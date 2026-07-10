@@ -84,13 +84,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Achetez directement chez les fabricants chinois via nos containers groupés. Prix cassés, livraison à Abidjan, réseau MLM.",
       },
-      { property: "og:title", content: "MSN Courtier — Groupage Chine ↔ Abidjan" },
+      { property: "og:title", content: "MSN Courtier — Import & Groupage Chine-Côte d'Ivoire" },
       {
         property: "og:description",
-        content: "Import solidaire, prix en gros pour tous. Rejoignez un container en cours.",
+        content: "Achetez directement chez les fabricants chinois via nos containers groupés. Prix cassés, livraison à Abidjan, réseau MLM.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "MSN Courtier — Import & Groupage Chine-Côte d'Ivoire" },
+      { name: "twitter:description", content: "Achetez directement chez les fabricants chinois via nos containers groupés. Prix cassés, livraison à Abidjan, réseau MLM." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/5395bc78-e839-4228-b91b-5dec468ce3bb" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/5395bc78-e839-4228-b91b-5dec468ce3bb" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
