@@ -84,7 +84,7 @@ function AdminLayout() {
           {NAV.map(({ to, label, icon: Icon, exact }) => (
             <Link
               key={to}
-              to={to}
+              to={to as never}
               activeOptions={{ exact: !!exact }}
               activeProps={{ className: "bg-primary text-primary-foreground" }}
               inactiveProps={{ className: "bg-muted/40 text-muted-foreground hover:bg-muted" }}
