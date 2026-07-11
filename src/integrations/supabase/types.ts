@@ -143,6 +143,11 @@ export type Database = {
           campaign_id: string | null
           created_at: string
           id: string
+          payment_meta: Json | null
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: string
+          payment_url: string | null
           product_id: string
           quantity: number
           shipping_type: Database["public"]["Enums"]["shipping_type"]
@@ -156,6 +161,11 @@ export type Database = {
           campaign_id?: string | null
           created_at?: string
           id?: string
+          payment_meta?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+          payment_url?: string | null
           product_id: string
           quantity?: number
           shipping_type?: Database["public"]["Enums"]["shipping_type"]
@@ -169,6 +179,11 @@ export type Database = {
           campaign_id?: string | null
           created_at?: string
           id?: string
+          payment_meta?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+          payment_url?: string | null
           product_id?: string
           quantity?: number
           shipping_type?: Database["public"]["Enums"]["shipping_type"]
@@ -245,6 +260,8 @@ export type Database = {
           phone: string | null
           referral_code: string
           referred_by: string | null
+          terms_accepted_at: string | null
+          terms_version: string | null
           updated_at: string
         }
         Insert: {
@@ -257,6 +274,8 @@ export type Database = {
           phone?: string | null
           referral_code: string
           referred_by?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
         }
         Update: {
@@ -269,6 +288,8 @@ export type Database = {
           phone?: string | null
           referral_code?: string
           referred_by?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
         }
         Relationships: [

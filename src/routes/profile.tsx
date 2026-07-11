@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, LogIn, Package, MapPin, Phone } from "lucide-react";
+import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const { user, loading } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
@@ -89,6 +91,25 @@ function ProfilePage() {
           </div>
           <span className="text-muted-foreground">›</span>
         </Link>
+
+        {isAdmin && (
+          <Link
+            to="/admin"
+            className="mt-3 flex items-center justify-between rounded-xl bg-gradient-brand p-4 text-primary-foreground shadow-brand"
+          >
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-lg bg-white/20">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-bold">Administrateur</div>
+                <div className="text-[11px] opacity-90">Accès complet à la gestion</div>
+              </div>
+            </div>
+            <span>›</span>
+          </Link>
+        )}
+
 
         <button
           onClick={async () => {

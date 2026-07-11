@@ -1,11 +1,13 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, Ship, Plane, Share2, Download } from "lucide-react";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowLeft, Ship, Plane, Share2, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProgressBar } from "@/components/ProgressBar";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { TermsDialog } from "@/components/TermsDialog";
 import {
   productQuery,
   campaignsQuery,
@@ -14,6 +16,7 @@ import {
 } from "@/lib/queries";
 import { formatXOF, computePrice, computeProductCostXOF } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
+import { initiateGeniusPayment } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ context, params }) => {
@@ -47,6 +50,28 @@ function ProductDetail() {
   const { data: cps } = useSuspenseQuery(campaignProductsQuery());
   const [ordering, setOrdering] = useState(false);
   const [qty, setQty] = useState(1);
+  const [showTerms, setShowTerms] = useState(false);
+  const [pendingShipping, setPendingShipping] = useState<"sea" | "air" | null>(null);
+  const initiatePay = useServerFn(initiateGeniusPayment);
+
+  const { data: sessionData } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => (await supabase.auth.getSession()).data.session,
+  });
+  const userId = sessionData?.user.id;
+
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ["profile-terms", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("terms_accepted_at")
+        .eq("id", userId!)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   if (!product) return null;
 
@@ -56,27 +81,42 @@ function ProductDetail() {
   const total = totalUnit * qty;
 
   async function placeOrder(shipping: "sea" | "air") {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      toast.error("Connectez-vous pour commander");
+      navigate({ to: "/auth", search: { redirect: `/product/${id}` } });
+      return;
+    }
+    if (!profile?.terms_accepted_at) {
+      setPendingShipping(shipping);
+      setShowTerms(true);
+      return;
+    }
     setOrdering(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        toast.error("Connectez-vous pour commander");
-        navigate({ to: "/auth", search: { redirect: `/product/${id}` } });
+      const { data: created, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: session.session.user.id,
+          product_id: product!.id,
+          campaign_id: shipping === "sea" && campaign ? campaign.id : null,
+          quantity: qty,
+          unit_price_xof: totalUnit,
+          total_xof: total,
+          shipping_type: shipping,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      toast.info("Redirection vers GeniusPay…");
+      const result = await initiatePay({ data: { orderId: created.id } });
+      if (result.alreadyPaid) {
+        navigate({ to: "/orders" });
         return;
       }
-      const { error } = await supabase.from("orders").insert({
-        user_id: session.session.user.id,
-        product_id: product!.id,
-        campaign_id: shipping === "sea" && campaign ? campaign.id : null,
-        quantity: qty,
-        unit_price_xof: totalUnit,
-        total_xof: total,
-        shipping_type: shipping,
-        status: "pending",
-      });
-      if (error) throw error;
-      toast.success("Commande créée — en attente de paiement");
-      navigate({ to: "/orders" });
+      window.location.href = result.paymentUrl;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erreur lors de la commande");
     } finally {
@@ -202,7 +242,35 @@ function ProductDetail() {
             <Plane className="h-4 w-4" /> Express Aérien
           </button>
         </div>
+        {userId && !profile?.terms_accepted_at && (
+          <button
+            onClick={() => setShowTerms(true)}
+            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-muted/40 py-2 text-[11px] font-semibold text-muted-foreground"
+          >
+            <FileText className="h-3 w-3" /> Lire et accepter les CGV avant achat
+          </button>
+        )}
       </div>
+
+      {showTerms && userId && (
+        <TermsDialog
+          userId={userId}
+          onClose={() => {
+            setShowTerms(false);
+            setPendingShipping(null);
+          }}
+          onAccepted={() => {
+            setShowTerms(false);
+            refetchProfile().then(() => {
+              if (pendingShipping) {
+                const s = pendingShipping;
+                setPendingShipping(null);
+                setTimeout(() => placeOrder(s), 100);
+              }
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
