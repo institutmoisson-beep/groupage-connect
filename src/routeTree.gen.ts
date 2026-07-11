@@ -15,9 +15,18 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MlmRouteImport } from './routes/mlm'
 import { Route as GroupageRouteImport } from './routes/groupage'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
+import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
+import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -50,10 +59,20 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
@@ -65,6 +84,41 @@ const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
   path: '/payment/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCommissionsRoute = AdminCommissionsRouteImport.update({
+  id: '/commissions',
+  path: '/commissions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
+  id: '/campaign-products',
+  path: '/campaign-products',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiPublicWebhooksGeniuspayRoute =
   ApiPublicWebhooksGeniuspayRouteImport.update({
     id: '/api/public/webhooks/geniuspay',
@@ -74,14 +128,23 @@ const ApiPublicWebhooksGeniuspayRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/campaign-products': typeof AdminCampaignProductsRoute
+  '/admin/campaigns': typeof AdminCampaignsRoute
+  '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesByTo {
@@ -92,35 +155,61 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/campaign-products': typeof AdminCampaignProductsRoute
+  '/admin/campaigns': typeof AdminCampaignsRoute
+  '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin': typeof AdminIndexRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/campaign-products': typeof AdminCampaignProductsRoute
+  '/admin/campaigns': typeof AdminCampaignsRoute
+  '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/groupage'
     | '/mlm'
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/admin/campaign-products'
+    | '/admin/campaigns'
+    | '/admin/commissions'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/roles'
+    | '/admin/users'
     | '/payment/callback'
     | '/product/$id'
+    | '/admin/'
     | '/api/public/webhooks/geniuspay'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -131,25 +220,43 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/admin/campaign-products'
+    | '/admin/campaigns'
+    | '/admin/commissions'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/roles'
+    | '/admin/users'
     | '/payment/callback'
     | '/product/$id'
+    | '/admin'
     | '/api/public/webhooks/geniuspay'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auth'
     | '/groupage'
     | '/mlm'
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/admin/campaign-products'
+    | '/admin/campaigns'
+    | '/admin/commissions'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/roles'
+    | '/admin/users'
     | '/payment/callback'
     | '/product/$id'
+    | '/admin/'
     | '/api/public/webhooks/geniuspay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   GroupageRoute: typeof GroupageRoute
   MlmRoute: typeof MlmRoute
@@ -205,12 +312,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/product/$id': {
       id: '/product/$id'
@@ -226,6 +347,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/commissions': {
+      id: '/admin/commissions'
+      path: '/commissions'
+      fullPath: '/admin/commissions'
+      preLoaderRoute: typeof AdminCommissionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/campaigns': {
+      id: '/admin/campaigns'
+      path: '/campaigns'
+      fullPath: '/admin/campaigns'
+      preLoaderRoute: typeof AdminCampaignsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/campaign-products': {
+      id: '/admin/campaign-products'
+      path: '/campaign-products'
+      fullPath: '/admin/campaign-products'
+      preLoaderRoute: typeof AdminCampaignProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/public/webhooks/geniuspay': {
       id: '/api/public/webhooks/geniuspay'
       path: '/api/public/webhooks/geniuspay'
@@ -236,8 +406,33 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminCampaignProductsRoute: typeof AdminCampaignProductsRoute
+  AdminCampaignsRoute: typeof AdminCampaignsRoute
+  AdminCommissionsRoute: typeof AdminCommissionsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminRolesRoute: typeof AdminRolesRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminCampaignProductsRoute: AdminCampaignProductsRoute,
+  AdminCampaignsRoute: AdminCampaignsRoute,
+  AdminCommissionsRoute: AdminCommissionsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminRolesRoute: AdminRolesRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   GroupageRoute: GroupageRoute,
   MlmRoute: MlmRoute,
