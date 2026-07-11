@@ -17,6 +17,8 @@ import { Route as GroupageRouteImport } from './routes/groupage'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -58,6 +60,17 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
+  id: '/payment/callback',
+  path: '/payment/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksGeniuspayRoute =
+  ApiPublicWebhooksGeniuspayRouteImport.update({
+    id: '/api/public/webhooks/geniuspay',
+    path: '/api/public/webhooks/geniuspay',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,7 +80,9 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,7 +92,9 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +105,9 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,7 +119,9 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/payment/callback'
     | '/product/$id'
+    | '/api/public/webhooks/geniuspay'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,7 +131,9 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/payment/callback'
     | '/product/$id'
+    | '/api/public/webhooks/geniuspay'
   id:
     | '__root__'
     | '/'
@@ -120,7 +143,9 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/payment/callback'
     | '/product/$id'
+    | '/api/public/webhooks/geniuspay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +156,9 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
+  ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +219,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payment/callback': {
+      id: '/payment/callback'
+      path: '/payment/callback'
+      fullPath: '/payment/callback'
+      preLoaderRoute: typeof PaymentCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/geniuspay': {
+      id: '/api/public/webhooks/geniuspay'
+      path: '/api/public/webhooks/geniuspay'
+      fullPath: '/api/public/webhooks/geniuspay'
+      preLoaderRoute: typeof ApiPublicWebhooksGeniuspayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -203,7 +244,9 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
+  ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
