@@ -50,6 +50,28 @@ function ProductDetail() {
   const { data: cps } = useSuspenseQuery(campaignProductsQuery());
   const [ordering, setOrdering] = useState(false);
   const [qty, setQty] = useState(1);
+  const [showTerms, setShowTerms] = useState(false);
+  const [pendingShipping, setPendingShipping] = useState<"sea" | "air" | null>(null);
+  const initiatePay = useServerFn(initiateGeniusPayment);
+
+  const { data: sessionData } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => (await supabase.auth.getSession()).data.session,
+  });
+  const userId = sessionData?.user.id;
+
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ["profile-terms", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("terms_accepted_at")
+        .eq("id", userId!)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   if (!product) return null;
 
@@ -59,27 +81,42 @@ function ProductDetail() {
   const total = totalUnit * qty;
 
   async function placeOrder(shipping: "sea" | "air") {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      toast.error("Connectez-vous pour commander");
+      navigate({ to: "/auth", search: { redirect: `/product/${id}` } });
+      return;
+    }
+    if (!profile?.terms_accepted_at) {
+      setPendingShipping(shipping);
+      setShowTerms(true);
+      return;
+    }
     setOrdering(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        toast.error("Connectez-vous pour commander");
-        navigate({ to: "/auth", search: { redirect: `/product/${id}` } });
+      const { data: created, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: session.session.user.id,
+          product_id: product!.id,
+          campaign_id: shipping === "sea" && campaign ? campaign.id : null,
+          quantity: qty,
+          unit_price_xof: totalUnit,
+          total_xof: total,
+          shipping_type: shipping,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      toast.info("Redirection vers GeniusPay…");
+      const result = await initiatePay({ data: { orderId: created.id } });
+      if (result.alreadyPaid) {
+        navigate({ to: "/orders" });
         return;
       }
-      const { error } = await supabase.from("orders").insert({
-        user_id: session.session.user.id,
-        product_id: product!.id,
-        campaign_id: shipping === "sea" && campaign ? campaign.id : null,
-        quantity: qty,
-        unit_price_xof: totalUnit,
-        total_xof: total,
-        shipping_type: shipping,
-        status: "pending",
-      });
-      if (error) throw error;
-      toast.success("Commande créée — en attente de paiement");
-      navigate({ to: "/orders" });
+      window.location.href = result.paymentUrl;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erreur lors de la commande");
     } finally {
