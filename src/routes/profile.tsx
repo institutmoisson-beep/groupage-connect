@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, LogIn, Package, MapPin, Phone } from "lucide-react";
+import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const { user, loading } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
