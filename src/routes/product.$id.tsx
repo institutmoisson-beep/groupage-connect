@@ -242,7 +242,35 @@ function ProductDetail() {
             <Plane className="h-4 w-4" /> Express Aérien
           </button>
         </div>
+        {userId && !profile?.terms_accepted_at && (
+          <button
+            onClick={() => setShowTerms(true)}
+            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-muted/40 py-2 text-[11px] font-semibold text-muted-foreground"
+          >
+            <FileText className="h-3 w-3" /> Lire et accepter les CGV avant achat
+          </button>
+        )}
       </div>
+
+      {showTerms && userId && (
+        <TermsDialog
+          userId={userId}
+          onClose={() => {
+            setShowTerms(false);
+            setPendingShipping(null);
+          }}
+          onAccepted={() => {
+            setShowTerms(false);
+            refetchProfile().then(() => {
+              if (pendingShipping) {
+                const s = pendingShipping;
+                setPendingShipping(null);
+                setTimeout(() => placeOrder(s), 100);
+              }
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
