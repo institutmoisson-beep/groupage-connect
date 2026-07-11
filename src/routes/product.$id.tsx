@@ -1,11 +1,13 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, Ship, Plane, Share2, Download } from "lucide-react";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowLeft, Ship, Plane, Share2, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProgressBar } from "@/components/ProgressBar";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { TermsDialog } from "@/components/TermsDialog";
 import {
   productQuery,
   campaignsQuery,
@@ -14,6 +16,7 @@ import {
 } from "@/lib/queries";
 import { formatXOF, computePrice, computeProductCostXOF } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
+import { initiateGeniusPayment } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ context, params }) => {
