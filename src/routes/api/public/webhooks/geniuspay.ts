@@ -57,11 +57,11 @@ export const Route = createFileRoute("/api/public/webhooks/geniuspay")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const patch: {
-          payment_meta: unknown;
+          payment_meta: any;
           payment_status?: string;
           status?: "pending" | "paid_confirmed" | "shipped" | "transit" | "abidjan" | "delivered" | "cancelled";
         } = {
-          payment_meta: payload,
+          payment_meta: payload as any,
         };
         if (paid) {
           patch.payment_status = "paid";
