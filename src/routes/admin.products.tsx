@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Save, Trash2, Plus } from "lucide-react";
+import { Save, Trash2, Plus, Upload, X, Loader2 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF, computePrice } from "@/lib/format";
+import { compressAndUploadImage } from "@/lib/image-upload";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -91,8 +92,7 @@ function AdminProducts() {
           <Input label="Titre" value={draft.title} onChange={(v) => setDraft({ ...draft, title: v })} />
           <Input label="Catégorie" value={draft.category} onChange={(v) => setDraft({ ...draft, category: v })} />
           <TextArea label="Description" value={draft.description} onChange={(v) => setDraft({ ...draft, description: v })} />
-          <TextArea
-            label="URLs images (séparées par virgule)"
+          <ImageUploader
             value={draft.image_urls}
             onChange={(v) => setDraft({ ...draft, image_urls: v })}
           />
@@ -198,5 +198,88 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
       <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
       <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 outline-none focus:border-primary" />
     </label>
+  );
+}
+
+function ImageUploader({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = useState(false);
+  const urls = value.split(",").map((s) => s.trim()).filter(Boolean);
+
+  async function handleFiles(files: FileList | null) {
+    if (!files?.length) return;
+    setBusy(true);
+    try {
+      const added: string[] = [];
+      for (const f of Array.from(files)) {
+        try {
+          const { url } = await compressAndUploadImage(f);
+          added.push(url);
+        } catch (e) {
+          toast.error(`Échec upload: ${(e as Error).message}`);
+        }
+      }
+      if (added.length) {
+        onChange([...urls, ...added].join(", "));
+        toast.success(`${added.length} image(s) ajoutée(s)`);
+      }
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  function removeAt(i: number) {
+    const next = urls.filter((_, idx) => idx !== i);
+    onChange(next.join(", "));
+  }
+
+  return (
+    <div className="md:col-span-2">
+      <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        Images produit (compressées automatiquement en WebP)
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {urls.map((u, i) => (
+          <div key={u + i} className="relative">
+            <img src={u} alt="" className="h-16 w-16 rounded-lg border border-border object-cover" />
+            <button
+              type="button"
+              onClick={() => removeAt(i)}
+              className="absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-destructive text-destructive-foreground"
+              aria-label="Retirer"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+          className="flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border bg-background text-[10px] font-semibold text-muted-foreground hover:border-primary hover:text-primary disabled:opacity-50"
+        >
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {busy ? "…" : "Ajouter"}
+        </button>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+      <p className="mt-1 text-[10px] text-muted-foreground">
+        Ou colle des URLs séparées par une virgule ci-dessous.
+      </p>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={2}
+        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:border-primary"
+      />
+    </div>
   );
 }
