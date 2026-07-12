@@ -92,8 +92,7 @@ function AdminProducts() {
           <Input label="Titre" value={draft.title} onChange={(v) => setDraft({ ...draft, title: v })} />
           <Input label="Catégorie" value={draft.category} onChange={(v) => setDraft({ ...draft, category: v })} />
           <TextArea label="Description" value={draft.description} onChange={(v) => setDraft({ ...draft, description: v })} />
-          <TextArea
-            label="URLs images (séparées par virgule)"
+          <ImageUploader
             value={draft.image_urls}
             onChange={(v) => setDraft({ ...draft, image_urls: v })}
           />
