@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Save, Trash2, Plus } from "lucide-react";
+import { Save, Trash2, Plus, Upload, X, Loader2 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF, computePrice } from "@/lib/format";
+import { compressAndUploadImage } from "@/lib/image-upload";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
