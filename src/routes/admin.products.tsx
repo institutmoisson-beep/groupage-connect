@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Save, Trash2, Plus, Upload, X, Loader2 } from "lucide-react";
+import { Save, Trash2, Plus, Upload, X, Loader2, Sparkles } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF, computePrice } from "@/lib/format";
 import { compressAndUploadImage } from "@/lib/image-upload";
+import { enhanceProductContent } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -144,7 +146,28 @@ function ProductRow({ row, onSave, onDelete }: { row: any; onSave: (id: string, 
   const [exchange_rate_cny_xof, setRate] = useState<number>(row.exchange_rate_cny_xof);
   const [logistics_fee_xof, setFee] = useState<number>(row.logistics_fee_xof);
   const [active, setActive] = useState(row.active);
+  const [aiBusy, setAiBusy] = useState(false);
   const total = computePrice({ cny_price, exchange_rate_cny_xof, logistics_fee_xof });
+  const enhance = useServerFn(enhanceProductContent);
+
+  async function runAI() {
+    setAiBusy(true);
+    try {
+      const r = await enhance({ data: { productId: row.id } });
+      setTitle(r.title);
+      await supabase.from("products").update({ title: r.title, description: r.description }).eq("id", row.id);
+      const pack = `📣 ${r.title}\n\n${r.description}\n\n— WhatsApp —\n${r.marketing_whatsapp}\n\n— TikTok —\n${r.marketing_tiktok}\n\nProfit score : ${r.profit_score}/100 · ${r.profit_reason}`;
+      try {
+        await navigator.clipboard.writeText(pack);
+      } catch {}
+      toast.success(`IA OK · Profit ${r.profit_score}/100 · Pack marketing copié`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "IA indisponible");
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
   return (
     <tr className="border-b border-border">
       <td className="p-2">
@@ -171,6 +194,9 @@ function ProductRow({ row, onSave, onDelete }: { row: any; onSave: (id: string, 
       </td>
       <td className="p-2 text-right">
         <div className="flex justify-end gap-1">
+          <button onClick={runAI} disabled={aiBusy} title="Améliorer avec l'IA" className="rounded bg-gradient-premium p-1.5 text-secondary-foreground shadow-premium disabled:opacity-50">
+            {aiBusy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+          </button>
           <button onClick={() => onSave(row.id, { title, category, cny_price, exchange_rate_cny_xof, logistics_fee_xof, active })} className="rounded bg-primary p-1.5 text-primary-foreground">
             <Save className="h-3 w-3" />
           </button>

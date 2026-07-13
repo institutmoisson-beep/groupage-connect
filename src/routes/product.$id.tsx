@@ -1,6 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Ship, Plane, Share2, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ import {
 } from "@/lib/queries";
 import { formatXOF, computePrice, computeProductCostXOF } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
-import { initiateGeniusPayment } from "@/lib/payments.functions";
+import { downloadFile } from "@/lib/proof-upload";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ context, params }) => {
@@ -52,7 +51,7 @@ function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [showTerms, setShowTerms] = useState(false);
   const [pendingShipping, setPendingShipping] = useState<"sea" | "air" | null>(null);
-  const initiatePay = useServerFn(initiateGeniusPayment);
+  
 
   const { data: sessionData } = useQuery({
     queryKey: ["session"],
@@ -110,13 +109,8 @@ function ProductDetail() {
         .single();
       if (error) throw error;
 
-      toast.info("Redirection vers GeniusPay…");
-      const result = await initiatePay({ data: { orderId: created.id } });
-      if (result.alreadyPaid) {
-        navigate({ to: "/orders" });
-        return;
-      }
-      window.location.href = result.paymentUrl;
+      navigate({ to: "/checkout/$orderId", params: { orderId: created.id } });
+      return;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erreur lors de la commande");
     } finally {
@@ -211,13 +205,22 @@ function ProductDetail() {
             </div>
           </div>
 
-          <a
-            href={product.image_urls[0]}
-            download
-            className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-secondary hover:bg-secondary/5"
+          <button
+            onClick={async () => {
+              try {
+                await downloadFile(
+                  product.image_urls[0],
+                  `${product.title.replace(/[^\w-]+/g, "_").slice(0, 40)}.jpg`,
+                );
+                toast.success("Image téléchargée");
+              } catch {
+                toast.error("Échec du téléchargement");
+              }
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-secondary hover:bg-secondary/5"
           >
             <Download className="h-4 w-4" /> Télécharger l'image pour partager
-          </a>
+          </button>
         </div>
       </main>
 

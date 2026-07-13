@@ -51,7 +51,7 @@ export type Database = {
           created_at: string
           id: string
           level: number
-          order_id: string
+          order_id: string | null
           referrer_id: string
         }
         Insert: {
@@ -60,7 +60,7 @@ export type Database = {
           created_at?: string
           id?: string
           level: number
-          order_id: string
+          order_id?: string | null
           referrer_id: string
         }
         Update: {
@@ -69,7 +69,7 @@ export type Database = {
           created_at?: string
           id?: string
           level?: number
-          order_id?: string
+          order_id?: string | null
           referrer_id?: string
         }
         Relationships: [
@@ -95,6 +95,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      custom_sourcing_orders: {
+        Row: {
+          admin_notes: string | null
+          cny_unit_price: number | null
+          created_at: string
+          estimated_total_xof: number | null
+          exchange_rate_cny_xof: number
+          final_total_xof: number | null
+          id: string
+          logistics_fee_xof: number
+          msn_commission_rate: number
+          msn_commission_xof: number | null
+          notes: string | null
+          product_name: string
+          qc_images: string[]
+          quantity: number
+          shipping_type: string
+          source_url: string
+          status: Database["public"]["Enums"]["sourcing_status"]
+          updated_at: string
+          user_id: string
+          variant: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          cny_unit_price?: number | null
+          created_at?: string
+          estimated_total_xof?: number | null
+          exchange_rate_cny_xof?: number
+          final_total_xof?: number | null
+          id?: string
+          logistics_fee_xof?: number
+          msn_commission_rate?: number
+          msn_commission_xof?: number | null
+          notes?: string | null
+          product_name: string
+          qc_images?: string[]
+          quantity?: number
+          shipping_type?: string
+          source_url: string
+          status?: Database["public"]["Enums"]["sourcing_status"]
+          updated_at?: string
+          user_id: string
+          variant?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          cny_unit_price?: number | null
+          created_at?: string
+          estimated_total_xof?: number | null
+          exchange_rate_cny_xof?: number
+          final_total_xof?: number | null
+          id?: string
+          logistics_fee_xof?: number
+          msn_commission_rate?: number
+          msn_commission_xof?: number | null
+          notes?: string | null
+          product_name?: string
+          qc_images?: string[]
+          quantity?: number
+          shipping_type?: string
+          source_url?: string
+          status?: Database["public"]["Enums"]["sourcing_status"]
+          updated_at?: string
+          user_id?: string
+          variant?: string | null
+        }
+        Relationships: []
       }
       groupage_campaigns: {
         Row: {
@@ -210,6 +279,114 @@ export type Database = {
           },
         ]
       }
+      payment_methods: {
+        Row: {
+          account_holder: string | null
+          account_identifier: string | null
+          active: boolean
+          created_at: string
+          id: string
+          instructions: string | null
+          logo_url: string | null
+          name: string
+          sort_order: number
+          type: Database["public"]["Enums"]["payment_method_type"]
+          updated_at: string
+        }
+        Insert: {
+          account_holder?: string | null
+          account_identifier?: string | null
+          active?: boolean
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          type: Database["public"]["Enums"]["payment_method_type"]
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string | null
+          account_identifier?: string | null
+          active?: boolean
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          type?: Database["public"]["Enums"]["payment_method_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_proofs: {
+        Row: {
+          amount_xof: number
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string
+          payment_method_id: string | null
+          reference: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          screenshot_url: string | null
+          status: Database["public"]["Enums"]["payment_proof_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_xof: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id: string
+          payment_method_id?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screenshot_url?: string | null
+          status?: Database["public"]["Enums"]["payment_proof_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_xof?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string
+          payment_method_id?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screenshot_url?: string | null
+          status?: Database["public"]["Enums"]["payment_proof_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_proofs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_proofs_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           active: boolean
@@ -254,6 +431,7 @@ export type Database = {
           avatar_url: string | null
           city: string | null
           created_at: string
+          delivered_referrals_count: number
           full_name: string | null
           id: string
           mlm_level: number
@@ -268,6 +446,7 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          delivered_referrals_count?: number
           full_name?: string | null
           id: string
           mlm_level?: number
@@ -282,6 +461,7 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          delivered_referrals_count?: number
           full_name?: string | null
           id?: string
           mlm_level?: number
@@ -344,7 +524,20 @@ export type Database = {
         | "abidjan"
         | "delivered"
         | "cancelled"
+      payment_method_type: "mobile_money" | "crypto" | "bank" | "cash" | "other"
+      payment_proof_status: "pending" | "verified" | "rejected"
       shipping_type: "sea" | "air"
+      sourcing_status:
+        | "quote_pending"
+        | "quoted"
+        | "paid"
+        | "ordered_china"
+        | "qc"
+        | "shipped"
+        | "transit"
+        | "abidjan"
+        | "delivered"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -483,7 +676,21 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
+      payment_method_type: ["mobile_money", "crypto", "bank", "cash", "other"],
+      payment_proof_status: ["pending", "verified", "rejected"],
       shipping_type: ["sea", "air"],
+      sourcing_status: [
+        "quote_pending",
+        "quoted",
+        "paid",
+        "ordered_china",
+        "qc",
+        "shipped",
+        "transit",
+        "abidjan",
+        "delivered",
+        "cancelled",
+      ],
     },
   },
 } as const
