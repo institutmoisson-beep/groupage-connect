@@ -51,7 +51,7 @@ function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [showTerms, setShowTerms] = useState(false);
   const [pendingShipping, setPendingShipping] = useState<"sea" | "air" | null>(null);
-  const initiatePay = useServerFn(initiateGeniusPayment);
+  
 
   const { data: sessionData } = useQuery({
     queryKey: ["session"],
@@ -109,13 +109,8 @@ function ProductDetail() {
         .single();
       if (error) throw error;
 
-      toast.info("Redirection vers GeniusPay…");
-      const result = await initiatePay({ data: { orderId: created.id } });
-      if (result.alreadyPaid) {
-        navigate({ to: "/orders" });
-        return;
-      }
-      window.location.href = result.paymentUrl;
+      navigate({ to: "/checkout/$orderId", params: { orderId: created.id } });
+      return;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erreur lors de la commande");
     } finally {
