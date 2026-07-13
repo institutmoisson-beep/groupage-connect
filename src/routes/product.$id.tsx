@@ -205,13 +205,22 @@ function ProductDetail() {
             </div>
           </div>
 
-          <a
-            href={product.image_urls[0]}
-            download
-            className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-secondary hover:bg-secondary/5"
+          <button
+            onClick={async () => {
+              try {
+                await downloadFile(
+                  product.image_urls[0],
+                  `${product.title.replace(/[^\w-]+/g, "_").slice(0, 40)}.jpg`,
+                );
+                toast.success("Image téléchargée");
+              } catch {
+                toast.error("Échec du téléchargement");
+              }
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-secondary hover:bg-secondary/5"
           >
             <Download className="h-4 w-4" /> Télécharger l'image pour partager
-          </a>
+          </button>
         </div>
       </main>
 

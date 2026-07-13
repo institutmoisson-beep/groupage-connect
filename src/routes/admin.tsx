@@ -10,6 +10,9 @@ import {
   Wallet,
   Home,
   LogOut,
+  CreditCard,
+  ReceiptText,
+  Search,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -29,6 +32,9 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/campaigns", label: "Campagnes", icon: Ship },
   { to: "/admin/campaign-products", label: "Produits/Campagnes", icon: LinkIcon },
   { to: "/admin/orders", label: "Commandes", icon: ShoppingCart },
+  { to: "/admin/payment-methods", label: "Moyens paiement", icon: CreditCard },
+  { to: "/admin/proofs", label: "Preuves", icon: ReceiptText },
+  { to: "/admin/sourcing", label: "Sourcing", icon: Search },
   { to: "/admin/commissions", label: "Commissions", icon: Wallet },
 ];
 
