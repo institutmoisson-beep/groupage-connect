@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SourcingRouteImport } from './routes/sourcing'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -20,15 +21,24 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
+const SourcingRoute = SourcingRouteImport.update({
+  id: '/sourcing',
+  path: '/sourcing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -84,9 +94,19 @@ const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
   path: '/payment/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
+  id: '/checkout/$orderId',
+  path: '/checkout/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSourcingRoute = AdminSourcingRouteImport.update({
+  id: '/sourcing',
+  path: '/sourcing',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminRolesRoute = AdminRolesRouteImport.update({
@@ -94,9 +114,19 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
   path: '/roles',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProofsRoute = AdminProofsRouteImport.update({
+  id: '/proofs',
+  path: '/proofs',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
+  id: '/payment-methods',
+  path: '/payment-methods',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
@@ -135,13 +165,18 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing': typeof SourcingRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
+  '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -155,13 +190,18 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing': typeof SourcingRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
+  '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
@@ -177,13 +217,18 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing': typeof SourcingRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
+  '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
+  '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -200,13 +245,18 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/sourcing'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/commissions'
     | '/admin/orders'
+    | '/admin/payment-methods'
     | '/admin/products'
+    | '/admin/proofs'
     | '/admin/roles'
+    | '/admin/sourcing'
     | '/admin/users'
+    | '/checkout/$orderId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
@@ -220,13 +270,18 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/sourcing'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/commissions'
     | '/admin/orders'
+    | '/admin/payment-methods'
     | '/admin/products'
+    | '/admin/proofs'
     | '/admin/roles'
+    | '/admin/sourcing'
     | '/admin/users'
+    | '/checkout/$orderId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin'
@@ -241,13 +296,18 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/sitemap.xml'
+    | '/sourcing'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/commissions'
     | '/admin/orders'
+    | '/admin/payment-methods'
     | '/admin/products'
+    | '/admin/proofs'
     | '/admin/roles'
+    | '/admin/sourcing'
     | '/admin/users'
+    | '/checkout/$orderId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
@@ -263,6 +323,8 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SourcingRoute: typeof SourcingRoute
+  CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
@@ -270,6 +332,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sourcing': {
+      id: '/sourcing'
+      path: '/sourcing'
+      fullPath: '/sourcing'
+      preLoaderRoute: typeof SourcingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -347,11 +416,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/$orderId': {
+      id: '/checkout/$orderId'
+      path: '/checkout/$orderId'
+      fullPath: '/checkout/$orderId'
+      preLoaderRoute: typeof CheckoutOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sourcing': {
+      id: '/admin/sourcing'
+      path: '/sourcing'
+      fullPath: '/admin/sourcing'
+      preLoaderRoute: typeof AdminSourcingRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/roles': {
@@ -361,11 +444,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/proofs': {
+      id: '/admin/proofs'
+      path: '/proofs'
+      fullPath: '/admin/proofs'
+      preLoaderRoute: typeof AdminProofsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
       fullPath: '/admin/products'
       preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payment-methods': {
+      id: '/admin/payment-methods'
+      path: '/payment-methods'
+      fullPath: '/admin/payment-methods'
+      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/orders': {
@@ -411,8 +508,11 @@ interface AdminRouteChildren {
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminCommissionsRoute: typeof AdminCommissionsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminProofsRoute: typeof AdminProofsRoute
   AdminRolesRoute: typeof AdminRolesRoute
+  AdminSourcingRoute: typeof AdminSourcingRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -422,8 +522,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminCommissionsRoute: AdminCommissionsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminProofsRoute: AdminProofsRoute,
   AdminRolesRoute: AdminRolesRoute,
+  AdminSourcingRoute: AdminSourcingRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -439,6 +542,8 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SourcingRoute: SourcingRoute,
+  CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,

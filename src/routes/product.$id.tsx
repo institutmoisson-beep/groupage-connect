@@ -1,6 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Ship, Plane, Share2, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ import {
 } from "@/lib/queries";
 import { formatXOF, computePrice, computeProductCostXOF } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
-import { initiateGeniusPayment } from "@/lib/payments.functions";
+import { downloadFile } from "@/lib/proof-upload";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ context, params }) => {
