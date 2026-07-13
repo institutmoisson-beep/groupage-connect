@@ -122,9 +122,14 @@ function MLMPage() {
             </button>
           </div>
           <div className="mt-2 text-[11px] opacity-80">
-            Partagez pour gagner 10% / 5% / 2% sur 3 niveaux.
+            Sourcing : 1% / 2% / 2.5% · Groupage : 10% / 5% / 2%.
           </div>
         </div>
+
+        <WithdrawalCard
+          delivered={profile?.delivered_referrals_count ?? 0}
+          total={totalCommissions}
+        />
 
         <section className="mt-6">
           <h2 className="mb-2 font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">
@@ -214,6 +219,46 @@ function Stat({
       <div className={highlight ? "" : "text-secondary"}>{icon}</div>
       <div className="mt-1 text-[10px] font-medium opacity-80">{label}</div>
       <div className="font-display text-sm font-bold">{value}</div>
+    </div>
+  );
+}
+
+function WithdrawalCard({ delivered, total }: { delivered: number; total: number }) {
+  const target = 10;
+  const unlocked = delivered >= target;
+  const pct = Math.min(100, Math.round((delivered / target) * 100));
+  return (
+    <div className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-card">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="font-display text-sm font-bold">Retrait de commissions</div>
+          <div className="text-[11px] text-muted-foreground">
+            Règle des 10 : débloqué après 10 filleuls livrés.
+          </div>
+        </div>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+            unlocked ? "bg-success/15 text-success" : "bg-secondary/15 text-secondary"
+          }`}
+        >
+          {unlocked ? "Débloqué" : "Verrouillé"}
+        </span>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-brand transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="mt-1 flex justify-between text-[11px]">
+        <span className="text-muted-foreground">{delivered} / {target} filleuls livrés</span>
+        <span className="font-bold text-primary">{formatXOF(total)}</span>
+      </div>
+      {!unlocked && (
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Encore {Math.max(0, target - delivered)} filleul(s) avec commande livrée pour débloquer vos retraits.
+        </p>
+      )}
     </div>
   );
 }
