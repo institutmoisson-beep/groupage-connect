@@ -106,6 +106,7 @@ export type Database = {
           final_total_xof: number | null
           id: string
           logistics_fee_xof: number
+          main_image: string | null
           msn_commission_rate: number
           msn_commission_xof: number | null
           notes: string | null
@@ -113,6 +114,7 @@ export type Database = {
           qc_images: string[]
           quantity: number
           shipping_type: string
+          source_platform: string | null
           source_url: string
           status: Database["public"]["Enums"]["sourcing_status"]
           updated_at: string
@@ -128,6 +130,7 @@ export type Database = {
           final_total_xof?: number | null
           id?: string
           logistics_fee_xof?: number
+          main_image?: string | null
           msn_commission_rate?: number
           msn_commission_xof?: number | null
           notes?: string | null
@@ -135,6 +138,7 @@ export type Database = {
           qc_images?: string[]
           quantity?: number
           shipping_type?: string
+          source_platform?: string | null
           source_url: string
           status?: Database["public"]["Enums"]["sourcing_status"]
           updated_at?: string
@@ -150,6 +154,7 @@ export type Database = {
           final_total_xof?: number | null
           id?: string
           logistics_fee_xof?: number
+          main_image?: string | null
           msn_commission_rate?: number
           msn_commission_xof?: number | null
           notes?: string | null
@@ -157,6 +162,7 @@ export type Database = {
           qc_images?: string[]
           quantity?: number
           shipping_type?: string
+          source_platform?: string | null
           source_url?: string
           status?: Database["public"]["Enums"]["sourcing_status"]
           updated_at?: string
