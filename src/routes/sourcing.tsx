@@ -242,7 +242,7 @@ function SourcingPage() {
                     Choisissez votre variante
                   </div>
                   <div className="grid max-h-40 grid-cols-1 gap-1 overflow-y-auto">
-                    {scanned.variants.map((v, i) => (
+                    {(scanned.variants as Variant[]).map((v: Variant, i: number) => (
                       <button
                         key={i}
                         onClick={() => setSelectedVariant(v)}
