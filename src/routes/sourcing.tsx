@@ -94,6 +94,26 @@ function SourcingPage() {
     },
   });
 
+  const { data: cargo } = useQuery({
+    queryKey: ["cargo-config"],
+    queryFn: async () => {
+      const { data } = await supabase.from("cargo_config").select("*").eq("id", 1).maybeSingle();
+      return data;
+    },
+  });
+
+  async function approveQC(id: string) {
+    const { error } = await supabase
+      .from("custom_sourcing_orders")
+      .update({ qc_approved_at: new Date().toISOString(), status: "shipped" } as never)
+      .eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Qualité approuvée — expédition en cours");
+      qc.invalidateQueries({ queryKey: ["my-sourcings"] });
+    }
+  }
+
   async function scan() {
     if (!user) {
       navigate({ to: "/auth", search: { redirect: "/sourcing" } as never });
