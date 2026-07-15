@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Search, Ship, Plane, LogIn, Package, Sparkles, Loader2, CreditCard } from "lucide-react";
+import { Search, Ship, Plane, LogIn, Package, Sparkles, Loader2, CreditCard, Warehouse, ShieldCheck } from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
