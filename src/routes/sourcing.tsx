@@ -430,16 +430,52 @@ function SourcingPage() {
                     </div>
                   </div>
                   {s.status === "quoted" && s.final_total_xof && (
-                    <button
-                      onClick={() => toast.info("Paiement sourcing bientôt disponible")}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-xs font-bold text-primary"
+                    <Link
+                      to="/checkout/sourcing/$sourcingId"
+                      params={{ sourcingId: s.id }}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-gradient-brand px-3 py-2 text-xs font-bold text-primary-foreground shadow-brand"
                     >
                       <CreditCard className="h-3.5 w-3.5" /> Payer via MSN Smart Payment
-                    </button>
+                    </Link>
+                  )}
+                  {s.status === "qc" && Array.isArray(s.qc_images) && s.qc_images.length > 0 && (
+                    <div className="space-y-2 rounded-lg border border-secondary/40 bg-secondary/5 p-2">
+                      <div className="text-[10px] font-bold uppercase text-secondary">Contrôle qualité — {s.qc_images.length} photo(s)</div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {s.qc_images.slice(0, 6).map((img: string, i: number) => (
+                          <a key={i} href={img} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden rounded-md">
+                            <img src={img} alt={`QC ${i + 1}`} loading="lazy" className="h-full w-full object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                      {!s.qc_approved_at && (
+                        <button
+                          onClick={() => approveQC(s.id)}
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-success/10 px-3 py-2 text-xs font-bold text-success"
+                        >
+                          <ShieldCheck className="h-3.5 w-3.5" /> Approuver la qualité
+                        </button>
+                      )}
+                    </div>
                   )}
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {cargo?.china_warehouse_address && (
+          <section className="rounded-xl border border-primary/30 bg-primary/5 p-3">
+            <div className="mb-1 flex items-center gap-2 text-[10px] font-bold uppercase text-primary">
+              <Warehouse className="h-3.5 w-3.5" /> MSN Global Cargo — Adresse de livraison Chine
+            </div>
+            <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-foreground">{cargo.china_warehouse_address}</pre>
+            {cargo.china_warehouse_contact && (
+              <div className="mt-1 text-[11px] text-muted-foreground">Contact : {cargo.china_warehouse_contact}</div>
+            )}
+            {cargo.instructions && (
+              <div className="mt-1 rounded-md bg-card p-2 text-[11px] text-muted-foreground">{cargo.instructions}</div>
+            )}
           </section>
         )}
       </main>
