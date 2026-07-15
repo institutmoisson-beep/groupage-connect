@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/firecrawl";
+// Firecrawl connection is direct-API (no gateway). Call api.firecrawl.dev with the FIRECRAWL_API_KEY as bearer.
+const FIRECRAWL_V2 = "https://api.firecrawl.dev/v2";
 
 const inputSchema = z.object({
   url: z
@@ -51,17 +52,15 @@ export const scrapeProductPage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => inputSchema.parse(input))
   .handler(async ({ data }) => {
-    const lovableKey = process.env.LOVABLE_API_KEY;
     const firecrawlKey = process.env.FIRECRAWL_API_KEY;
-    if (!lovableKey || !firecrawlKey) {
+    if (!firecrawlKey) {
       throw new Error("Firecrawl connector not configured");
     }
 
-    const res = await fetch(`${GATEWAY_URL}/v2/scrape`, {
+    const res = await fetch(`${FIRECRAWL_V2}/scrape`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": firecrawlKey,
+        Authorization: `Bearer ${firecrawlKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

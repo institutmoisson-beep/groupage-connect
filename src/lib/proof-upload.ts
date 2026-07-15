@@ -6,19 +6,32 @@ const BUCKET = "payment-proofs";
 export type UploadedProof = { url: string; path: string };
 
 export async function uploadPaymentProof(file: File, userId: string): Promise<UploadedProof> {
-  const compressed = await imageCompression(file, {
-    maxSizeMB: 0.8,
-    maxWidthOrHeight: 1600,
-    useWebWorker: true,
-    fileType: "image/webp",
-    initialQuality: 0.85,
-  });
-  const path = `${userId}/${crypto.randomUUID()}.webp`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, compressed, {
-    contentType: "image/webp",
+  // Try to compress to webp; if the browser/format refuses, fall back to the original file.
+  let toUpload: Blob = file;
+  let ext = (file.name.split(".").pop() || "bin").toLowerCase();
+  let contentType = file.type || "application/octet-stream";
+  try {
+    if (file.type.startsWith("image/") && file.type !== "image/heic" && file.type !== "image/heif") {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1600,
+        useWebWorker: false,
+        fileType: "image/webp",
+        initialQuality: 0.85,
+      });
+      toUpload = compressed;
+      ext = "webp";
+      contentType = "image/webp";
+    }
+  } catch (e) {
+    console.warn("Image compression failed, uploading original", e);
+  }
+  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from(BUCKET).upload(path, toUpload, {
+    contentType,
     upsert: false,
   });
-  if (error) throw error;
+  if (error) throw new Error(error.message || "Upload échoué");
   const { data, error: sErr } = await supabase.storage
     .from(BUCKET)
     .createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
