@@ -20,7 +20,7 @@ function AdminProofs() {
     queryFn: async () => {
       let q = supabase
         .from("payment_proofs")
-        .select("*, orders(id, total_xof, quantity, shipping_type, status), payment_methods(name, type)")
+        .select("*, orders(id, total_xof, quantity, shipping_type, status), custom_sourcing_orders(id, product_name, quantity, status), payment_methods(name, type)")
         .order("created_at", { ascending: false });
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
@@ -30,6 +30,7 @@ function AdminProofs() {
   });
 
   async function review(id: string, status: "verified" | "rejected", note?: string) {
+    const row = (rows ?? []).find((r: any) => r.id === id);
     const { error } = await supabase
       .from("payment_proofs")
       .update({
@@ -39,9 +40,20 @@ function AdminProofs() {
       })
       .eq("id", id);
     if (error) return toast.error(error.message);
-    if (status === "rejected") {
-      // reset order to unpaid
-      const row = (rows ?? []).find((r: any) => r.id === id);
+    if (status === "verified") {
+      if (row?.order_id) {
+        await supabase
+          .from("orders")
+          .update({ payment_status: "paid", status: "paid_confirmed" })
+          .eq("id", row.order_id);
+      }
+      if (row?.sourcing_order_id) {
+        await supabase
+          .from("custom_sourcing_orders")
+          .update({ status: "paid" } as never)
+          .eq("id", row.sourcing_order_id);
+      }
+    } else if (status === "rejected") {
       if (row?.order_id) {
         await supabase.from("orders").update({ payment_status: "unpaid" }).eq("id", row.order_id);
       }
@@ -111,8 +123,12 @@ function AdminProofs() {
                   <div className="font-bold">{p.payment_methods?.name ?? "—"}</div>
                 </div>
                 <div className="col-span-2">
-                  <div className="text-muted-foreground">Commande</div>
-                  <div className="font-mono text-[11px]">{p.order_id?.slice(0, 8)}…</div>
+                  <div className="text-muted-foreground">Cible</div>
+                  <div className="font-mono text-[11px]">
+                    {p.sourcing_order_id
+                      ? `Sourcing · ${p.custom_sourcing_orders?.product_name ?? p.sourcing_order_id.slice(0, 8) + "…"}`
+                      : `Commande · ${p.order_id?.slice(0, 8) ?? "?"}…`}
+                  </div>
                 </div>
               </div>
 

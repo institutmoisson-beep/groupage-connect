@@ -44,6 +44,30 @@ export type Database = {
           },
         ]
       }
+      cargo_config: {
+        Row: {
+          china_warehouse_address: string
+          china_warehouse_contact: string
+          id: number
+          instructions: string
+          updated_at: string
+        }
+        Insert: {
+          china_warehouse_address?: string
+          china_warehouse_contact?: string
+          id?: number
+          instructions?: string
+          updated_at?: string
+        }
+        Update: {
+          china_warehouse_address?: string
+          china_warehouse_contact?: string
+          id?: number
+          instructions?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           amount_xof: number
@@ -111,6 +135,7 @@ export type Database = {
           msn_commission_xof: number | null
           notes: string | null
           product_name: string
+          qc_approved_at: string | null
           qc_images: string[]
           quantity: number
           shipping_type: string
@@ -135,6 +160,7 @@ export type Database = {
           msn_commission_xof?: number | null
           notes?: string | null
           product_name: string
+          qc_approved_at?: string | null
           qc_images?: string[]
           quantity?: number
           shipping_type?: string
@@ -159,6 +185,7 @@ export type Database = {
           msn_commission_xof?: number | null
           notes?: string | null
           product_name?: string
+          qc_approved_at?: string | null
           qc_images?: string[]
           quantity?: number
           shipping_type?: string
@@ -348,13 +375,14 @@ export type Database = {
           created_at: string
           id: string
           note: string | null
-          order_id: string
+          order_id: string | null
           payment_method_id: string | null
           reference: string | null
           review_note: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           screenshot_url: string | null
+          sourcing_order_id: string | null
           status: Database["public"]["Enums"]["payment_proof_status"]
           updated_at: string
           user_id: string
@@ -364,13 +392,14 @@ export type Database = {
           created_at?: string
           id?: string
           note?: string | null
-          order_id: string
+          order_id?: string | null
           payment_method_id?: string | null
           reference?: string | null
           review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           screenshot_url?: string | null
+          sourcing_order_id?: string | null
           status?: Database["public"]["Enums"]["payment_proof_status"]
           updated_at?: string
           user_id: string
@@ -380,13 +409,14 @@ export type Database = {
           created_at?: string
           id?: string
           note?: string | null
-          order_id?: string
+          order_id?: string | null
           payment_method_id?: string | null
           reference?: string | null
           review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           screenshot_url?: string | null
+          sourcing_order_id?: string | null
           status?: Database["public"]["Enums"]["payment_proof_status"]
           updated_at?: string
           user_id?: string
@@ -404,6 +434,13 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_proofs_sourcing_order_id_fkey"
+            columns: ["sourcing_order_id"]
+            isOneToOne: false
+            referencedRelation: "custom_sourcing_orders"
             referencedColumns: ["id"]
           },
           {
