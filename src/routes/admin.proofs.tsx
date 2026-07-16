@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, ExternalLink } from "lucide-react";
 
@@ -15,7 +15,7 @@ function AdminProofs() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"pending" | "verified" | "rejected" | "all">("pending");
 
-  const { data: rows } = useQuery({
+  const { data: rows, isError, error } = useQuery({
     queryKey: ["admin-proofs", filter],
     queryFn: async () => {
       let q = supabase
@@ -28,6 +28,12 @@ function AdminProofs() {
       return data ?? [];
     },
   });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(`Erreur de chargement des preuves : ${(error as any)?.message ?? "inconnue"}`);
+    }
+  }, [isError, error]);
 
   async function review(id: string, status: "verified" | "rejected", note?: string) {
     const row = (rows ?? []).find((r: any) => r.id === id);
