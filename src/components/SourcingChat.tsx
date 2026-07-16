@@ -30,8 +30,9 @@ export function SourcingChat({
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages } = useQuery({
+  const { data: messages, isError, error, isLoading } = useQuery({
     queryKey: ["sourcing-messages", sourcingOrderId],
+    refetchInterval: 4000, // fallback in case Realtime isn't enabled on this table in your project
     queryFn: async () => {
       const { data, error } = await supabase
         .from("sourcing_messages" as any)
@@ -44,6 +45,12 @@ export function SourcingChat({
   });
 
   useEffect(() => {
+    if (isError) {
+      toast.error(`Impossible de charger la discussion : ${(error as any)?.message ?? "erreur inconnue"}`);
+    }
+  }, [isError, error]);
+
+  useEffect(() => {
     const channel = supabase
       .channel(`sourcing-chat-${sourcingOrderId}`)
       .on(
@@ -51,7 +58,11 @@ export function SourcingChat({
         { event: "INSERT", schema: "public", table: "sourcing_messages", filter: `sourcing_order_id=eq.${sourcingOrderId}` },
         () => qc.invalidateQueries({ queryKey: ["sourcing-messages", sourcingOrderId] }),
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.warn("Sourcing chat realtime unavailable, falling back to polling only:", status, err);
+        }
+      });
     return () => {
       supabase.removeChannel(channel);
     };
@@ -83,7 +94,11 @@ export function SourcingChat({
   return (
     <div className="flex flex-col rounded-xl border border-border bg-card">
       <div className={`flex-1 space-y-2 overflow-y-auto p-3 ${compact ? "max-h-64" : "max-h-[60vh]"}`}>
-        {(messages ?? []).length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          </div>
+        ) : (messages ?? []).length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">
             Aucun message. {viewAsAdmin ? "Écrivez au client" : "Écrivez à MSN"} pour discuter de ce produit.
           </p>
