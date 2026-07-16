@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { ProgressBar } from "@/components/ProgressBar";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { ShareButtons } from "@/components/ShareButtons";
 import { campaignsQuery, campaignProductsQuery, productsQuery } from "@/lib/queries";
 import { formatXOF, computePrice } from "@/lib/format";
 
@@ -80,6 +81,7 @@ function GroupagePage() {
             return (
               <article
                 key={c.id}
+                id={c.id}
                 className={`overflow-hidden rounded-2xl bg-card shadow-card ${almost ? "ring-2 ring-primary/60" : ""}`}
               >
                 <div className="relative h-32 overflow-hidden">
@@ -120,6 +122,18 @@ function GroupagePage() {
                       Ferme dans
                     </span>
                     <CountdownTimer endDate={c.end_date} />
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-border pt-2">
+                    <span className="text-[10px] font-semibold uppercase text-muted-foreground">
+                      Inviter des amis
+                    </span>
+                    <ShareButtons
+                      compact
+                      url={typeof window !== "undefined" ? `${window.location.origin}/groupage#${c.id}` : `/groupage#${c.id}`}
+                      title={c.title}
+                      text={`Rejoignez le groupage "${c.title}" sur MSN Courtier — encore ${Math.max(0, c.target_quantity - c.current_participants)} places, ferme bientôt ! 🚢`}
+                    />
                   </div>
 
                   {items.length > 0 && (
