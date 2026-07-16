@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ProgressBar } from "@/components/ProgressBar";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { TermsDialog } from "@/components/TermsDialog";
+import { ShareButtons } from "@/components/ShareButtons";
 import {
   productQuery,
   campaignsQuery,
@@ -23,13 +24,26 @@ export const Route = createFileRoute("/product/$id")({
     if (!p) throw notFound();
     context.queryClient.ensureQueryData(campaignsQuery());
     context.queryClient.ensureQueryData(campaignProductsQuery());
-    return { title: p.title };
+    return { title: p.title, description: p.description, image: p.image_urls?.[0] };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: loaderData ? `${loaderData.title} — MSN Courtier` : "Produit — MSN Courtier" },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const title = loaderData ? `${loaderData.title} — MSN Courtier` : "Produit — MSN Courtier";
+    const description = loaderData?.description || "Découvrez ce produit sur MSN Courtier — prix de gros, groupage Chine-Côte d'Ivoire.";
+    const image = loaderData?.image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+      ],
+    };
+  },
   component: ProductDetail,
   notFoundComponent: () => (
     <div className="mx-auto max-w-md p-6 text-center">
@@ -221,6 +235,17 @@ function ProductDetail() {
           >
             <Download className="h-4 w-4" /> Télécharger l'image pour partager
           </button>
+
+          <div className="rounded-xl bg-card p-3 shadow-card">
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Inviter des amis à rejoindre
+            </h3>
+            <ShareButtons
+              url={typeof window !== "undefined" ? window.location.href : ""}
+              title={product.title}
+              text={`${product.title} à partir de ${formatXOF(totalUnit)}${campaign ? ` — groupage "${campaign.title}" en cours, encore ${Math.max(0, campaign.target_quantity - campaign.current_participants)} places !` : ""} 🔥 Sur MSN Courtier :`}
+            />
+          </div>
         </div>
       </main>
 
