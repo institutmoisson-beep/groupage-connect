@@ -24,6 +24,13 @@ function AdminCargo() {
     china_warehouse_address: "",
     china_warehouse_contact: "",
     instructions: "",
+    default_rate_per_kg_xof: "",
+    default_rate_per_cbm_xof: "",
+    default_customs_flat_fee_xof: "",
+    local_hub_lat: "",
+    local_hub_lng: "",
+    delivery_base_fee_xof: "",
+    delivery_rate_per_km_xof: "",
   });
   useEffect(() => {
     if (data) {
@@ -31,6 +38,13 @@ function AdminCargo() {
         china_warehouse_address: data.china_warehouse_address ?? "",
         china_warehouse_contact: data.china_warehouse_contact ?? "",
         instructions: data.instructions ?? "",
+        default_rate_per_kg_xof: data.default_rate_per_kg_xof ?? "",
+        default_rate_per_cbm_xof: data.default_rate_per_cbm_xof ?? "",
+        default_customs_flat_fee_xof: data.default_customs_flat_fee_xof ?? "",
+        local_hub_lat: data.local_hub_lat ?? "",
+        local_hub_lng: data.local_hub_lng ?? "",
+        delivery_base_fee_xof: data.delivery_base_fee_xof ?? "",
+        delivery_rate_per_km_xof: data.delivery_rate_per_km_xof ?? "",
       });
     }
   }, [data]);
@@ -38,7 +52,20 @@ function AdminCargo() {
   async function save() {
     const { error } = await supabase
       .from("cargo_config")
-      .update({ ...form, updated_at: new Date().toISOString() })
+      .update({
+        china_warehouse_address: form.china_warehouse_address,
+        china_warehouse_contact: form.china_warehouse_contact,
+        instructions: form.instructions,
+        default_rate_per_kg_xof: form.default_rate_per_kg_xof === "" ? null : Number(form.default_rate_per_kg_xof),
+        default_rate_per_cbm_xof: form.default_rate_per_cbm_xof === "" ? null : Number(form.default_rate_per_cbm_xof),
+        default_customs_flat_fee_xof:
+          form.default_customs_flat_fee_xof === "" ? null : Number(form.default_customs_flat_fee_xof),
+        local_hub_lat: form.local_hub_lat === "" ? null : Number(form.local_hub_lat),
+        local_hub_lng: form.local_hub_lng === "" ? null : Number(form.local_hub_lng),
+        delivery_base_fee_xof: form.delivery_base_fee_xof === "" ? null : Number(form.delivery_base_fee_xof),
+        delivery_rate_per_km_xof: form.delivery_rate_per_km_xof === "" ? null : Number(form.delivery_rate_per_km_xof),
+        updated_at: new Date().toISOString(),
+      } as never)
       .eq("id", 1);
     if (error) toast.error(error.message);
     else {
@@ -90,6 +117,94 @@ function AdminCargo() {
             className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
           />
         </label>
+
+        <div className="border-t border-border pt-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Tarification fret (Total_Fret = Poids/Volume × Tarif + Frais douane)
+          </h2>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Tarif / kg (Air) — XOF</span>
+              <input
+                type="number"
+                value={form.default_rate_per_kg_xof}
+                onChange={(e) => setForm({ ...form, default_rate_per_kg_xof: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Tarif / CBM (Mer) — XOF</span>
+              <input
+                type="number"
+                value={form.default_rate_per_cbm_xof}
+                onChange={(e) => setForm({ ...form, default_rate_per_cbm_xof: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="col-span-2 block">
+              <span className="text-xs font-semibold text-muted-foreground">Frais douane fixes — XOF</span>
+              <input
+                type="number"
+                value={form.default_customs_flat_fee_xof}
+                onChange={(e) => setForm({ ...form, default_customs_flat_fee_xof: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="border-t border-border pt-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Hub local Abidjan (GPS dispatch dernier kilomètre)
+          </h2>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Latitude hub</span>
+              <input
+                type="number"
+                step="0.000001"
+                value={form.local_hub_lat}
+                onChange={(e) => setForm({ ...form, local_hub_lat: e.target.value })}
+                placeholder="Ex : 5.320357"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Longitude hub</span>
+              <input
+                type="number"
+                step="0.000001"
+                value={form.local_hub_lng}
+                onChange={(e) => setForm({ ...form, local_hub_lng: e.target.value })}
+                placeholder="Ex : -4.016107"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Frais de base livraison — XOF</span>
+              <input
+                type="number"
+                value={form.delivery_base_fee_xof}
+                onChange={(e) => setForm({ ...form, delivery_base_fee_xof: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Tarif / km — XOF</span>
+              <input
+                type="number"
+                value={form.delivery_rate_per_km_xof}
+                onChange={(e) => setForm({ ...form, delivery_rate_per_km_xof: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+          <p className="mt-2 text-[10px] text-muted-foreground">
+            Astuce : trouvez les coordonnées GPS de votre hub sur Google Maps (clic droit sur le point → copier les
+            coordonnées).
+          </p>
+        </div>
+
         <div className="flex justify-end">
           <button
             onClick={save}
