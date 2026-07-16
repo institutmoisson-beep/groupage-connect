@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ExternalLink, Save, Trash2 } from "lucide-react";
 
@@ -28,7 +28,7 @@ function AdminSourcing() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<string>("all");
 
-  const { data: rows } = useQuery({
+  const { data: rows, isError, error } = useQuery({
     queryKey: ["admin-sourcing", filter],
     queryFn: async () => {
       let q = supabase
@@ -41,6 +41,12 @@ function AdminSourcing() {
       return data ?? [];
     },
   });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(`Erreur de chargement du sourcing : ${(error as any)?.message ?? "inconnue"}`);
+    }
+  }, [isError, error]);
 
   async function save(id: string, patch: any) {
     const { error } = await supabase.from("custom_sourcing_orders").update(patch).eq("id", id);
