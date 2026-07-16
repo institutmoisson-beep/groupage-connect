@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Home, PackageOpen, Search, Users, User } from "lucide-react";
+import { Home, PackageOpen, Search, Ship, Users, User } from "lucide-react";
 
-const items: Array<{ to: "/" | "/groupage" | "/sourcing" | "/mlm" | "/profile"; label: string; icon: typeof Home; exact?: boolean }> = [
+const items: Array<{ to: "/" | "/groupage" | "/sourcing" | "/cargo" | "/mlm" | "/profile"; label: string; icon: typeof Home; exact?: boolean }> = [
   { to: "/", label: "Accueil", icon: Home, exact: true },
   { to: "/groupage", label: "Groupage", icon: PackageOpen },
   { to: "/sourcing", label: "Sourcing", icon: Search },
+  { to: "/cargo", label: "Cargo", icon: Ship },
   { to: "/mlm", label: "Réseau", icon: Users },
   { to: "/profile", label: "Profil", icon: User },
 ];
