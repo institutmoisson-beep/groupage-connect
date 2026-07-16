@@ -14,6 +14,8 @@ import {
   ReceiptText,
   Search,
   Warehouse,
+  ClipboardList,
+  Truck,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -36,7 +38,9 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/payment-methods", label: "Moyens paiement", icon: CreditCard },
   { to: "/admin/proofs", label: "Preuves", icon: ReceiptText },
   { to: "/admin/sourcing", label: "Sourcing", icon: Search },
-  { to: "/admin/cargo", label: "Cargo Chine", icon: Warehouse },
+  { to: "/admin/cargo", label: "Cargo Chine (config)", icon: Warehouse },
+  { to: "/admin/cargo-packages", label: "Manifest Cargo", icon: ClipboardList },
+  { to: "/admin/cargo-dispatch", label: "GPS Dispatch", icon: Truck },
   { to: "/admin/commissions", label: "Commissions", icon: Wallet },
 ];
 
