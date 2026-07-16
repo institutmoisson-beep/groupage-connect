@@ -2,10 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, Save, Trash2 } from "lucide-react";
+import { ExternalLink, Save, Trash2, MessageCircle } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
+import { SourcingChat } from "@/components/SourcingChat";
 
 export const Route = createFileRoute("/admin/sourcing")({
   component: AdminSourcing,
@@ -26,6 +28,7 @@ const STATUSES = [
 
 function AdminSourcing() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<string>("all");
 
   const { data: rows, isError, error } = useQuery({
@@ -91,7 +94,7 @@ function AdminSourcing() {
       ) : (
         <ul className="grid gap-3 md:grid-cols-2">
           {(rows ?? []).map((r: any) => (
-            <SourcingRow key={r.id} row={r} onSave={save} onDelete={del} />
+            <SourcingRow key={r.id} row={r} onSave={save} onDelete={del} adminUserId={user?.id} />
           ))}
         </ul>
       )}
@@ -103,11 +106,14 @@ function SourcingRow({
   row,
   onSave,
   onDelete,
+  adminUserId,
 }: {
   row: any;
   onSave: (id: string, patch: any) => void;
   onDelete: (id: string) => void;
+  adminUserId?: string;
 }) {
+  const [showChat, setShowChat] = useState(false);
   const [edit, setEdit] = useState({
     status: row.status,
     final_total_xof: row.final_total_xof ?? "",
@@ -213,6 +219,12 @@ function SourcingRow({
 
       <div className="flex justify-end gap-2">
         <button
+          onClick={() => setShowChat((v) => !v)}
+          className="flex items-center gap-1 rounded-lg bg-secondary/10 px-3 py-1.5 text-xs font-semibold text-secondary"
+        >
+          <MessageCircle className="h-3.5 w-3.5" /> {showChat ? "Fermer le chat" : "Discuter"}
+        </button>
+        <button
           onClick={() => onDelete(row.id)}
           className="flex items-center gap-1 rounded-lg bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive"
         >
@@ -237,6 +249,10 @@ function SourcingRow({
           <Save className="h-3.5 w-3.5" /> Enregistrer
         </button>
       </div>
+
+      {showChat && adminUserId && (
+        <SourcingChat sourcingOrderId={row.id} currentUserId={adminUserId} viewAsAdmin compact />
+      )}
     </li>
   );
 }
