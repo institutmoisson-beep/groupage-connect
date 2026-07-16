@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Save, Trash2, Plus } from "lucide-react";
 
@@ -15,17 +15,36 @@ function AdminRoles() {
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<"admin" | "member">("admin");
 
-  const { data: rows } = useQuery({
+  const { data: rows, isError, error } = useQuery({
     queryKey: ["admin-roles"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // user_roles.user_id references auth.users, not public.profiles, so there is
+      // no direct FK PostgREST can embed on. Fetch both and merge manually instead.
+      const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
-        .select("*, profiles!inner(full_name, referral_code)")
+        .select("*")
         .order("role");
-      if (error) throw error;
-      return data;
+      if (rolesError) throw rolesError;
+
+      const userIds = Array.from(new Set((roles ?? []).map((r: any) => r.user_id)));
+      if (userIds.length === 0) return [];
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, referral_code")
+        .in("id", userIds);
+      if (profilesError) throw profilesError;
+
+      const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      return (roles ?? []).map((r: any) => ({ ...r, profiles: profileById.get(r.user_id) ?? null }));
     },
   });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(`Erreur de chargement des rôles : ${(error as any)?.message ?? "inconnue"}`);
+    }
+  }, [isError, error]);
 
   async function grant() {
     if (!userId) return toast.error("UUID utilisateur requis");
