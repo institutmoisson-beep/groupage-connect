@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Search, Ship, Plane, LogIn, Package, Sparkles, Loader2, CreditCard, Warehouse, ShieldCheck } from "lucide-react";
+import { Search, Ship, Plane, LogIn, Package, Sparkles, Loader2, CreditCard, Warehouse, ShieldCheck, MessageCircle, Receipt } from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
@@ -429,6 +429,15 @@ function SourcingPage() {
                       </div>
                     </div>
                   </div>
+                  {s.status === "quote_pending" && s.estimated_total_xof && (
+                    <Link
+                      to="/checkout/sourcing/$sourcingId"
+                      params={{ sourcingId: s.id }}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary/5 px-3 py-2 text-xs font-bold text-primary"
+                    >
+                      <CreditCard className="h-3.5 w-3.5" /> Payer maintenant (estimation)
+                    </Link>
+                  )}
                   {s.status === "quoted" && s.final_total_xof && (
                     <Link
                       to="/checkout/sourcing/$sourcingId"
@@ -438,6 +447,24 @@ function SourcingPage() {
                       <CreditCard className="h-3.5 w-3.5" /> Payer via MSN Smart Payment
                     </Link>
                   )}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      to="/sourcing/$sourcingId/chat"
+                      params={{ sourcingId: s.id }}
+                      className="flex items-center justify-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-[11px] font-bold text-foreground"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" /> Discuter avec MSN
+                    </Link>
+                    {["paid", "ordered_china", "qc", "shipped", "transit", "abidjan", "delivered"].includes(s.status) && (
+                      <Link
+                        to="/receipt/sourcing/$sourcingId"
+                        params={{ sourcingId: s.id }}
+                        className="flex items-center justify-center gap-1.5 rounded-lg bg-secondary/10 px-3 py-2 text-[11px] font-bold text-secondary"
+                      >
+                        <Receipt className="h-3.5 w-3.5" /> Reçu & contrat
+                      </Link>
+                    )}
+                  </div>
                   {s.status === "qc" && Array.isArray(s.qc_images) && s.qc_images.length > 0 && (
                     <div className="space-y-2 rounded-lg border border-secondary/40 bg-secondary/5 p-2">
                       <div className="text-[10px] font-bold uppercase text-secondary">Contrôle qualité — {s.qc_images.length} photo(s)</div>
