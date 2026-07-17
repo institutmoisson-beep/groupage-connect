@@ -15,6 +15,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MlmRouteImport } from './routes/mlm'
 import { Route as GroupageRouteImport } from './routes/groupage'
+import { Route as CargoRouteImport } from './routes/cargo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -31,8 +32,12 @@ import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
 import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
+import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
+import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dispatch'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
+import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
+import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
 import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
@@ -64,6 +69,11 @@ const MlmRoute = MlmRouteImport.update({
 const GroupageRoute = GroupageRouteImport.update({
   id: '/groupage',
   path: '/groupage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CargoRoute = CargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -146,6 +156,16 @@ const AdminCargoRoute = AdminCargoRouteImport.update({
   path: '/cargo',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCargoPackagesRoute = AdminCargoPackagesRouteImport.update({
+  id: '/cargo-packages',
+  path: '/cargo-packages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCargoDispatchRoute = AdminCargoDispatchRouteImport.update({
+  id: '/cargo-dispatch',
+  path: '/cargo-dispatch',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
   id: '/campaigns',
   path: '/campaigns',
@@ -162,6 +182,17 @@ const CheckoutSourcingSourcingIdRoute =
     path: '/checkout/sourcing/$sourcingId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ReceiptSourcingSourcingIdRoute =
+  ReceiptSourcingSourcingIdRouteImport.update({
+    id: '/receipt/sourcing/$sourcingId',
+    path: '/receipt/sourcing/$sourcingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
+  id: '/sourcing/$sourcingId/chat',
+  path: '/sourcing/$sourcingId/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksGeniuspayRoute =
   ApiPublicWebhooksGeniuspayRouteImport.update({
     id: '/api/public/webhooks/geniuspay',
@@ -174,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
+  '/cargo': typeof CargoRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -182,6 +214,8 @@ export interface FileRoutesByFullPath {
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
+  '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
+  '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -195,12 +229,15 @@ export interface FileRoutesByFullPath {
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
+  '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
+  '/cargo': typeof CargoRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -209,6 +246,8 @@ export interface FileRoutesByTo {
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
+  '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
+  '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -222,6 +261,8 @@ export interface FileRoutesByTo {
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
+  '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesById {
@@ -230,6 +271,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
+  '/cargo': typeof CargoRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -238,6 +280,8 @@ export interface FileRoutesById {
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
+  '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
+  '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -251,6 +295,8 @@ export interface FileRoutesById {
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
+  '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRouteTypes {
@@ -260,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/groupage'
+    | '/cargo'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -268,6 +315,8 @@ export interface FileRouteTypes {
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
+    | '/admin/cargo-dispatch'
+    | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -281,12 +330,15 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/admin/'
     | '/checkout/sourcing/$sourcingId'
+    | '/receipt/sourcing/$sourcingId'
+    | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/groupage'
+    | '/cargo'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -295,6 +347,8 @@ export interface FileRouteTypes {
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
+    | '/admin/cargo-dispatch'
+    | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -308,6 +362,8 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/admin'
     | '/checkout/sourcing/$sourcingId'
+    | '/receipt/sourcing/$sourcingId'
+    | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
   id:
     | '__root__'
@@ -315,6 +371,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/groupage'
+    | '/cargo'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -323,6 +380,8 @@ export interface FileRouteTypes {
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
+    | '/admin/cargo-dispatch'
+    | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -336,6 +395,8 @@ export interface FileRouteTypes {
     | '/product/$id'
     | '/admin/'
     | '/checkout/sourcing/$sourcingId'
+    | '/receipt/sourcing/$sourcingId'
+    | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
   fileRoutesById: FileRoutesById
 }
@@ -344,6 +405,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   GroupageRoute: typeof GroupageRoute
+  CargoRoute: typeof CargoRoute
   MlmRoute: typeof MlmRoute
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
@@ -353,6 +415,8 @@ export interface RootRouteChildren {
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
+  ReceiptSourcingSourcingIdRoute: typeof ReceiptSourcingSourcingIdRoute
+  SourcingSourcingIdChatRoute: typeof SourcingSourcingIdChatRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
 }
 
@@ -398,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/groupage'
       fullPath: '/groupage'
       preLoaderRoute: typeof GroupageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cargo': {
+      id: '/cargo'
+      path: '/cargo'
+      fullPath: '/cargo'
+      preLoaderRoute: typeof CargoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -512,6 +583,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCargoRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/cargo-dispatch': {
+      id: '/admin/cargo-dispatch'
+      path: '/cargo-dispatch'
+      fullPath: '/admin/cargo-dispatch'
+      preLoaderRoute: typeof AdminCargoDispatchRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cargo-packages': {
+      id: '/admin/cargo-packages'
+      path: '/cargo-packages'
+      fullPath: '/admin/cargo-packages'
+      preLoaderRoute: typeof AdminCargoPackagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/campaigns': {
       id: '/admin/campaigns'
       path: '/campaigns'
@@ -533,6 +618,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutSourcingSourcingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/receipt/sourcing/$sourcingId': {
+      id: '/receipt/sourcing/$sourcingId'
+      path: '/receipt/sourcing/$sourcingId'
+      fullPath: '/receipt/sourcing/$sourcingId'
+      preLoaderRoute: typeof ReceiptSourcingSourcingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sourcing/$sourcingId/chat': {
+      id: '/sourcing/$sourcingId/chat'
+      path: '/sourcing/$sourcingId/chat'
+      fullPath: '/sourcing/$sourcingId/chat'
+      preLoaderRoute: typeof SourcingSourcingIdChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/geniuspay': {
       id: '/api/public/webhooks/geniuspay'
       path: '/api/public/webhooks/geniuspay'
@@ -547,6 +646,8 @@ interface AdminRouteChildren {
   AdminCampaignProductsRoute: typeof AdminCampaignProductsRoute
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminCargoRoute: typeof AdminCargoRoute
+  AdminCargoDispatchRoute: typeof AdminCargoDispatchRoute
+  AdminCargoPackagesRoute: typeof AdminCargoPackagesRoute
   AdminCommissionsRoute: typeof AdminCommissionsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
@@ -562,6 +663,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCampaignProductsRoute: AdminCampaignProductsRoute,
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminCargoRoute: AdminCargoRoute,
+  AdminCargoDispatchRoute: AdminCargoDispatchRoute,
+  AdminCargoPackagesRoute: AdminCargoPackagesRoute,
   AdminCommissionsRoute: AdminCommissionsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
@@ -580,6 +683,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   GroupageRoute: GroupageRoute,
+  CargoRoute: CargoRoute,
   MlmRoute: MlmRoute,
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
@@ -589,6 +693,8 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
+  ReceiptSourcingSourcingIdRoute: ReceiptSourcingSourcingIdRoute,
+  SourcingSourcingIdChatRoute: SourcingSourcingIdChatRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,
 }
 export const routeTree = rootRouteImport
