@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ExternalLink, Save, Trash2, MessageCircle } from "lucide-react";
 
@@ -31,7 +31,11 @@ function AdminSourcing() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<string>("all");
 
-  const { data: rows, isError, error } = useQuery({
+  const {
+    data: rows,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["admin-sourcing", filter],
     queryFn: async () => {
       let q = supabase
@@ -114,6 +118,7 @@ function SourcingRow({
   adminUserId?: string;
 }) {
   const [showChat, setShowChat] = useState(false);
+  const chatRef = useRef<HTMLDivElement>(null);
   const [edit, setEdit] = useState({
     status: row.status,
     final_total_xof: row.final_total_xof ?? "",
@@ -121,6 +126,19 @@ function SourcingRow({
     admin_notes: row.admin_notes ?? "",
     qc_images: (row.qc_images ?? []).join(", "),
   });
+
+  useEffect(() => {
+    if (showChat) {
+      // Laisse le panneau de discussion se monter avant de défiler vers lui, pour que
+      // l'admin voie clairement qu'il a bien accès à la discussion (le bouton semblait
+      // "ne rien faire" quand le panneau s'ouvrait hors de la zone visible).
+      const t = setTimeout(
+        () => chatRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
+        50,
+      );
+      return () => clearTimeout(t);
+    }
+  }, [showChat]);
 
   return (
     <li className="space-y-2 rounded-xl border border-border bg-card p-3 shadow-card">
@@ -144,7 +162,9 @@ function SourcingRow({
       <div className="grid grid-cols-2 gap-1 text-[11px]">
         <div>
           <span className="text-muted-foreground">CNY :</span>{" "}
-          <span className="font-semibold">{row.cny_unit_price ?? "—"} × {row.quantity}</span>
+          <span className="font-semibold">
+            {row.cny_unit_price ?? "—"} × {row.quantity}
+          </span>
         </div>
         <div>
           <span className="text-muted-foreground">Type :</span>{" "}
@@ -198,7 +218,9 @@ function SourcingRow({
           />
         </label>
         <label className="col-span-2 text-[11px]">
-          <span className="font-semibold text-muted-foreground">Photos QC (URLs séparées par virgule)</span>
+          <span className="font-semibold text-muted-foreground">
+            Photos QC (URLs séparées par virgule)
+          </span>
           <textarea
             value={edit.qc_images}
             onChange={(e) => setEdit({ ...edit, qc_images: e.target.value })}
@@ -217,20 +239,36 @@ function SourcingRow({
         </label>
       </div>
 
+      <button
+        type="button"
+        onClick={() => setShowChat((v) => !v)}
+        aria-expanded={showChat}
+        className={`flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition ${
+          showChat
+            ? "bg-muted text-foreground"
+            : "bg-gradient-brand text-primary-foreground shadow-brand"
+        }`}
+      >
+        <MessageCircle className="h-3.5 w-3.5" />
+        {showChat ? "Fermer la discussion" : "Discuter avec le client"}
+      </button>
+
+      {showChat && adminUserId && (
+        <div ref={chatRef}>
+          <SourcingChat sourcingOrderId={row.id} currentUserId={adminUserId} viewAsAdmin compact />
+        </div>
+      )}
+
       <div className="flex justify-end gap-2">
         <button
-          onClick={() => setShowChat((v) => !v)}
-          className="flex items-center gap-1 rounded-lg bg-secondary/10 px-3 py-1.5 text-xs font-semibold text-secondary"
-        >
-          <MessageCircle className="h-3.5 w-3.5" /> {showChat ? "Fermer le chat" : "Discuter"}
-        </button>
-        <button
+          type="button"
           onClick={() => onDelete(row.id)}
           className="flex items-center gap-1 rounded-lg bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive"
         >
           <Trash2 className="h-3.5 w-3.5" /> Supprimer
         </button>
         <button
+          type="button"
           onClick={() =>
             onSave(row.id, {
               status: edit.status,
@@ -249,10 +287,6 @@ function SourcingRow({
           <Save className="h-3.5 w-3.5" /> Enregistrer
         </button>
       </div>
-
-      {showChat && adminUserId && (
-        <SourcingChat sourcingOrderId={row.id} currentUserId={adminUserId} viewAsAdmin compact />
-      )}
     </li>
   );
 }
