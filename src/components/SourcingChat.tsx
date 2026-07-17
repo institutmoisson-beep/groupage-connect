@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Image as ImageIcon, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { uploadSourcingChatImage } from "@/lib/sourcing-chat-upload";
 
 type Message = {
   id: string;
@@ -11,6 +12,7 @@ type Message = {
   sender_id: string;
   sender_role: "user" | "admin";
   body: string;
+  image_urls: string[] | null;
   created_at: string;
 };
 
@@ -27,8 +29,12 @@ export function SourcingChat({
 }) {
   const qc = useQueryClient();
   const [text, setText] = useState("");
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: messages, isError, error, isLoading } = useQuery({
     queryKey: ["sourcing-messages", sourcingOrderId],
@@ -72,22 +78,42 @@ export function SourcingChat({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.length]);
 
+  function addFiles(files: FileList | null) {
+    if (!files) return;
+    const imgs = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (imgs.length < files.length) toast.error("Seules les images sont acceptées");
+    setPendingFiles((prev) => [...prev, ...imgs].slice(0, 6));
+  }
+
   async function send() {
-    if (!text.trim()) return;
+    if (!text.trim() && pendingFiles.length === 0) return;
     setSending(true);
     try {
+      let imageUrls: string[] = [];
+      if (pendingFiles.length > 0) {
+        setUploadProgress({ done: 0, total: pendingFiles.length });
+        for (const file of pendingFiles) {
+          const url = await uploadSourcingChatImage(file, sourcingOrderId);
+          imageUrls.push(url);
+          setUploadProgress((p) => (p ? { ...p, done: p.done + 1 } : p));
+        }
+      }
       const { error } = await supabase.from("sourcing_messages" as any).insert({
         sourcing_order_id: sourcingOrderId,
         sender_id: currentUserId,
         body: text.trim(),
+        image_urls: imageUrls,
       } as never);
       if (error) throw error;
       setText("");
+      setPendingFiles([]);
       qc.invalidateQueries({ queryKey: ["sourcing-messages", sourcingOrderId] });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Échec de l'envoi");
     } finally {
       setSending(false);
+      setUploadProgress(null);
+      if (fileRef.current) fileRef.current.value = "";
     }
   }
 
@@ -100,11 +126,13 @@ export function SourcingChat({
           </div>
         ) : (messages ?? []).length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">
-            Aucun message. {viewAsAdmin ? "Écrivez au client" : "Écrivez à MSN"} pour discuter de ce produit.
+            Aucun message. {viewAsAdmin ? "Écrivez au client" : "Écrivez à MSN"} pour discuter de ce produit — vous
+            pouvez aussi joindre des photos.
           </p>
         ) : (
           messages!.map((m) => {
             const mine = m.sender_id === currentUserId;
+            const images = m.image_urls ?? [];
             return (
               <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                 <div
@@ -115,7 +143,20 @@ export function SourcingChat({
                   <div className="mb-0.5 text-[9px] font-bold uppercase opacity-70">
                     {m.sender_role === "admin" ? "MSN Courtier" : "Client"}
                   </div>
-                  <div className="whitespace-pre-wrap leading-relaxed">{m.body}</div>
+                  {images.length > 0 && (
+                    <div className={`mb-1 grid gap-1 ${images.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+                      {images.map((img, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setLightbox(img)}
+                          className="block aspect-square overflow-hidden rounded-lg"
+                        >
+                          <img src={img} alt="Pièce jointe" loading="lazy" className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {m.body && <div className="whitespace-pre-wrap leading-relaxed">{m.body}</div>}
                   <div className="mt-0.5 text-right text-[9px] opacity-60">
                     {new Date(m.created_at).toLocaleString("fr-CI", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
                   </div>
@@ -126,7 +167,39 @@ export function SourcingChat({
         )}
         <div ref={bottomRef} />
       </div>
+
+      {pendingFiles.length > 0 && (
+        <div className="flex flex-wrap gap-2 border-t border-border p-2">
+          {pendingFiles.map((f, i) => (
+            <div key={i} className="relative h-14 w-14 overflow-hidden rounded-lg border border-border">
+              <img src={URL.createObjectURL(f)} alt="" className="h-full w-full object-cover" />
+              <button
+                onClick={() => setPendingFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                className="absolute right-0 top-0 grid h-4 w-4 place-items-center rounded-bl-lg bg-black/60 text-white"
+                aria-label="Retirer"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      {uploadProgress && (
+        <div className="border-t border-border px-3 py-1 text-[10px] text-muted-foreground">
+          Optimisation et envoi des images… {uploadProgress.done}/{uploadProgress.total}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 border-t border-border p-2">
+        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => addFiles(e.target.files)} />
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={sending}
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground disabled:opacity-60"
+          aria-label="Joindre une image"
+        >
+          <ImageIcon className="h-4 w-4" />
+        </button>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -141,13 +214,29 @@ export function SourcingChat({
         />
         <button
           onClick={send}
-          disabled={sending || !text.trim()}
+          disabled={sending || (!text.trim() && pendingFiles.length === 0)}
           className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-brand text-primary-foreground shadow-brand disabled:opacity-60"
           aria-label="Envoyer"
         >
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </button>
       </div>
+
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            onClick={() => setLightbox(null)}
+            className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white"
+            aria-label="Fermer"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img src={lightbox} alt="Pièce jointe" className="max-h-full max-w-full rounded-lg object-contain" />
+        </div>
+      )}
     </div>
   );
 }
