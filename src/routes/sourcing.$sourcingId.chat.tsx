@@ -58,6 +58,7 @@ function SourcingChatPage() {
     <div className="mx-auto flex min-h-screen max-w-md flex-col bg-background">
       <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-background/95 px-3 py-2.5 backdrop-blur">
         <button
+          type="button"
           onClick={() => history.back()}
           className="grid h-9 w-9 place-items-center rounded-lg hover:bg-muted"
           aria-label="Retour"
@@ -69,7 +70,11 @@ function SourcingChatPage() {
           <p className="text-[10px] text-muted-foreground">Discussion avec MSN Courtier</p>
         </div>
         {order.main_image && (
-          <img src={order.main_image} alt={order.product_name} className="h-9 w-9 shrink-0 rounded-lg object-cover" />
+          <img
+            src={order.main_image}
+            alt={order.product_name}
+            className="h-9 w-9 shrink-0 rounded-lg object-cover"
+          />
         )}
       </header>
       <main className="flex-1 p-3">
