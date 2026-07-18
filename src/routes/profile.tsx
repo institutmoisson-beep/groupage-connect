@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
@@ -60,21 +60,47 @@ function ProfilePage() {
               {profile?.full_name?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase()}
             </div>
             <div>
-              <div className="font-display text-lg font-bold">{profile?.full_name ?? user.email}</div>
+              <div className="font-display text-lg font-bold">
+                {profile?.full_name ?? user.email}
+              </div>
               <div className="text-xs opacity-90">Niveau {profile?.mlm_level ?? 1} · Membre</div>
             </div>
           </div>
         </div>
 
         <div className="mt-4 space-y-2 rounded-xl bg-card p-4 shadow-card">
-          <Row icon={<MapPin className="h-4 w-4 text-secondary" />} label="Ville" value={profile?.city ?? "—"} />
-          <Row icon={<Phone className="h-4 w-4 text-secondary" />} label="Téléphone" value={profile?.phone ?? "—"} />
+          <Row
+            icon={<MapPin className="h-4 w-4 text-secondary" />}
+            label="Ville"
+            value={profile?.city ?? "—"}
+          />
+          <Row
+            icon={<Phone className="h-4 w-4 text-secondary" />}
+            label="Téléphone"
+            value={profile?.phone ?? "—"}
+          />
           <Row
             icon={<Package className="h-4 w-4 text-secondary" />}
             label="Code parrain"
             value={profile?.referral_code ?? "—"}
           />
         </div>
+
+        <Link
+          to="/messages"
+          className="mt-3 flex items-center justify-between rounded-xl bg-card p-4 shadow-card hover:bg-muted"
+        >
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-lg bg-secondary/10 text-secondary">
+              <MessageCircle className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold">Discuter avec MSN</div>
+              <div className="text-[11px] text-muted-foreground">Messagerie personnelle</div>
+            </div>
+          </div>
+          <span className="text-muted-foreground">›</span>
+        </Link>
 
         <Link
           to="/orders"
@@ -109,7 +135,6 @@ function ProfilePage() {
             <span>›</span>
           </Link>
         )}
-
 
         <button
           onClick={async () => {
