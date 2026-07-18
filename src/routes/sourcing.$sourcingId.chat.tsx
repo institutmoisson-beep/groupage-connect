@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +32,18 @@ function SourcingChatPage() {
       return data;
     },
   });
+
+  // Ouvrir la discussion marque comme lues les notifications liées à cette demande.
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_notifications" as any)
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", user.id)
+      .eq("sourcing_order_id", sourcingId)
+      .is("read_at", null)
+      .then(() => {});
+  }, [user, sourcingId]);
 
   if (loading || isLoading) {
     return (
