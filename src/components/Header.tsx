@@ -1,9 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
+
+import { useAuth } from "@/hooks/use-auth";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function Header({ onSearch }: { onSearch?: (q: string) => void }) {
   const [q, setQ] = useState("");
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex max-w-md items-center gap-2 px-3 py-2.5">
@@ -26,13 +30,7 @@ export function Header({ onSearch }: { onSearch?: (q: string) => void }) {
             className="w-full rounded-full border border-input bg-muted/50 py-1.5 pl-8 pr-3 text-xs outline-none transition-colors focus:border-primary focus:bg-background"
           />
         </div>
-        <button
-          type="button"
-          className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground hover:bg-muted"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-        </button>
+        <NotificationBell userId={user?.id} />
       </div>
     </header>
   );
