@@ -16,6 +16,7 @@ import {
   Warehouse,
   ClipboardList,
   Truck,
+  MessageCircle,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -23,7 +24,9 @@ import { useIsAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Administration — MSN Courtier" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Administration — MSN Courtier" }, { name: "robots", content: "noindex" }],
+  }),
   component: AdminLayout,
 });
 
@@ -38,6 +41,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/payment-methods", label: "Moyens paiement", icon: CreditCard },
   { to: "/admin/proofs", label: "Preuves", icon: ReceiptText },
   { to: "/admin/sourcing", label: "Sourcing", icon: Search },
+  { to: "/admin/messages", label: "Messagerie", icon: MessageCircle },
   { to: "/admin/cargo", label: "Cargo Chine (config)", icon: Warehouse },
   { to: "/admin/cargo-packages", label: "Manifest Cargo", icon: ClipboardList },
   { to: "/admin/cargo-dispatch", label: "GPS Dispatch", icon: Truck },
@@ -74,11 +78,16 @@ function AdminLayout() {
             </div>
             <div>
               <div className="font-display text-sm font-black">MSN Admin</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Gestion complète</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Gestion complète
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/" className="rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+            <Link
+              to="/"
+              className="rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary"
+            >
               ← Application
             </Link>
             <button
