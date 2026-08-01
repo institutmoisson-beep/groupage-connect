@@ -14,10 +14,11 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MlmRouteImport } from './routes/mlm'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as GroupageRouteImport } from './routes/groupage'
-import { Route as CargoRouteImport } from './routes/cargo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CargoRouteImport } from './routes/Cargo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -30,10 +31,11 @@ import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
-import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
 import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
 import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dispatch'
+import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
 import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
@@ -66,14 +68,14 @@ const MlmRoute = MlmRouteImport.update({
   path: '/mlm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GroupageRoute = GroupageRouteImport.update({
   id: '/groupage',
   path: '/groupage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CargoRoute = CargoRouteImport.update({
-  id: '/cargo',
-  path: '/cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -84,6 +86,11 @@ const AuthRoute = AuthRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CargoRoute = CargoRouteImport.update({
+  id: '/Cargo',
+  path: '/Cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -146,14 +153,14 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMessagesRoute = AdminMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCommissionsRoute = AdminCommissionsRouteImport.update({
   id: '/commissions',
   path: '/commissions',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCargoRoute = AdminCargoRouteImport.update({
-  id: '/cargo',
-  path: '/cargo',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCargoPackagesRoute = AdminCargoPackagesRouteImport.update({
@@ -166,6 +173,11 @@ const AdminCargoDispatchRoute = AdminCargoDispatchRouteImport.update({
   path: '/cargo-dispatch',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCargoRoute = AdminCargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
   id: '/campaigns',
   path: '/campaigns',
@@ -176,23 +188,23 @@ const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
   path: '/campaign-products',
   getParentRoute: () => AdminRoute,
 } as any)
-const CheckoutSourcingSourcingIdRoute =
-  CheckoutSourcingSourcingIdRouteImport.update({
-    id: '/checkout/sourcing/$sourcingId',
-    path: '/checkout/sourcing/$sourcingId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
+  id: '/$sourcingId/chat',
+  path: '/$sourcingId/chat',
+  getParentRoute: () => SourcingRoute,
+} as any)
 const ReceiptSourcingSourcingIdRoute =
   ReceiptSourcingSourcingIdRouteImport.update({
     id: '/receipt/sourcing/$sourcingId',
     path: '/receipt/sourcing/$sourcingId',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
-  id: '/sourcing/$sourcingId/chat',
-  path: '/sourcing/$sourcingId/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const CheckoutSourcingSourcingIdRoute =
+  CheckoutSourcingSourcingIdRouteImport.update({
+    id: '/checkout/sourcing/$sourcingId',
+    path: '/checkout/sourcing/$sourcingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksGeniuspayRoute =
   ApiPublicWebhooksGeniuspayRouteImport.update({
     id: '/api/public/webhooks/geniuspay',
@@ -202,21 +214,23 @@ const ApiPublicWebhooksGeniuspayRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
-  '/cargo': typeof CargoRoute
+  '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sourcing': typeof SourcingRoute
+  '/sourcing': typeof SourcingRouteWithChildren
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -235,20 +249,22 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/Cargo': typeof CargoRoute
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
-  '/cargo': typeof CargoRoute
+  '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sourcing': typeof SourcingRoute
+  '/sourcing': typeof SourcingRouteWithChildren
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -268,21 +284,23 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/groupage': typeof GroupageRoute
-  '/cargo': typeof CargoRoute
+  '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/sourcing': typeof SourcingRoute
+  '/sourcing': typeof SourcingRouteWithChildren
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -303,10 +321,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/Cargo'
     | '/admin'
     | '/auth'
     | '/groupage'
-    | '/cargo'
+    | '/messages'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -318,6 +337,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -336,9 +356,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/Cargo'
     | '/auth'
     | '/groupage'
-    | '/cargo'
+    | '/messages'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -350,6 +371,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -368,10 +390,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/Cargo'
     | '/admin'
     | '/auth'
     | '/groupage'
-    | '/cargo'
+    | '/messages'
     | '/mlm'
     | '/orders'
     | '/profile'
@@ -383,6 +406,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -402,21 +426,21 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CargoRoute: typeof CargoRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   GroupageRoute: typeof GroupageRoute
-  CargoRoute: typeof CargoRoute
+  MessagesRoute: typeof MessagesRoute
   MlmRoute: typeof MlmRoute
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  SourcingRoute: typeof SourcingRoute
+  SourcingRoute: typeof SourcingRouteWithChildren
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
   ReceiptSourcingSourcingIdRoute: typeof ReceiptSourcingSourcingIdRoute
-  SourcingSourcingIdChatRoute: typeof SourcingSourcingIdChatRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
 }
 
@@ -457,18 +481,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MlmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/groupage': {
       id: '/groupage'
       path: '/groupage'
       fullPath: '/groupage'
       preLoaderRoute: typeof GroupageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cargo': {
-      id: '/cargo'
-      path: '/cargo'
-      fullPath: '/cargo'
-      preLoaderRoute: typeof CargoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -483,6 +507,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/Cargo': {
+      id: '/Cargo'
+      path: '/Cargo'
+      fullPath: '/Cargo'
+      preLoaderRoute: typeof CargoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -569,6 +600,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/commissions': {
       id: '/admin/commissions'
       path: '/commissions'
@@ -576,11 +614,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCommissionsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/cargo': {
-      id: '/admin/cargo'
-      path: '/cargo'
-      fullPath: '/admin/cargo'
-      preLoaderRoute: typeof AdminCargoRouteImport
+    '/admin/cargo-packages': {
+      id: '/admin/cargo-packages'
+      path: '/cargo-packages'
+      fullPath: '/admin/cargo-packages'
+      preLoaderRoute: typeof AdminCargoPackagesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/cargo-dispatch': {
@@ -590,11 +628,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCargoDispatchRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/cargo-packages': {
-      id: '/admin/cargo-packages'
-      path: '/cargo-packages'
-      fullPath: '/admin/cargo-packages'
-      preLoaderRoute: typeof AdminCargoPackagesRouteImport
+    '/admin/cargo': {
+      id: '/admin/cargo'
+      path: '/cargo'
+      fullPath: '/admin/cargo'
+      preLoaderRoute: typeof AdminCargoRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/campaigns': {
@@ -611,12 +649,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCampaignProductsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/checkout/sourcing/$sourcingId': {
-      id: '/checkout/sourcing/$sourcingId'
-      path: '/checkout/sourcing/$sourcingId'
-      fullPath: '/checkout/sourcing/$sourcingId'
-      preLoaderRoute: typeof CheckoutSourcingSourcingIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/sourcing/$sourcingId/chat': {
+      id: '/sourcing/$sourcingId/chat'
+      path: '/$sourcingId/chat'
+      fullPath: '/sourcing/$sourcingId/chat'
+      preLoaderRoute: typeof SourcingSourcingIdChatRouteImport
+      parentRoute: typeof SourcingRoute
     }
     '/receipt/sourcing/$sourcingId': {
       id: '/receipt/sourcing/$sourcingId'
@@ -625,11 +663,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReceiptSourcingSourcingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sourcing/$sourcingId/chat': {
-      id: '/sourcing/$sourcingId/chat'
-      path: '/sourcing/$sourcingId/chat'
-      fullPath: '/sourcing/$sourcingId/chat'
-      preLoaderRoute: typeof SourcingSourcingIdChatRouteImport
+    '/checkout/sourcing/$sourcingId': {
+      id: '/checkout/sourcing/$sourcingId'
+      path: '/checkout/sourcing/$sourcingId'
+      fullPath: '/checkout/sourcing/$sourcingId'
+      preLoaderRoute: typeof CheckoutSourcingSourcingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/webhooks/geniuspay': {
@@ -649,6 +687,7 @@ interface AdminRouteChildren {
   AdminCargoDispatchRoute: typeof AdminCargoDispatchRoute
   AdminCargoPackagesRoute: typeof AdminCargoPackagesRoute
   AdminCommissionsRoute: typeof AdminCommissionsRoute
+  AdminMessagesRoute: typeof AdminMessagesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -666,6 +705,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCargoDispatchRoute: AdminCargoDispatchRoute,
   AdminCargoPackagesRoute: AdminCargoPackagesRoute,
   AdminCommissionsRoute: AdminCommissionsRoute,
+  AdminMessagesRoute: AdminMessagesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -678,25 +718,47 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface SourcingRouteChildren {
+  SourcingSourcingIdChatRoute: typeof SourcingSourcingIdChatRoute
+}
+
+const SourcingRouteChildren: SourcingRouteChildren = {
+  SourcingSourcingIdChatRoute: SourcingSourcingIdChatRoute,
+}
+
+const SourcingRouteWithChildren = SourcingRoute._addFileChildren(
+  SourcingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CargoRoute: CargoRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   GroupageRoute: GroupageRoute,
-  CargoRoute: CargoRoute,
+  MessagesRoute: MessagesRoute,
   MlmRoute: MlmRoute,
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  SourcingRoute: SourcingRoute,
+  SourcingRoute: SourcingRouteWithChildren,
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
   ReceiptSourcingSourcingIdRoute: ReceiptSourcingSourcingIdRoute,
-  SourcingSourcingIdChatRoute: SourcingSourcingIdChatRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

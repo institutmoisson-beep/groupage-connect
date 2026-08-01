@@ -48,22 +48,43 @@ export type Database = {
         Row: {
           china_warehouse_address: string
           china_warehouse_contact: string
+          default_customs_flat_fee_xof: number
+          default_rate_per_cbm_xof: number
+          default_rate_per_kg_xof: number
+          delivery_base_fee_xof: number
+          delivery_rate_per_km_xof: number
           id: number
           instructions: string
+          local_hub_lat: number | null
+          local_hub_lng: number | null
           updated_at: string
         }
         Insert: {
           china_warehouse_address?: string
           china_warehouse_contact?: string
+          default_customs_flat_fee_xof?: number
+          default_rate_per_cbm_xof?: number
+          default_rate_per_kg_xof?: number
+          delivery_base_fee_xof?: number
+          delivery_rate_per_km_xof?: number
           id?: number
           instructions?: string
+          local_hub_lat?: number | null
+          local_hub_lng?: number | null
           updated_at?: string
         }
         Update: {
           china_warehouse_address?: string
           china_warehouse_contact?: string
+          default_customs_flat_fee_xof?: number
+          default_rate_per_cbm_xof?: number
+          default_rate_per_kg_xof?: number
+          delivery_base_fee_xof?: number
+          delivery_rate_per_km_xof?: number
           id?: number
           instructions?: string
+          local_hub_lat?: number | null
+          local_hub_lng?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -206,6 +227,146 @@ export type Database = {
           },
         ]
       }
+      direct_messages: {
+        Row: {
+          audio_url: string | null
+          body: string
+          created_at: string
+          id: string
+          image_urls: string[]
+          read_at: string | null
+          sender_id: string
+          sender_role: string
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          image_urls?: string[]
+          read_at?: string | null
+          sender_id: string
+          sender_role?: string
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          image_urls?: string[]
+          read_at?: string | null
+          sender_id?: string
+          sender_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forwarding_packages: {
+        Row: {
+          admin_notes: string | null
+          chinese_tracking_number: string
+          created_at: string
+          customs_flat_fee_xof: number | null
+          declared_value: number | null
+          declared_value_currency: Database["public"]["Enums"]["forwarding_currency"]
+          description: string
+          freight_type: Database["public"]["Enums"]["forwarding_freight_type"]
+          id: string
+          qc_approved_at: string | null
+          qc_images_urls: string[]
+          qc_note: string | null
+          qc_rejected_at: string | null
+          quantity: number
+          rate_per_cbm_xof: number | null
+          rate_per_kg_xof: number | null
+          shipping_cost_currency: string
+          shipping_cost_xof: number | null
+          source_platform: string
+          status: Database["public"]["Enums"]["forwarding_status"]
+          updated_at: string
+          user_id: string
+          volume_cbm: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          chinese_tracking_number: string
+          created_at?: string
+          customs_flat_fee_xof?: number | null
+          declared_value?: number | null
+          declared_value_currency?: Database["public"]["Enums"]["forwarding_currency"]
+          description: string
+          freight_type?: Database["public"]["Enums"]["forwarding_freight_type"]
+          id?: string
+          qc_approved_at?: string | null
+          qc_images_urls?: string[]
+          qc_note?: string | null
+          qc_rejected_at?: string | null
+          quantity?: number
+          rate_per_cbm_xof?: number | null
+          rate_per_kg_xof?: number | null
+          shipping_cost_currency?: string
+          shipping_cost_xof?: number | null
+          source_platform?: string
+          status?: Database["public"]["Enums"]["forwarding_status"]
+          updated_at?: string
+          user_id: string
+          volume_cbm?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          admin_notes?: string | null
+          chinese_tracking_number?: string
+          created_at?: string
+          customs_flat_fee_xof?: number | null
+          declared_value?: number | null
+          declared_value_currency?: Database["public"]["Enums"]["forwarding_currency"]
+          description?: string
+          freight_type?: Database["public"]["Enums"]["forwarding_freight_type"]
+          id?: string
+          qc_approved_at?: string | null
+          qc_images_urls?: string[]
+          qc_note?: string | null
+          qc_rejected_at?: string | null
+          quantity?: number
+          rate_per_cbm_xof?: number | null
+          rate_per_kg_xof?: number | null
+          shipping_cost_currency?: string
+          shipping_cost_xof?: number | null
+          source_platform?: string
+          status?: Database["public"]["Enums"]["forwarding_status"]
+          updated_at?: string
+          user_id?: string
+          volume_cbm?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forwarding_packages_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groupage_campaigns: {
         Row: {
           container_image: string | null
@@ -323,6 +484,56 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      package_delivery_logs: {
+        Row: {
+          assigned_driver_contact: string | null
+          assigned_driver_name: string | null
+          created_at: string
+          delivery_address_note: string | null
+          delivery_fee_xof: number | null
+          delivery_latitude: number
+          delivery_longitude: number
+          delivery_timestamp: string | null
+          distance_km: number | null
+          id: string
+          package_id: string
+        }
+        Insert: {
+          assigned_driver_contact?: string | null
+          assigned_driver_name?: string | null
+          created_at?: string
+          delivery_address_note?: string | null
+          delivery_fee_xof?: number | null
+          delivery_latitude: number
+          delivery_longitude: number
+          delivery_timestamp?: string | null
+          distance_km?: number | null
+          id?: string
+          package_id: string
+        }
+        Update: {
+          assigned_driver_contact?: string | null
+          assigned_driver_name?: string | null
+          created_at?: string
+          delivery_address_note?: string | null
+          delivery_fee_xof?: number | null
+          delivery_latitude?: number
+          delivery_longitude?: number
+          delivery_timestamp?: string | null
+          distance_km?: number | null
+          id?: string
+          package_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_delivery_logs_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "forwarding_packages"
             referencedColumns: ["id"]
           },
         ]
@@ -547,6 +758,88 @@ export type Database = {
           },
         ]
       }
+      sourcing_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          image_urls: string[]
+          read_at: string | null
+          sender_id: string
+          sender_role: string
+          sourcing_order_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          image_urls?: string[]
+          read_at?: string | null
+          sender_id: string
+          sender_role?: string
+          sourcing_order_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          image_urls?: string[]
+          read_at?: string | null
+          sender_id?: string
+          sender_role?: string
+          sourcing_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sourcing_messages_sourcing_order_id_fkey"
+            columns: ["sourcing_order_id"]
+            isOneToOne: false
+            referencedRelation: "custom_sourcing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          sourcing_order_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          sourcing_order_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          sourcing_order_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notifications_sourcing_order_id_fkey"
+            columns: ["sourcing_order_id"]
+            isOneToOne: false
+            referencedRelation: "custom_sourcing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -581,6 +874,17 @@ export type Database = {
     Enums: {
       app_role: "admin" | "member"
       campaign_status: "open" | "closed" | "shipped" | "arrived"
+      forwarding_currency: "CNY" | "USD"
+      forwarding_freight_type: "AIR" | "SEA"
+      forwarding_status:
+        | "DECLARED"
+        | "RECEIVED_CHINA"
+        | "IN_TRANSIT"
+        | "CUSTOMS"
+        | "READY_DELIVERY"
+        | "DISPATCHED"
+        | "DELIVERED"
+        | "CANCELLED"
       order_status:
         | "pending"
         | "paid_confirmed"
@@ -732,6 +1036,18 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "member"],
       campaign_status: ["open", "closed", "shipped", "arrived"],
+      forwarding_currency: ["CNY", "USD"],
+      forwarding_freight_type: ["AIR", "SEA"],
+      forwarding_status: [
+        "DECLARED",
+        "RECEIVED_CHINA",
+        "IN_TRANSIT",
+        "CUSTOMS",
+        "READY_DELIVERY",
+        "DISPATCHED",
+        "DELIVERED",
+        "CANCELLED",
+      ],
       order_status: [
         "pending",
         "paid_confirmed",
