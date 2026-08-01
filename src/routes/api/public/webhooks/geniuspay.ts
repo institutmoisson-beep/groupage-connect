@@ -70,6 +70,37 @@ export const Route = createFileRoute("/api/public/webhooks/geniuspay")({
           patch.payment_status = "failed";
         }
 
+        // Les réservations hôtel utilisent des références MSNH-*, les commandes cargo MSN-*.
+        const isHotelBooking = reference.startsWith("MSNH-");
+
+        if (isHotelBooking) {
+          const hotelPatch: { payment_meta: any; payment_status?: string; status?: "pending" | "confirmed" | "cancelled" | "completed" } = {
+            payment_meta: payload as any,
+          };
+          if (paid) {
+            hotelPatch.payment_status = "paid";
+            hotelPatch.status = "confirmed";
+          } else if (failed) {
+            hotelPatch.payment_status = "failed";
+          }
+
+          const { error } = await supabaseAdmin
+            .from("hotel_bookings")
+            .update(hotelPatch)
+            .eq("payment_reference", reference);
+
+          if (error) {
+            console.error("[GeniusPay webhook] hotel_bookings update failed", error);
+            return new Response("DB error", { status: 500 });
+          }
+
+          // TODO: quand une vraie API fournisseur (RateHawk/Hotelbeds) sera branchée,
+          // déclencher ici POST /hotels/book avec le solde prépayé MSN, puis stocker
+          // supplier_confirmation_id retourné par le fournisseur.
+
+          return new Response("ok", { status: 200 });
+        }
+
         const { error } = await supabaseAdmin
           .from("orders")
           .update(patch)
