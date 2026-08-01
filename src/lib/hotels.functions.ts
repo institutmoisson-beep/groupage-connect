@@ -114,7 +114,13 @@ export const bookHotel = createServerFn({ method: "POST" })
           ? `MSN-API-${Math.random().toString(36).slice(2, 10).toUpperCase()}`
           : null,
       cancellation_policy: quote.cancellation_policy,
+      // Modèle 1 (paiement direct) : la marge MSN est déjà dans markup_amount.
+      // Modèle 2 (délégué au fournisseur/hôtel) : on trace la commission affiliée attendue,
+      // par défaut alignée sur le markup catalogue tant que le vrai barème fournisseur n'est pas branché.
+      commission_type: data.paymentModel === "api_delegated" ? "affiliate_payout" : "merchant_markup",
+      commission_amount: rate.markup_xof,
     };
+
 
     const { data: row, error } = await supabaseAdmin
       .from("hotel_bookings")
@@ -123,6 +129,105 @@ export const bookHotel = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     return row as { id: string; booking_reference: string; status: string; total_price: number };
+  });
+
+const initiateHotelPaymentSchema = z.object({
+  bookingId: z.string().uuid(),
+  email: z.string().trim().email().max(255),
+});
+
+/**
+ * Modèle 1 (Direct Merchant) : ouvre une session GeniusPay (Mobile Money / carte)
+ * pour une réservation hôtel déjà créée avec payment_status = 'pending'.
+ * Le webhook /api/public/webhooks/geniuspay confirme ensuite le paiement.
+ */
+export const initiateHotelPayment = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => initiateHotelPaymentSchema.parse(input))
+  .handler(async ({ data }) => {
+    const secretKey = process.env.GENIUSPAY_SECRET_KEY;
+    const publicKey = process.env.GENIUSPAY_PUBLIC_KEY;
+    const apiUrl = process.env.GENIUSPAY_API_URL ?? "https://geniuspay.ci/api/v1/merchant";
+    if (!secretKey || !publicKey) throw new Error("GeniusPay non configuré (clés manquantes).");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: booking, error } = await supabaseAdmin
+      .from("hotel_bookings")
+      .select(
+        "id, guest_email, guest_name, guest_phone, total_price, currency, payment_status, payment_url, payment_reference, booking_reference, payment_model",
+      )
+      .eq("id", data.bookingId)
+      .ilike("guest_email", data.email.toLowerCase())
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!booking) throw new Error("Réservation introuvable pour cet email.");
+    if (booking.payment_model !== "direct_merchant") {
+      throw new Error("Cette réservation ne relève pas du paiement direct.");
+    }
+    if (booking.payment_status === "paid") {
+      return { paymentUrl: booking.payment_url ?? "", reference: booking.payment_reference ?? "", alreadyPaid: true };
+    }
+    if (booking.payment_status === "pending" && booking.payment_url && booking.payment_reference) {
+      return { paymentUrl: booking.payment_url, reference: booking.payment_reference, reused: true };
+    }
+
+    const reference = `MSNH-${booking.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    const origin = process.env.SITE_URL ?? process.env.PUBLIC_SITE_URL ?? "https://groupage-connect.lovable.app";
+
+    const payload = {
+      apikey: publicKey,
+      site_id: publicKey,
+      transaction_id: reference,
+      amount: Math.round(Number(booking.total_price)),
+      currency: booking.currency ?? "XOF",
+      description: `MSN Hôtels · Réservation ${booking.booking_reference}`,
+      notify_url: `${origin}/api/public/webhooks/geniuspay`,
+      return_url: `${origin}/hotels/voucher/${booking.id}?email=${encodeURIComponent(data.email)}`,
+      cancel_url: `${origin}/hotels/voucher/${booking.id}?email=${encodeURIComponent(data.email)}&status=cancelled`,
+      customer_name: booking.guest_name ?? "Client MSN",
+      customer_phone_number: booking.guest_phone ?? "",
+      channels: "ALL",
+    };
+
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${secretKey}`,
+        "X-API-Key": secretKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await res.text();
+    let providerResponse: any;
+    try {
+      providerResponse = JSON.parse(text);
+    } catch {
+      providerResponse = { raw: text };
+    }
+    if (!res.ok) {
+      throw new Error(`Paiement indisponible (${res.status}). ${providerResponse?.message ?? "Réessayez plus tard."}`);
+    }
+    const paymentUrl =
+      providerResponse?.data?.payment_url ??
+      providerResponse?.payment_url ??
+      providerResponse?.url ??
+      providerResponse?.data?.url ??
+      null;
+    if (!paymentUrl) throw new Error("GeniusPay n'a pas renvoyé d'URL de paiement.");
+
+    const { error: updErr } = await supabaseAdmin
+      .from("hotel_bookings")
+      .update({
+        payment_provider: "geniuspay",
+        payment_reference: reference,
+        payment_url: paymentUrl,
+        payment_meta: providerResponse ?? null,
+      } as never)
+      .eq("id", booking.id);
+    if (updErr) throw new Error(updErr.message);
+
+    return { paymentUrl, reference, reused: false };
   });
 
 const voucherSchema = z.object({
