@@ -1,9 +1,8 @@
+import { formatMoney } from "./currency";
+
+// Hydration-safe: Intl's XOF symbol differs between server and browser ICU data.
 export function formatXOF(value: number): string {
-  return new Intl.NumberFormat("fr-CI", {
-    style: "currency",
-    currency: "XOF",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(value, "XOF");
 }
 
 export interface PricedProduct {
