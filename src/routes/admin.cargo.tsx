@@ -38,13 +38,13 @@ function AdminCargo() {
         china_warehouse_address: data.china_warehouse_address ?? "",
         china_warehouse_contact: data.china_warehouse_contact ?? "",
         instructions: data.instructions ?? "",
-        default_rate_per_kg_xof: data.default_rate_per_kg_xof ?? "",
-        default_rate_per_cbm_xof: data.default_rate_per_cbm_xof ?? "",
-        default_customs_flat_fee_xof: data.default_customs_flat_fee_xof ?? "",
-        local_hub_lat: data.local_hub_lat ?? "",
-        local_hub_lng: data.local_hub_lng ?? "",
-        delivery_base_fee_xof: data.delivery_base_fee_xof ?? "",
-        delivery_rate_per_km_xof: data.delivery_rate_per_km_xof ?? "",
+        default_rate_per_kg_xof: String(data.default_rate_per_kg_xof ?? ""),
+        default_rate_per_cbm_xof: String(data.default_rate_per_cbm_xof ?? ""),
+        default_customs_flat_fee_xof: String(data.default_customs_flat_fee_xof ?? ""),
+        local_hub_lat: String(data.local_hub_lat ?? ""),
+        local_hub_lng: String(data.local_hub_lng ?? ""),
+        delivery_base_fee_xof: String(data.delivery_base_fee_xof ?? ""),
+        delivery_rate_per_km_xof: String(data.delivery_rate_per_km_xof ?? ""),
       });
     }
   }, [data]);
