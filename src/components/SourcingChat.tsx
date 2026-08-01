@@ -53,7 +53,7 @@ export function SourcingChat({
         .eq("sourcing_order_id", sourcingOrderId)
         .order("created_at", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as Message[];
+      return (data ?? []) as unknown as Message[];
     },
   });
 
