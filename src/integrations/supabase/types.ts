@@ -278,6 +278,27 @@ export type Database = {
           },
         ]
       }
+      exchange_rates: {
+        Row: {
+          base_currency: string
+          quote_currency: string
+          rate: number
+          updated_at: string
+        }
+        Insert: {
+          base_currency: string
+          quote_currency: string
+          rate: number
+          updated_at?: string
+        }
+        Update: {
+          base_currency?: string
+          quote_currency?: string
+          rate?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       forwarding_packages: {
         Row: {
           admin_notes: string | null
@@ -406,6 +427,90 @@ export type Database = {
           status?: Database["public"]["Enums"]["campaign_status"]
           target_quantity?: number
           title?: string
+        }
+        Relationships: []
+      }
+      hotel_bookings: {
+        Row: {
+          admin_notes: string | null
+          booking_reference: string
+          cancellation_policy: Json
+          check_in_date: string
+          check_out_date: string
+          created_at: string
+          currency: string
+          guest_email: string
+          guest_name: string | null
+          guest_phone: string | null
+          guests: number
+          hotel_details: Json
+          id: string
+          markup_amount: number
+          payment_gateway: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_model: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_status: Database["public"]["Enums"]["hotel_payment_status"]
+          room_details: Json
+          rooms: number
+          status: Database["public"]["Enums"]["hotel_booking_status"]
+          supplier_confirmation_id: string | null
+          supplier_net_price: number
+          total_price: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          booking_reference?: string
+          cancellation_policy?: Json
+          check_in_date: string
+          check_out_date: string
+          created_at?: string
+          currency?: string
+          guest_email: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          guests?: number
+          hotel_details?: Json
+          id?: string
+          markup_amount?: number
+          payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_model?: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          room_details?: Json
+          rooms?: number
+          status?: Database["public"]["Enums"]["hotel_booking_status"]
+          supplier_confirmation_id?: string | null
+          supplier_net_price?: number
+          total_price?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          booking_reference?: string
+          cancellation_policy?: Json
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string
+          currency?: string
+          guest_email?: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          guests?: number
+          hotel_details?: Json
+          id?: string
+          markup_amount?: number
+          payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_model?: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          room_details?: Json
+          rooms?: number
+          status?: Database["public"]["Enums"]["hotel_booking_status"]
+          supplier_confirmation_id?: string | null
+          supplier_net_price?: number
+          total_price?: number
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -840,6 +945,30 @@ export type Database = {
           },
         ]
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          default_currency: string
+          preferred_language: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_currency?: string
+          preferred_language?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_currency?: string
+          preferred_language?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -885,6 +1014,14 @@ export type Database = {
         | "DISPATCHED"
         | "DELIVERED"
         | "CANCELLED"
+      hotel_booking_status: "pending" | "confirmed" | "cancelled" | "completed"
+      hotel_payment_gateway:
+        | "msn_smart"
+        | "stripe"
+        | "mobile_money_xof"
+        | "hotel_direct"
+      hotel_payment_model: "direct_merchant" | "api_delegated"
+      hotel_payment_status: "pending" | "paid" | "refunded" | "failed"
       order_status:
         | "pending"
         | "paid_confirmed"
@@ -1048,6 +1185,15 @@ export const Constants = {
         "DELIVERED",
         "CANCELLED",
       ],
+      hotel_booking_status: ["pending", "confirmed", "cancelled", "completed"],
+      hotel_payment_gateway: [
+        "msn_smart",
+        "stripe",
+        "mobile_money_xof",
+        "hotel_direct",
+      ],
+      hotel_payment_model: ["direct_merchant", "api_delegated"],
+      hotel_payment_status: ["pending", "paid", "refunded", "failed"],
       order_status: [
         "pending",
         "paid_confirmed",
