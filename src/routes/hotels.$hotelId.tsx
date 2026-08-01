@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/use-auth";
 import { useTravelPrefs } from "@/hooks/use-travel-prefs";
-import { bookHotel, prebookHotel, searchHotels } from "@/lib/hotels.functions";
+import { bookHotel, initiateHotelPayment, prebookHotel, searchHotels } from "@/lib/hotels.functions";
 import { BOARD_LABELS, TRADE_TAG_LABELS } from "@/lib/hotels-catalog";
 import { formatFromXof } from "@/lib/currency";
 import { t } from "@/lib/hotels-i18n";
@@ -95,12 +95,28 @@ function HotelDetail() {
         },
       });
     },
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       toast.success(`Réservation ${res.booking_reference} enregistrée`);
+      const email = form.email.trim();
+
+      // Modèle 1 : le paiement se fait sur MSN via GeniusPay (Mobile Money / carte).
+      // Modèle 2 (payAtHotel / hotel_direct) : réservation déjà confirmée, pas de paiement MSN.
+      if (!payAtHotel) {
+        try {
+          const pay = await initiateHotelPayment({ data: { bookingId: res.id, email } });
+          if (pay.paymentUrl) {
+            window.location.href = pay.paymentUrl;
+            return;
+          }
+        } catch (e) {
+          toast.error((e as Error).message ?? "Paiement indisponible, réessayez depuis votre bon de réservation.");
+        }
+      }
+
       navigate({
         to: "/hotels/voucher/$bookingId",
         params: { bookingId: res.id },
-        search: { email: form.email.trim() },
+        search: { email },
       });
     },
     onError: (e: Error) => toast.error(e.message),
