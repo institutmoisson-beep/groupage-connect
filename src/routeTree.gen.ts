@@ -24,6 +24,7 @@ import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
@@ -117,6 +118,11 @@ const ProductIdRoute = ProductIdRouteImport.update({
 const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
   id: '/payment/callback',
   path: '/payment/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
+  id: '/hotels/$hotelId',
+  path: '/hotels/$hotelId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
@@ -245,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
+  '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -280,6 +287,7 @@ export interface FileRoutesByTo {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
+  '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
+  '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -355,6 +364,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/users'
     | '/checkout/$orderId'
+    | '/hotels/$hotelId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/users'
     | '/checkout/$orderId'
+    | '/hotels/$hotelId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/users'
     | '/checkout/$orderId'
+    | '/hotels/$hotelId'
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingRoute: typeof SourcingRouteWithChildren
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
+  HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
@@ -562,6 +575,13 @@ declare module '@tanstack/react-router' {
       path: '/payment/callback'
       fullPath: '/payment/callback'
       preLoaderRoute: typeof PaymentCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/$hotelId': {
+      id: '/hotels/$hotelId'
+      path: '/hotels/$hotelId'
+      fullPath: '/hotels/$hotelId'
+      preLoaderRoute: typeof HotelsHotelIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/$orderId': {
@@ -763,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingRoute: SourcingRouteWithChildren,
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
+  HotelsHotelIdRoute: HotelsHotelIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   HotelsIndexRoute: HotelsIndexRoute,
