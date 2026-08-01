@@ -20,6 +20,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CargoRouteImport } from './routes/Cargo'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
@@ -96,6 +97,11 @@ const CargoRoute = CargoRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsIndexRoute = HotelsIndexRouteImport.update({
+  id: '/hotels/',
+  path: '/hotels/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/hotels/': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
+  '/hotels': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/hotels/': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
+    | '/hotels/'
     | '/checkout/sourcing/$sourcingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/admin'
+    | '/hotels'
     | '/checkout/sourcing/$sourcingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/admin/'
+    | '/hotels/'
     | '/checkout/sourcing/$sourcingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -439,6 +451,7 @@ export interface RootRouteChildren {
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
+  HotelsIndexRoute: typeof HotelsIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
   ReceiptSourcingSourcingIdRoute: typeof ReceiptSourcingSourcingIdRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
@@ -521,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/': {
+      id: '/hotels/'
+      path: '/hotels'
+      fullPath: '/hotels/'
+      preLoaderRoute: typeof HotelsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -745,6 +765,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
+  HotelsIndexRoute: HotelsIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
   ReceiptSourcingSourcingIdRoute: ReceiptSourcingSourcingIdRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,
