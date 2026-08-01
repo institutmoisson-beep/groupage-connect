@@ -445,10 +445,16 @@ export type Database = {
           guests: number
           hotel_details: Json
           id: string
+          commission_amount: number
+          commission_type: string | null
           markup_amount: number
           payment_gateway: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_meta: Json | null
           payment_model: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_provider: string | null
+          payment_reference: string | null
           payment_status: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url: string | null
           room_details: Json
           rooms: number
           status: Database["public"]["Enums"]["hotel_booking_status"]
@@ -472,10 +478,16 @@ export type Database = {
           guests?: number
           hotel_details?: Json
           id?: string
+          commission_amount?: number
+          commission_type?: string | null
           markup_amount?: number
           payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_meta?: Json | null
           payment_model?: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_provider?: string | null
+          payment_reference?: string | null
           payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url?: string | null
           room_details?: Json
           rooms?: number
           status?: Database["public"]["Enums"]["hotel_booking_status"]
@@ -499,10 +511,16 @@ export type Database = {
           guests?: number
           hotel_details?: Json
           id?: string
+          commission_amount?: number
+          commission_type?: string | null
           markup_amount?: number
           payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
+          payment_meta?: Json | null
           payment_model?: Database["public"]["Enums"]["hotel_payment_model"]
+          payment_provider?: string | null
+          payment_reference?: string | null
           payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url?: string | null
           room_details?: Json
           rooms?: number
           status?: Database["public"]["Enums"]["hotel_booking_status"]
