@@ -43,6 +43,7 @@ import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
 import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
 import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
+import { Route as HotelsVoucherBookingIdRouteImport } from './routes/hotels.voucher.$bookingId'
 import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
@@ -217,6 +218,11 @@ const ReceiptSourcingSourcingIdRoute =
     path: '/receipt/sourcing/$sourcingId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const HotelsVoucherBookingIdRoute = HotelsVoucherBookingIdRouteImport.update({
+  id: '/hotels/voucher/$bookingId',
+  path: '/hotels/voucher/$bookingId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutSourcingSourcingIdRoute =
   CheckoutSourcingSourcingIdRouteImport.update({
     id: '/checkout/sourcing/$sourcingId',
@@ -264,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
@@ -380,6 +389,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/hotels/'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/hotels'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/hotels/'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
     | '/api/public/webhooks/geniuspay'
@@ -479,6 +491,7 @@ export interface RootRouteChildren {
   ProductIdRoute: typeof ProductIdRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
+  HotelsVoucherBookingIdRoute: typeof HotelsVoucherBookingIdRoute
   ReceiptSourcingSourcingIdRoute: typeof ReceiptSourcingSourcingIdRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
 }
@@ -723,6 +736,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReceiptSourcingSourcingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hotels/voucher/$bookingId': {
+      id: '/hotels/voucher/$bookingId'
+      path: '/hotels/voucher/$bookingId'
+      fullPath: '/hotels/voucher/$bookingId'
+      preLoaderRoute: typeof HotelsVoucherBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/sourcing/$sourcingId': {
       id: '/checkout/sourcing/$sourcingId'
       path: '/checkout/sourcing/$sourcingId'
@@ -809,6 +829,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductIdRoute: ProductIdRoute,
   HotelsIndexRoute: HotelsIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
+  HotelsVoucherBookingIdRoute: HotelsVoucherBookingIdRoute,
   ReceiptSourcingSourcingIdRoute: ReceiptSourcingSourcingIdRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,
 }
