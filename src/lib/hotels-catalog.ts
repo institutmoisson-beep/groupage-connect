@@ -37,6 +37,10 @@ export interface Hotel {
   /** Trade-oriented tags used by the filters. */
   trade_tags: TradeTag[];
   rates: HotelRate[];
+  /** True for in-house "direct contracting" hotels managed from /admin/hotels. */
+  is_direct_partner?: boolean;
+  cover_image_url?: string;
+  gallery_urls?: string[];
 }
 
 export type TradeTag =
