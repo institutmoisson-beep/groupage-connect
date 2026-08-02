@@ -17,6 +17,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { uploadDirectMessageAudio, uploadDirectMessageImage } from "@/lib/direct-message-upload";
+import { playNotificationSound } from "@/lib/notification-sound";
 
 type Message = {
   id: string;
@@ -102,7 +103,13 @@ export function DirectChat({
           table: "direct_messages",
           filter: `user_id=eq.${channelUserId}`,
         },
-        () => qc.invalidateQueries({ queryKey: ["direct-messages", channelUserId] }),
+        (payload) => {
+          qc.invalidateQueries({ queryKey: ["direct-messages", channelUserId] });
+          const row = payload.new as { sender_id?: string } | null;
+          if (payload.eventType === "INSERT" && row?.sender_id && row.sender_id !== currentUserId) {
+            playNotificationSound();
+          }
+        },
       )
       .subscribe((status, err) => {
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -116,7 +123,7 @@ export function DirectChat({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [channelUserId, qc]);
+  }, [channelUserId, currentUserId, qc]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
