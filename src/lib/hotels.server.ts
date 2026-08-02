@@ -58,17 +58,44 @@ export function quoteRate(rate: HotelRate, nights: number, rooms: number): Quote
   };
 }
 
-export function searchInventory(params: SearchParams): HotelResult[] {
+/** Loads raw inventory: live Hotelbeds when configured, curated catalog otherwise. */
+async function loadInventory(params: SearchParams & { hotelCodes?: string[] }): Promise<Hotel[]> {
+  const { isHotelbedsEnabled, hbSearchHotels } = await import("./hotelbeds.server");
+  if (!isHotelbedsEnabled()) return HOTELS;
+  try {
+    const live = await hbSearchHotels(
+      {
+        checkIn: params.checkIn,
+        checkOut: params.checkOut,
+        rooms: params.rooms,
+        guests: params.guests,
+        ...(params.city ? { city: params.city } : {}),
+        ...(params.hotelCodes ? { hotelCodes: params.hotelCodes } : {}),
+      },
+      nightsBetween(params.checkIn, params.checkOut),
+    );
+    if (live.length) return live;
+  } catch (e) {
+    console.error("[Hotelbeds] search failed, fallback catalogue", e);
+  }
+  return HOTELS;
+}
+
+export async function searchInventory(
+  params: SearchParams & { hotelCodes?: string[] },
+): Promise<HotelResult[]> {
   const nights = nightsBetween(params.checkIn, params.checkOut);
   const needle = params.city?.trim().toLowerCase() ?? "";
+  const inventory = await loadInventory(params);
+  const live = inventory !== HOTELS;
 
-  const matches = HOTELS.filter((h) => {
-    if (needle) {
+  const matches = inventory.filter((h) => {
+    if (needle && !live) {
       const haystack = `${h.city} ${h.city_zh} ${h.country} ${h.name} ${h.name_zh}`.toLowerCase();
       if (!haystack.includes(needle)) return false;
     }
     if (params.minStars && h.star_rating < params.minStars) return false;
-    if (params.tags?.length && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
+    if (params.tags?.length && !live && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
     return true;
   });
 
@@ -89,6 +116,22 @@ export function searchInventory(params: SearchParams): HotelResult[] {
 
   return results.sort((a, b) => a.cheapest_total_xof - b.cheapest_total_xof);
 }
+
+/** Resolves one hotel (live by Hotelbeds code, otherwise from the catalog). */
+export async function resolveHotel(
+  hotelId: string,
+  stay: { checkIn: string; checkOut: string; rooms: number; guests: number },
+): Promise<Hotel | undefined> {
+  const { isHotelbedsEnabled, hotelCodeFromId } = await import("./hotelbeds.server");
+  const code = hotelCodeFromId(hotelId);
+  if (isHotelbedsEnabled() && code) {
+    const list = await loadInventory({ ...stay, hotelCodes: [code] });
+    const found = list.find((h) => h.id === hotelId);
+    if (found) return found;
+  }
+  return HOTELS.find((h) => h.id === hotelId);
+}
+
 
 export function findHotel(hotelId: string): Hotel | undefined {
   return HOTELS.find((h) => h.id === hotelId);
