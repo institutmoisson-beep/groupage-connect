@@ -532,6 +532,259 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_destinations: {
+        Row: {
+          city_name: string
+          country_code: string
+          country_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          city_name: string
+          country_code: string
+          country_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          city_name?: string
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      custom_hotels: {
+        Row: {
+          address: string
+          amenities: string[]
+          contact_email: string | null
+          contact_phone: string | null
+          cover_image_url: string | null
+          created_at: string
+          description: string
+          destination_id: string
+          gallery_urls: string[]
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          star_rating: number
+          city: string
+          country: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string
+          amenities?: string[]
+          contact_email?: string | null
+          contact_phone?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string
+          destination_id: string
+          gallery_urls?: string[]
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          star_rating?: number
+          city: string
+          country: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          amenities?: string[]
+          contact_email?: string | null
+          contact_phone?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string
+          destination_id?: string
+          gallery_urls?: string[]
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          star_rating?: number
+          city?: string
+          country?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_hotels_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "custom_destinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_rooms: {
+        Row: {
+          amenities: string[]
+          available_quantity: number
+          base_price_per_night: number
+          created_at: string
+          currency: string
+          description: string
+          hotel_id: string
+          id: string
+          images: string[]
+          is_active: boolean
+          max_adults: number
+          max_children: number
+          room_type: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[]
+          available_quantity?: number
+          base_price_per_night: number
+          created_at?: string
+          currency?: string
+          description?: string
+          hotel_id: string
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          max_adults?: number
+          max_children?: number
+          room_type: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[]
+          available_quantity?: number
+          base_price_per_night?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          hotel_id?: string
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          max_adults?: number
+          max_children?: number
+          room_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_rooms_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "custom_hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_hotel_bookings: {
+        Row: {
+          admin_notes: string | null
+          booking_reference: string
+          booking_status: Database["public"]["Enums"]["hotel_booking_status"]
+          check_in_date: string
+          check_out_date: string
+          created_at: string
+          currency: string
+          guest_email: string
+          guest_name: string
+          guest_phone: string | null
+          hotel_id: string
+          id: string
+          payment_meta: Json | null
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url: string | null
+          room_id: string
+          rooms_booked: number
+          total_price: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          booking_reference?: string
+          booking_status?: Database["public"]["Enums"]["hotel_booking_status"]
+          check_in_date: string
+          check_out_date: string
+          created_at?: string
+          currency?: string
+          guest_email: string
+          guest_name: string
+          guest_phone?: string | null
+          hotel_id: string
+          id?: string
+          payment_meta?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url?: string | null
+          room_id: string
+          rooms_booked?: number
+          total_price?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          booking_reference?: string
+          booking_status?: Database["public"]["Enums"]["hotel_booking_status"]
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string
+          currency?: string
+          guest_email?: string
+          guest_name?: string
+          guest_phone?: string | null
+          hotel_id?: string
+          id?: string
+          payment_meta?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["hotel_payment_status"]
+          payment_url?: string | null
+          room_id?: string
+          rooms_booked?: number
+          total_price?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_hotel_bookings_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "custom_hotels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_hotel_bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "custom_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           campaign_id: string | null
