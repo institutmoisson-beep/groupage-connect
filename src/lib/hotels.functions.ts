@@ -103,6 +103,42 @@ export const bookHotel = createServerFn({ method: "POST" })
     const userId = await userIdFromBearer(getRequestHeader("authorization"));
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+    // Hôtels "Direct Contracting" (custom_hotels) : payés uniquement sur MSN,
+    // stock vérifié, insertion dans custom_hotel_bookings.
+    const { isCustomHotelId, customHotelUuid, checkCustomRoomAvailability } = await import("./custom-hotels.server");
+    if (isCustomHotelId(data.hotelId)) {
+      const hotelUuid = customHotelUuid(data.hotelId)!;
+      const availability = await checkCustomRoomAvailability(rawRate.id, data.checkIn, data.checkOut, data.rooms);
+      if (!availability.ok) {
+        throw new Error(
+          `Stock insuffisant pour cette chambre (${availability.availableQuantity - availability.alreadyBooked} restante(s)).`,
+        );
+      }
+
+      const { data: row, error } = await supabaseAdmin
+        .from("custom_hotel_bookings")
+        .insert({
+          user_id: userId,
+          hotel_id: hotelUuid,
+          room_id: rawRate.id,
+          check_in_date: data.checkIn,
+          check_out_date: data.checkOut,
+          rooms_booked: data.rooms,
+          guest_name: data.guestName,
+          guest_email: data.guestEmail.toLowerCase(),
+          guest_phone: data.guestPhone,
+          total_price: rate.total_xof,
+          currency: "XOF",
+          payment_status: "pending",
+          booking_status: "pending",
+        } as never)
+        .select("id, booking_reference, booking_status, total_price")
+        .single();
+      if (error) throw new Error(error.message);
+      const r = row as { id: string; booking_reference: string; booking_status: string; total_price: number };
+      return { id: r.id, booking_reference: r.booking_reference, status: r.booking_status, total_price: r.total_price };
+    }
+
     const insert = {
       user_id: userId,
       guest_email: data.guestEmail.toLowerCase(),
@@ -175,7 +211,10 @@ const initiateHotelPaymentSchema = z.object({
 /**
  * Modèle 1 (Direct Merchant) : ouvre une session GeniusPay (Mobile Money / carte)
  * pour une réservation hôtel déjà créée avec payment_status = 'pending'.
- * Le webhook /api/public/webhooks/geniuspay confirme ensuite le paiement.
+ * Fonctionne aussi bien pour les hôtels Hotelbeds (`hotel_bookings`) que pour
+ * les hôtels en direct contracting (`custom_hotel_bookings`).
+ * Le webhook /api/public/webhooks/geniuspay confirme ensuite le paiement
+ * (référence préfixée MSNH- ou MSND- pour router vers la bonne table).
  */
 export const initiateHotelPayment = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => initiateHotelPaymentSchema.parse(input))
@@ -186,7 +225,8 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
     if (!secretKey || !publicKey) throw new Error("GeniusPay non configuré (clés manquantes).");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: booking, error } = await supabaseAdmin
+
+    const standard = await supabaseAdmin
       .from("hotel_bookings")
       .select(
         "id, guest_email, guest_name, guest_phone, total_price, currency, payment_status, payment_url, payment_reference, booking_reference, payment_model",
@@ -194,11 +234,43 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
       .eq("id", data.bookingId)
       .ilike("guest_email", data.email.toLowerCase())
       .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!booking) throw new Error("Réservation introuvable pour cet email.");
-    if (booking.payment_model !== "direct_merchant") {
+    if (standard.error) throw new Error(standard.error.message);
+
+    let table: "hotel_bookings" | "custom_hotel_bookings" = "hotel_bookings";
+    let booking = standard.data as
+      | {
+          id: string;
+          guest_email: string;
+          guest_name: string | null;
+          guest_phone: string | null;
+          total_price: number;
+          currency: string;
+          payment_status: string;
+          payment_url: string | null;
+          payment_reference: string | null;
+          booking_reference: string;
+        }
+      | null;
+
+    if (!booking) {
+      const custom = await supabaseAdmin
+        .from("custom_hotel_bookings")
+        .select(
+          "id, guest_email, guest_name, guest_phone, total_price, currency, payment_status, payment_url, payment_reference, booking_reference",
+        )
+        .eq("id", data.bookingId)
+        .ilike("guest_email", data.email.toLowerCase())
+        .maybeSingle();
+      if (custom.error) throw new Error(custom.error.message);
+      if (custom.data) {
+        table = "custom_hotel_bookings";
+        booking = custom.data as typeof booking;
+      }
+    } else if ((standard.data as any).payment_model !== "direct_merchant") {
       throw new Error("Cette réservation ne relève pas du paiement direct.");
     }
+
+    if (!booking) throw new Error("Réservation introuvable pour cet email.");
     if (booking.payment_status === "paid") {
       return { paymentUrl: booking.payment_url ?? "", reference: booking.payment_reference ?? "", alreadyPaid: true };
     }
@@ -206,8 +278,10 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
       return { paymentUrl: booking.payment_url, reference: booking.payment_reference, reused: true };
     }
 
-    const reference = `MSNH-${booking.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    const prefix = table === "hotel_bookings" ? "MSNH" : "MSND";
+    const reference = `${prefix}-${booking.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
     const origin = process.env.SITE_URL ?? process.env.PUBLIC_SITE_URL ?? "https://groupage-connect.lovable.app";
+    const voucherPath = table === "hotel_bookings" ? "/hotels/voucher" : "/hotels/voucher-direct";
 
     const payload = {
       apikey: publicKey,
@@ -217,8 +291,8 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
       currency: booking.currency ?? "XOF",
       description: `MSN Hôtels · Réservation ${booking.booking_reference}`,
       notify_url: `${origin}/api/public/webhooks/geniuspay`,
-      return_url: `${origin}/hotels/voucher/${booking.id}?email=${encodeURIComponent(data.email)}`,
-      cancel_url: `${origin}/hotels/voucher/${booking.id}?email=${encodeURIComponent(data.email)}&status=cancelled`,
+      return_url: `${origin}${voucherPath}/${booking.id}?email=${encodeURIComponent(data.email)}`,
+      cancel_url: `${origin}${voucherPath}/${booking.id}?email=${encodeURIComponent(data.email)}&status=cancelled`,
       customer_name: booking.guest_name ?? "Client MSN",
       customer_phone_number: booking.guest_phone ?? "",
       channels: "ALL",
@@ -253,7 +327,7 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
     if (!paymentUrl) throw new Error("GeniusPay n'a pas renvoyé d'URL de paiement.");
 
     const { error: updErr } = await supabaseAdmin
-      .from("hotel_bookings")
+      .from(table)
       .update({
         payment_provider: "geniuspay",
         payment_reference: reference,
@@ -327,4 +401,45 @@ export const cancelHotelBooking = createServerFn({ method: "POST" })
       .eq("id", data.bookingId);
     if (upErr) throw new Error(upErr.message);
     return { ok: true, penalty_xof: penalty };
+  });
+
+// ---------------------------------------------------------------------------
+// Hôtels "Direct Contracting" (custom_hotel_bookings)
+// ---------------------------------------------------------------------------
+
+export const getCustomHotelBooking = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => voucherSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("custom_hotel_bookings")
+      .select("*, hotel:custom_hotels(*), room:custom_rooms(*)")
+      .eq("id", data.bookingId)
+      .ilike("guest_email", data.email.toLowerCase())
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Réservation introuvable pour cet email.");
+    return row;
+  });
+
+export const cancelCustomHotelBooking = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => cancelSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("custom_hotel_bookings")
+      .select("id, booking_status")
+      .eq("id", data.bookingId)
+      .ilike("guest_email", data.email.toLowerCase())
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Réservation introuvable pour cet email.");
+    if (row.booking_status === "cancelled") return { ok: true };
+
+    const { error: upErr } = await supabaseAdmin
+      .from("custom_hotel_bookings")
+      .update({ booking_status: "cancelled" } as never)
+      .eq("id", data.bookingId);
+    if (upErr) throw new Error(upErr.message);
+    return { ok: true };
   });
