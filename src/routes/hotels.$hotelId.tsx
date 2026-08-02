@@ -58,7 +58,7 @@ function HotelDetail() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["hotel", hotelId, checkIn, checkOut, rooms],
-    queryFn: () => searchHotels({ data: { checkIn, checkOut, rooms, guests } }),
+    queryFn: () => searchHotels({ data: { hotelId, checkIn, checkOut, rooms, guests } }),
   });
 
   const hotel = data?.hotels.find((h) => h.id === hotelId);
