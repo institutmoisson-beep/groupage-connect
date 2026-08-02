@@ -35,6 +35,7 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminHotelBookingsRouteImport } from './routes/admin.hotel-bookings'
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
 import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
 import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dispatch'
@@ -177,6 +178,11 @@ const AdminMessagesRoute = AdminMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminHotelBookingsRoute = AdminHotelBookingsRouteImport.update({
+  id: '/hotel-bookings',
+  path: '/hotel-bookings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCommissionsRoute = AdminCommissionsRouteImport.update({
   id: '/commissions',
   path: '/commissions',
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -332,6 +340,7 @@ export interface FileRoutesById {
   '/admin/cargo-dispatch': typeof AdminCargoDispatchRoute
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
+  '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/hotel-bookings'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/hotel-bookings'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-dispatch'
     | '/admin/cargo-packages'
     | '/admin/commissions'
+    | '/admin/hotel-bookings'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -680,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMessagesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/hotel-bookings': {
+      id: '/admin/hotel-bookings'
+      path: '/hotel-bookings'
+      fullPath: '/admin/hotel-bookings'
+      preLoaderRoute: typeof AdminHotelBookingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/commissions': {
       id: '/admin/commissions'
       path: '/commissions'
@@ -767,6 +786,7 @@ interface AdminRouteChildren {
   AdminCargoDispatchRoute: typeof AdminCargoDispatchRoute
   AdminCargoPackagesRoute: typeof AdminCargoPackagesRoute
   AdminCommissionsRoute: typeof AdminCommissionsRoute
+  AdminHotelBookingsRoute: typeof AdminHotelBookingsRoute
   AdminMessagesRoute: typeof AdminMessagesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
@@ -785,6 +805,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCargoDispatchRoute: AdminCargoDispatchRoute,
   AdminCargoPackagesRoute: AdminCargoPackagesRoute,
   AdminCommissionsRoute: AdminCommissionsRoute,
+  AdminHotelBookingsRoute: AdminHotelBookingsRoute,
   AdminMessagesRoute: AdminMessagesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
@@ -836,3 +857,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
