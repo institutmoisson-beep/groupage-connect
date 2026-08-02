@@ -5,6 +5,7 @@ import { Send, Loader2, Image as ImageIcon, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { uploadSourcingChatImage } from "@/lib/sourcing-chat-upload";
+import { playNotificationSound } from "@/lib/notification-sound";
 
 type Message = {
   id: string;
@@ -76,7 +77,11 @@ export function SourcingChat({
           table: "sourcing_messages",
           filter: `sourcing_order_id=eq.${sourcingOrderId}`,
         },
-        () => qc.invalidateQueries({ queryKey: ["sourcing-messages", sourcingOrderId] }),
+        (payload) => {
+          qc.invalidateQueries({ queryKey: ["sourcing-messages", sourcingOrderId] });
+          const row = payload.new as { sender_id?: string } | null;
+          if (row?.sender_id && row.sender_id !== currentUserId) playNotificationSound();
+        },
       )
       .subscribe((status, err) => {
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -90,7 +95,7 @@ export function SourcingChat({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [sourcingOrderId, qc]);
+  }, [sourcingOrderId, currentUserId, qc]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
