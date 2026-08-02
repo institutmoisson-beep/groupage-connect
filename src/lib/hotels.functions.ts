@@ -294,7 +294,7 @@ export const cancelHotelBooking = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("hotel_bookings")
-      .select("id, status, cancellation_policy, total_price, guest_email")
+      .select("id, status, cancellation_policy, total_price, guest_email, supplier_confirmation_id")
       .eq("id", data.bookingId)
       .ilike("guest_email", data.email.toLowerCase())
       .maybeSingle();
@@ -306,6 +306,20 @@ export const cancelHotelBooking = createServerFn({ method: "POST" })
     const today = new Date().toISOString().slice(0, 10);
     const penalty =
       policy.refundable && policy.free_until && today <= policy.free_until ? 0 : Number(row.total_price ?? 0);
+
+    // Annulation fournisseur Hotelbeds si la réservation y a été confirmée.
+    const supplierRef = row.supplier_confirmation_id;
+    if (supplierRef && !supplierRef.startsWith("MSN-API-")) {
+      const { isHotelbedsEnabled, hbCancel } = await import("./hotelbeds.server");
+      if (isHotelbedsEnabled()) {
+        try {
+          await hbCancel(supplierRef);
+        } catch (e) {
+          console.error("[Hotelbeds] cancel failed", e);
+        }
+      }
+    }
+
 
     const { error: upErr } = await supabaseAdmin
       .from("hotel_bookings")
