@@ -74,7 +74,7 @@ export const Route = createFileRoute("/api/public/webhooks/geniuspay")({
         const isHotelBooking = reference.startsWith("MSNH-");
 
         if (isHotelBooking) {
-          const hotelPatch: { payment_meta: any; payment_status?: string; status?: "pending" | "confirmed" | "cancelled" | "completed" } = {
+          const hotelPatch: { payment_meta: any; payment_status?: "pending" | "paid" | "failed" | "refunded"; status?: "pending" | "confirmed" | "cancelled" | "completed" } = {
             payment_meta: payload as any,
           };
           if (paid) {

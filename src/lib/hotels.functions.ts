@@ -3,16 +3,17 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 import {
-  findHotel,
   nightsBetween,
   prebook,
   quoteRate,
+  resolveHotel,
   searchInventory,
   userIdFromBearer,
 } from "./hotels.server";
 
 const searchSchema = z.object({
   city: z.string().max(80).optional(),
+  hotelId: z.string().max(120).optional(),
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rooms: z.number().int().min(1).max(9),
@@ -26,14 +27,22 @@ const searchSchema = z.object({
 
 export const searchHotels = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => searchSchema.parse(input))
-  .handler(async ({ data }) => ({
-    nights: nightsBetween(data.checkIn, data.checkOut),
-    hotels: searchInventory({ ...data, tags: data.tags as never }),
-  }));
+  .handler(async ({ data }) => {
+    const { hotelId, ...rest } = data;
+    const code = hotelId?.startsWith("hb-") ? hotelId.slice(3) : undefined;
+    return {
+      nights: nightsBetween(data.checkIn, data.checkOut),
+      hotels: await searchInventory({
+        ...rest,
+        tags: rest.tags as never,
+        ...(code ? { hotelCodes: [code] } : {}),
+      }),
+    };
+  });
 
 const prebookSchema = z.object({
-  hotelId: z.string().min(1).max(80),
-  rateId: z.string().min(1).max(80),
+  hotelId: z.string().min(1).max(120),
+  rateId: z.string().min(1).max(2000),
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rooms: z.number().int().min(1).max(9),
@@ -42,6 +51,7 @@ const prebookSchema = z.object({
 export const prebookHotel = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => prebookSchema.parse(input))
   .handler(async ({ data }) => prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms));
+
 
 const bookSchema = prebookSchema.extend({
   guests: z.number().int().min(1).max(20),
@@ -55,7 +65,12 @@ const bookSchema = prebookSchema.extend({
 export const bookHotel = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => bookSchema.parse(input))
   .handler(async ({ data }) => {
-    const hotel = findHotel(data.hotelId);
+    const hotel = await resolveHotel(data.hotelId, {
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      rooms: data.rooms,
+      guests: data.guests,
+    });
     const rawRate = hotel?.rates.find((r) => r.id === data.rateId);
     if (!hotel || !rawRate) throw new Error("Tarif indisponible, relancez la recherche.");
     if (data.paymentModel === "api_delegated" && !rawRate.pay_at_hotel) {
@@ -63,8 +78,27 @@ export const bookHotel = createServerFn({ method: "POST" })
     }
 
     const nights = nightsBetween(data.checkIn, data.checkOut);
-    const rate = quoteRate(rawRate, nights, data.rooms);
-    const quote = prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms);
+    const quote = await prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms, data.guests);
+    const rate = quote.rate.total_xof > 0 ? quote.rate : quoteRate(rawRate, nights, data.rooms);
+
+    // Réservation fournisseur immédiate uniquement quand le paiement est délégué
+    // (tarif « payer à l'hôtel ») ; sinon on attend la confirmation du paiement.
+    let supplierRef: string | null = null;
+    const { isHotelbedsEnabled, hbBook, hotelCodeFromId } = await import("./hotelbeds.server");
+    if (isHotelbedsEnabled() && hotelCodeFromId(data.hotelId) && data.paymentModel === "api_delegated") {
+      const [firstName, ...restName] = data.guestName.trim().split(/\s+/);
+      const booked = await hbBook({
+        rateKey: data.rateId,
+        holderName: firstName ?? data.guestName,
+        holderSurname: restName.join(" ") || (firstName ?? "MSN"),
+        clientReference: `MSN-${Date.now().toString(36).toUpperCase()}`,
+        email: data.guestEmail,
+        phone: data.guestPhone,
+        rooms: data.rooms,
+      });
+      supplierRef = booked.reference || null;
+    }
+
 
     const userId = await userIdFromBearer(getRequestHeader("authorization"));
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -110,9 +144,11 @@ export const bookHotel = createServerFn({ method: "POST" })
       currency: "XOF",
       status: data.paymentModel === "api_delegated" ? "confirmed" : "pending",
       supplier_confirmation_id:
-        data.paymentModel === "api_delegated"
+        supplierRef ??
+        (data.paymentModel === "api_delegated"
           ? `MSN-API-${Math.random().toString(36).slice(2, 10).toUpperCase()}`
-          : null,
+          : null),
+
       cancellation_policy: quote.cancellation_policy,
       // Modèle 1 (paiement direct) : la marge MSN est déjà dans markup_amount.
       // Modèle 2 (délégué au fournisseur/hôtel) : on trace la commission affiliée attendue,
@@ -258,7 +294,7 @@ export const cancelHotelBooking = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("hotel_bookings")
-      .select("id, status, cancellation_policy, total_price, guest_email")
+      .select("id, status, cancellation_policy, total_price, guest_email, supplier_confirmation_id")
       .eq("id", data.bookingId)
       .ilike("guest_email", data.email.toLowerCase())
       .maybeSingle();
@@ -270,6 +306,20 @@ export const cancelHotelBooking = createServerFn({ method: "POST" })
     const today = new Date().toISOString().slice(0, 10);
     const penalty =
       policy.refundable && policy.free_until && today <= policy.free_until ? 0 : Number(row.total_price ?? 0);
+
+    // Annulation fournisseur Hotelbeds si la réservation y a été confirmée.
+    const supplierRef = row.supplier_confirmation_id;
+    if (supplierRef && !supplierRef.startsWith("MSN-API-")) {
+      const { isHotelbedsEnabled, hbCancel } = await import("./hotelbeds.server");
+      if (isHotelbedsEnabled()) {
+        try {
+          await hbCancel(supplierRef);
+        } catch (e) {
+          console.error("[Hotelbeds] cancel failed", e);
+        }
+      }
+    }
+
 
     const { error: upErr } = await supabaseAdmin
       .from("hotel_bookings")

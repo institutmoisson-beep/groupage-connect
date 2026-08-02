@@ -58,17 +58,44 @@ export function quoteRate(rate: HotelRate, nights: number, rooms: number): Quote
   };
 }
 
-export function searchInventory(params: SearchParams): HotelResult[] {
+/** Loads raw inventory: live Hotelbeds when configured, curated catalog otherwise. */
+async function loadInventory(params: SearchParams & { hotelCodes?: string[] }): Promise<Hotel[]> {
+  const { isHotelbedsEnabled, hbSearchHotels } = await import("./hotelbeds.server");
+  if (!isHotelbedsEnabled()) return HOTELS;
+  try {
+    const live = await hbSearchHotels(
+      {
+        checkIn: params.checkIn,
+        checkOut: params.checkOut,
+        rooms: params.rooms,
+        guests: params.guests,
+        ...(params.city ? { city: params.city } : {}),
+        ...(params.hotelCodes ? { hotelCodes: params.hotelCodes } : {}),
+      },
+      nightsBetween(params.checkIn, params.checkOut),
+    );
+    if (live.length) return live;
+  } catch (e) {
+    console.error("[Hotelbeds] search failed, fallback catalogue", e);
+  }
+  return HOTELS;
+}
+
+export async function searchInventory(
+  params: SearchParams & { hotelCodes?: string[] },
+): Promise<HotelResult[]> {
   const nights = nightsBetween(params.checkIn, params.checkOut);
   const needle = params.city?.trim().toLowerCase() ?? "";
+  const inventory = await loadInventory(params);
+  const live = inventory !== HOTELS;
 
-  const matches = HOTELS.filter((h) => {
-    if (needle) {
+  const matches = inventory.filter((h) => {
+    if (needle && !live) {
       const haystack = `${h.city} ${h.city_zh} ${h.country} ${h.name} ${h.name_zh}`.toLowerCase();
       if (!haystack.includes(needle)) return false;
     }
     if (params.minStars && h.star_rating < params.minStars) return false;
-    if (params.tags?.length && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
+    if (params.tags?.length && !live && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
     return true;
   });
 
@@ -90,6 +117,22 @@ export function searchInventory(params: SearchParams): HotelResult[] {
   return results.sort((a, b) => a.cheapest_total_xof - b.cheapest_total_xof);
 }
 
+/** Resolves one hotel (live by Hotelbeds code, otherwise from the catalog). */
+export async function resolveHotel(
+  hotelId: string,
+  stay: { checkIn: string; checkOut: string; rooms: number; guests: number },
+): Promise<Hotel | undefined> {
+  const { isHotelbedsEnabled, hotelCodeFromId } = await import("./hotelbeds.server");
+  const code = hotelCodeFromId(hotelId);
+  if (isHotelbedsEnabled() && code) {
+    const list = await loadInventory({ ...stay, hotelCodes: [code] });
+    const found = list.find((h) => h.id === hotelId);
+    if (found) return found;
+  }
+  return HOTELS.find((h) => h.id === hotelId);
+}
+
+
 export function findHotel(hotelId: string): Hotel | undefined {
   return HOTELS.find((h) => h.id === hotelId);
 }
@@ -103,22 +146,46 @@ export interface PrebookResult {
   cancellation_policy: { refundable: boolean; free_until: string; penalty_xof: number };
 }
 
-export function prebook(
+export async function prebook(
   hotelId: string,
   rateId: string,
   checkIn: string,
   checkOut: string,
   rooms: number,
-): PrebookResult {
-  const hotel = findHotel(hotelId);
+  guests = rooms,
+): Promise<PrebookResult> {
+  const hotel = await resolveHotel(hotelId, { checkIn, checkOut, rooms, guests });
   if (!hotel) throw new Error("Hôtel introuvable");
   const rawRate = hotel.rates.find((r) => r.id === rateId);
   if (!rawRate) throw new Error("Tarif introuvable ou expiré");
 
   const nights = nightsBetween(checkIn, checkOut);
-  const rate = quoteRate(rawRate, nights, rooms);
+  let rate = quoteRate(rawRate, nights, rooms);
+  let refundable = rawRate.refundable;
+  let freeUntilDays = rawRate.free_cancellation_until_days;
+
+  // Hotelbeds: verrouillage du prix via /checkrates avant paiement.
+  const { isHotelbedsEnabled, hbCheckRates, hotelCodeFromId } = await import("./hotelbeds.server");
+  if (isHotelbedsEnabled() && hotelCodeFromId(hotelId)) {
+    try {
+      const checked = await hbCheckRates(rateId);
+      if (checked) {
+        const perNight = Math.max(1, Math.round(checked.netXof / Math.max(1, nights) / Math.max(1, rooms)));
+        rate = quoteRate({ ...rawRate, net_per_night_xof: perNight }, nights, rooms);
+        refundable = checked.cancellationPolicies.length > 0;
+        if (checked.cancellationPolicies[0]?.from) {
+          const from = new Date(checked.cancellationPolicies[0].from).getTime();
+          const start = new Date(`${checkIn}T00:00:00Z`).getTime();
+          freeUntilDays = Math.max(0, Math.round((start - from) / 86_400_000));
+        }
+      }
+    } catch (e) {
+      console.error("[Hotelbeds] checkrates failed", e);
+    }
+  }
+
   const freeUntil = new Date(`${checkIn}T00:00:00Z`);
-  freeUntil.setUTCDate(freeUntil.getUTCDate() - rawRate.free_cancellation_until_days);
+  freeUntil.setUTCDate(freeUntil.getUTCDate() - freeUntilDays);
   const { rates: _drop, ...hotelInfo } = hotel;
 
   return {
@@ -127,12 +194,13 @@ export function prebook(
     rate,
     hold_expires_at: new Date(Date.now() + 20 * 60_000).toISOString(),
     cancellation_policy: {
-      refundable: rawRate.refundable,
+      refundable,
       free_until: freeUntil.toISOString().slice(0, 10),
-      penalty_xof: rawRate.refundable ? 0 : rate.total_xof,
+      penalty_xof: refundable ? 0 : rate.total_xof,
     },
   };
 }
+
 
 /** Resolves the signed-in user from an optional Authorization header. */
 export async function userIdFromBearer(authHeader: string | undefined): Promise<string | null> {

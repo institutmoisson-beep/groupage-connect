@@ -437,6 +437,8 @@ export type Database = {
           cancellation_policy: Json
           check_in_date: string
           check_out_date: string
+          commission_amount: number
+          commission_type: string | null
           created_at: string
           currency: string
           guest_email: string
@@ -445,8 +447,6 @@ export type Database = {
           guests: number
           hotel_details: Json
           id: string
-          commission_amount: number
-          commission_type: string | null
           markup_amount: number
           payment_gateway: Database["public"]["Enums"]["hotel_payment_gateway"]
           payment_meta: Json | null
@@ -470,6 +470,8 @@ export type Database = {
           cancellation_policy?: Json
           check_in_date: string
           check_out_date: string
+          commission_amount?: number
+          commission_type?: string | null
           created_at?: string
           currency?: string
           guest_email: string
@@ -478,8 +480,6 @@ export type Database = {
           guests?: number
           hotel_details?: Json
           id?: string
-          commission_amount?: number
-          commission_type?: string | null
           markup_amount?: number
           payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
           payment_meta?: Json | null
@@ -503,6 +503,8 @@ export type Database = {
           cancellation_policy?: Json
           check_in_date?: string
           check_out_date?: string
+          commission_amount?: number
+          commission_type?: string | null
           created_at?: string
           currency?: string
           guest_email?: string
@@ -511,8 +513,6 @@ export type Database = {
           guests?: number
           hotel_details?: Json
           id?: string
-          commission_amount?: number
-          commission_type?: string | null
           markup_amount?: number
           payment_gateway?: Database["public"]["Enums"]["hotel_payment_gateway"]
           payment_meta?: Json | null
