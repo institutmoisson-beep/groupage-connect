@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, Loader2, MessageCircle } from "lucide-react";
+import { Bell, Loader2, MessageCircle, Volume2, VolumeX } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import {
+  isNotificationSoundMuted,
+  playNotificationSound,
+  setNotificationSoundMuted,
+} from "@/lib/notification-sound";
 
 type Notification = {
   id: string;
@@ -54,7 +59,10 @@ export function NotificationBell({ userId }: { userId?: string | null }) {
           table: "user_notifications",
           filter: `user_id=eq.${userId}`,
         },
-        () => qc.invalidateQueries({ queryKey: ["user-notifications", userId] }),
+        () => {
+          qc.invalidateQueries({ queryKey: ["user-notifications", userId] });
+          playNotificationSound();
+        },
       )
       .subscribe();
     return () => {
@@ -71,6 +79,14 @@ export function NotificationBell({ userId }: { userId?: string | null }) {
   }, [open]);
 
   const unreadCount = (notifications ?? []).filter((n) => !n.read_at).length;
+  const [muted, setMuted] = useState(isNotificationSoundMuted());
+
+  function toggleMuted() {
+    const next = !muted;
+    setMuted(next);
+    setNotificationSoundMuted(next);
+    if (!next) playNotificationSound();
+  }
 
   async function openNotification(n: Notification) {
     setOpen(false);
@@ -128,15 +144,26 @@ export function NotificationBell({ userId }: { userId?: string | null }) {
         <div className="absolute right-0 top-11 z-50 max-h-[70vh] w-80 max-w-[90vw] overflow-hidden rounded-xl border border-border bg-card shadow-xl">
           <div className="flex items-center justify-between border-b border-border px-3 py-2">
             <span className="text-xs font-bold">Notifications</span>
-            {unreadCount > 0 && (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={markAllRead}
-                className="text-[10px] font-semibold text-primary"
+                onClick={toggleMuted}
+                className="grid h-6 w-6 place-items-center rounded text-muted-foreground hover:bg-muted"
+                aria-label={muted ? "Activer le son des notifications" : "Couper le son des notifications"}
+                title={muted ? "Son coupé — cliquer pour activer" : "Son activé — cliquer pour couper"}
               >
-                Tout marquer comme lu
+                {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
               </button>
-            )}
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={markAllRead}
+                  className="text-[10px] font-semibold text-primary"
+                >
+                  Tout marquer comme lu
+                </button>
+              )}
+            </div>
           </div>
           <div className="max-h-[55vh] overflow-y-auto">
             {isLoading ? (
