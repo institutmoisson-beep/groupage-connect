@@ -40,6 +40,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/campaign-products", label: "Produits/Campagnes", icon: LinkIcon },
   { to: "/admin/orders", label: "Commandes", icon: ShoppingCart },
   { to: "/admin/hotel-bookings", label: "Réservations hôtel", icon: BedDouble },
+  { to: "/admin/hotels", label: "Hôtels en direct", icon: BedDouble },
   { to: "/admin/payment-methods", label: "Moyens paiement", icon: CreditCard },
   { to: "/admin/proofs", label: "Preuves", icon: ReceiptText },
   { to: "/admin/sourcing", label: "Sourcing", icon: Search },
