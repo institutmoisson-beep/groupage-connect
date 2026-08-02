@@ -3,16 +3,17 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 import {
-  findHotel,
   nightsBetween,
   prebook,
   quoteRate,
+  resolveHotel,
   searchInventory,
   userIdFromBearer,
 } from "./hotels.server";
 
 const searchSchema = z.object({
   city: z.string().max(80).optional(),
+  hotelId: z.string().max(120).optional(),
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rooms: z.number().int().min(1).max(9),
@@ -26,14 +27,22 @@ const searchSchema = z.object({
 
 export const searchHotels = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => searchSchema.parse(input))
-  .handler(async ({ data }) => ({
-    nights: nightsBetween(data.checkIn, data.checkOut),
-    hotels: searchInventory({ ...data, tags: data.tags as never }),
-  }));
+  .handler(async ({ data }) => {
+    const { hotelId, ...rest } = data;
+    const code = hotelId?.startsWith("hb-") ? hotelId.slice(3) : undefined;
+    return {
+      nights: nightsBetween(data.checkIn, data.checkOut),
+      hotels: await searchInventory({
+        ...rest,
+        tags: rest.tags as never,
+        ...(code ? { hotelCodes: [code] } : {}),
+      }),
+    };
+  });
 
 const prebookSchema = z.object({
-  hotelId: z.string().min(1).max(80),
-  rateId: z.string().min(1).max(80),
+  hotelId: z.string().min(1).max(120),
+  rateId: z.string().min(1).max(2000),
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rooms: z.number().int().min(1).max(9),
@@ -42,6 +51,7 @@ const prebookSchema = z.object({
 export const prebookHotel = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => prebookSchema.parse(input))
   .handler(async ({ data }) => prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms));
+
 
 const bookSchema = prebookSchema.extend({
   guests: z.number().int().min(1).max(20),
