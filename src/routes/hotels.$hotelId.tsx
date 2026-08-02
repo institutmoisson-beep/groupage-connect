@@ -114,7 +114,7 @@ function HotelDetail() {
       }
 
       navigate({
-        to: "/hotels/voucher/$bookingId",
+        to: hotelId.startsWith("custom-") ? "/hotels/voucher-direct/$bookingId" : "/hotels/voucher/$bookingId",
         params: { bookingId: res.id },
         search: { email },
       });
