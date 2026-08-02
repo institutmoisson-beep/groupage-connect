@@ -115,7 +115,6 @@ function daysBefore(fromIso: string | undefined, checkIn: string): number {
   return d > 0 ? d : 0;
 }
 
-function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {
 function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {
   const netTotalXof = toXof(Number(raw?.net ?? raw?.sellingRate ?? 0), currency);
   const perNight = Math.max(1, Math.round(netTotalXof / Math.max(1, nights) / Math.max(1, rooms)));
