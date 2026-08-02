@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { BedDouble, Building2, Filter, Languages, Search, Star, Coins, ArrowRightLeft } from "lucide-react";
+import { BedDouble, Building2, Filter, Languages, Search, Star, Coins, ArrowRightLeft, BadgeCheck } from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
@@ -325,7 +325,14 @@ function HotelsSearch() {
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-sm font-bold">{h.name}</h2>
+                  <div className="flex items-center gap-1.5">
+                    <h2 className="truncate text-sm font-bold">{h.name}</h2>
+                    {h.is_direct_partner && (
+                      <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-primary">
+                        <BadgeCheck className="h-2.5 w-2.5" /> Partenaire Direct MSN
+                      </span>
+                    )}
+                  </div>
                   <p className="truncate text-[11px] text-muted-foreground">
                     {h.name_zh} · {h.city_zh}
                   </p>
