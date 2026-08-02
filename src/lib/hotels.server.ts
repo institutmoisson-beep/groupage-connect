@@ -146,22 +146,46 @@ export interface PrebookResult {
   cancellation_policy: { refundable: boolean; free_until: string; penalty_xof: number };
 }
 
-export function prebook(
+export async function prebook(
   hotelId: string,
   rateId: string,
   checkIn: string,
   checkOut: string,
   rooms: number,
-): PrebookResult {
-  const hotel = findHotel(hotelId);
+  guests = rooms,
+): Promise<PrebookResult> {
+  const hotel = await resolveHotel(hotelId, { checkIn, checkOut, rooms, guests });
   if (!hotel) throw new Error("Hôtel introuvable");
   const rawRate = hotel.rates.find((r) => r.id === rateId);
   if (!rawRate) throw new Error("Tarif introuvable ou expiré");
 
   const nights = nightsBetween(checkIn, checkOut);
-  const rate = quoteRate(rawRate, nights, rooms);
+  let rate = quoteRate(rawRate, nights, rooms);
+  let refundable = rawRate.refundable;
+  let freeUntilDays = rawRate.free_cancellation_until_days;
+
+  // Hotelbeds: verrouillage du prix via /checkrates avant paiement.
+  const { isHotelbedsEnabled, hbCheckRates, hotelCodeFromId } = await import("./hotelbeds.server");
+  if (isHotelbedsEnabled() && hotelCodeFromId(hotelId)) {
+    try {
+      const checked = await hbCheckRates(rateId);
+      if (checked) {
+        const perNight = Math.max(1, Math.round(checked.netXof / Math.max(1, nights) / Math.max(1, rooms)));
+        rate = quoteRate({ ...rawRate, net_per_night_xof: perNight }, nights, rooms);
+        refundable = checked.cancellationPolicies.length > 0;
+        if (checked.cancellationPolicies[0]?.from) {
+          const from = new Date(checked.cancellationPolicies[0].from).getTime();
+          const start = new Date(`${checkIn}T00:00:00Z`).getTime();
+          freeUntilDays = Math.max(0, Math.round((start - from) / 86_400_000));
+        }
+      }
+    } catch (e) {
+      console.error("[Hotelbeds] checkrates failed", e);
+    }
+  }
+
   const freeUntil = new Date(`${checkIn}T00:00:00Z`);
-  freeUntil.setUTCDate(freeUntil.getUTCDate() - rawRate.free_cancellation_until_days);
+  freeUntil.setUTCDate(freeUntil.getUTCDate() - freeUntilDays);
   const { rates: _drop, ...hotelInfo } = hotel;
 
   return {
@@ -170,12 +194,13 @@ export function prebook(
     rate,
     hold_expires_at: new Date(Date.now() + 20 * 60_000).toISOString(),
     cancellation_policy: {
-      refundable: rawRate.refundable,
+      refundable,
       free_until: freeUntil.toISOString().slice(0, 10),
-      penalty_xof: rawRate.refundable ? 0 : rate.total_xof,
+      penalty_xof: refundable ? 0 : rate.total_xof,
     },
   };
 }
+
 
 /** Resolves the signed-in user from an optional Authorization header. */
 export async function userIdFromBearer(authHeader: string | undefined): Promise<string | null> {
