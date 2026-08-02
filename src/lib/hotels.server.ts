@@ -89,13 +89,19 @@ export async function searchInventory(
   const inventory = await loadInventory(params);
   const live = inventory !== HOTELS;
 
-  const matches = inventory.filter((h) => {
-    if (needle && !live) {
+  // Hybrid search: nos hôtels en direct (custom_hotels) sont toujours filtrés
+  // localement par ville et ajoutés au pool Hotelbeds/catalogue.
+  const { loadCustomHotels } = await import("./custom-hotels.server");
+  const customHotels = await loadCustomHotels(params.city);
+  const combined = [...inventory, ...customHotels];
+
+  const matches = combined.filter((h) => {
+    if (needle && !(live && !h.is_direct_partner)) {
       const haystack = `${h.city} ${h.city_zh} ${h.country} ${h.name} ${h.name_zh}`.toLowerCase();
       if (!haystack.includes(needle)) return false;
     }
     if (params.minStars && h.star_rating < params.minStars) return false;
-    if (params.tags?.length && !live && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
+    if (params.tags?.length && !live && !h.is_direct_partner && !params.tags.every((tag) => h.trade_tags.includes(tag))) return false;
     return true;
   });
 
@@ -122,6 +128,9 @@ export async function resolveHotel(
   hotelId: string,
   stay: { checkIn: string; checkOut: string; rooms: number; guests: number },
 ): Promise<Hotel | undefined> {
+  const { isCustomHotelId, resolveCustomHotel } = await import("./custom-hotels.server");
+  if (isCustomHotelId(hotelId)) return resolveCustomHotel(hotelId);
+
   const { isHotelbedsEnabled, hotelCodeFromId } = await import("./hotelbeds.server");
   const code = hotelCodeFromId(hotelId);
   if (isHotelbedsEnabled() && code) {
