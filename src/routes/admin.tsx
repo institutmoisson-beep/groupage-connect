@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ShieldCheck,
   Users,
@@ -18,11 +18,19 @@ import {
   Truck,
   MessageCircle,
   BedDouble,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
+import { AdminInboxWatcher } from "@/components/AdminInboxWatcher";
+import {
+  isNotificationSoundMuted,
+  playNotificationSound,
+  setNotificationSoundMuted,
+} from "@/lib/notification-sound";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -56,6 +64,14 @@ function AdminLayout() {
   const { isAdmin, loading: roleLoading } = useIsAdmin();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [muted, setMuted] = useState(isNotificationSoundMuted());
+
+  function toggleMuted() {
+    const next = !muted;
+    setMuted(next);
+    setNotificationSoundMuted(next);
+    if (!next) playNotificationSound();
+  }
 
   useEffect(() => {
     if (loading || roleLoading) return;
@@ -73,6 +89,7 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      <AdminInboxWatcher />
       <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
@@ -87,6 +104,14 @@ function AdminLayout() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleMuted}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-card text-muted-foreground hover:text-primary"
+              aria-label={muted ? "Activer le son des messages" : "Couper le son des messages"}
+              title={muted ? "Son des messages coupé" : "Son des messages activé"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
             <Link
               to="/"
               className="rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary"
