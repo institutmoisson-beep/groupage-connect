@@ -115,6 +115,7 @@ function daysBefore(fromIso: string | undefined, checkIn: string): number {
   return d > 0 ? d : 0;
 }
 
+function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {
 function mapRate(raw: any, roomName: string, currency: string, nights: number, rooms: number, checkIn: string): HotelRate {
   const netTotalXof = toXof(Number(raw?.net ?? raw?.sellingRate ?? 0), currency);
   const perNight = Math.max(1, Math.round(netTotalXof / Math.max(1, nights) / Math.max(1, rooms)));
@@ -258,16 +259,4 @@ export async function hbBook(input: {
     status: String(json?.booking?.status ?? "CONFIRMED"),
     raw: json,
   };
-}
-
-/** Cancellation (`DELETE /bookings/{reference}`). */
-export async function hbCancel(reference: string): Promise<{ status: string; raw: unknown }> {
-  const json = await hbFetch<any>(`/bookings/${encodeURIComponent(reference)}?cancellationFlag=CANCELLATION`, {
-    method: "DELETE",
-  });
-  return { status: String(json?.booking?.status ?? "CANCELLED"), raw: json };
-}
-
-export function hotelCodeFromId(hotelId: string): string | null {
-  return hotelId.startsWith("hb-") ? hotelId.slice(3) : null;
 }
