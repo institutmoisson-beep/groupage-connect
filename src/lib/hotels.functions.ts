@@ -65,7 +65,12 @@ const bookSchema = prebookSchema.extend({
 export const bookHotel = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => bookSchema.parse(input))
   .handler(async ({ data }) => {
-    const hotel = findHotel(data.hotelId);
+    const hotel = await resolveHotel(data.hotelId, {
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      rooms: data.rooms,
+      guests: data.guests,
+    });
     const rawRate = hotel?.rates.find((r) => r.id === data.rateId);
     if (!hotel || !rawRate) throw new Error("Tarif indisponible, relancez la recherche.");
     if (data.paymentModel === "api_delegated" && !rawRate.pay_at_hotel) {
@@ -73,8 +78,27 @@ export const bookHotel = createServerFn({ method: "POST" })
     }
 
     const nights = nightsBetween(data.checkIn, data.checkOut);
-    const rate = quoteRate(rawRate, nights, data.rooms);
-    const quote = prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms);
+    const quote = await prebook(data.hotelId, data.rateId, data.checkIn, data.checkOut, data.rooms, data.guests);
+    const rate = quote.rate.total_xof > 0 ? quote.rate : quoteRate(rawRate, nights, data.rooms);
+
+    // Réservation fournisseur immédiate uniquement quand le paiement est délégué
+    // (tarif « payer à l'hôtel ») ; sinon on attend la confirmation du paiement.
+    let supplierRef: string | null = null;
+    const { isHotelbedsEnabled, hbBook, hotelCodeFromId } = await import("./hotelbeds.server");
+    if (isHotelbedsEnabled() && hotelCodeFromId(data.hotelId) && data.paymentModel === "api_delegated") {
+      const [firstName, ...restName] = data.guestName.trim().split(/\s+/);
+      const booked = await hbBook({
+        rateKey: data.rateId,
+        holderName: firstName ?? data.guestName,
+        holderSurname: restName.join(" ") || (firstName ?? "MSN"),
+        clientReference: `MSN-${Date.now().toString(36).toUpperCase()}`,
+        email: data.guestEmail,
+        phone: data.guestPhone,
+        rooms: data.rooms,
+      });
+      supplierRef = booked.reference || null;
+    }
+
 
     const userId = await userIdFromBearer(getRequestHeader("authorization"));
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
