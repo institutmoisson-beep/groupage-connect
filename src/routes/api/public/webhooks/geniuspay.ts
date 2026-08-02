@@ -70,8 +70,36 @@ export const Route = createFileRoute("/api/public/webhooks/geniuspay")({
           patch.payment_status = "failed";
         }
 
-        // Les réservations hôtel utilisent des références MSNH-*, les commandes cargo MSN-*.
+        // Références : MSNH-* (hotel_bookings / Hotelbeds), MSND-* (custom_hotel_bookings
+        // / hôtels en direct contracting), MSN-* (commandes cargo).
         const isHotelBooking = reference.startsWith("MSNH-");
+        const isCustomHotelBooking = reference.startsWith("MSND-");
+
+        if (isCustomHotelBooking) {
+          const customPatch: {
+            payment_meta: any;
+            payment_status?: "pending" | "paid" | "failed" | "refunded";
+            booking_status?: "pending" | "confirmed" | "cancelled" | "completed";
+          } = { payment_meta: payload as any };
+          if (paid) {
+            customPatch.payment_status = "paid";
+            customPatch.booking_status = "confirmed";
+          } else if (failed) {
+            customPatch.payment_status = "failed";
+          }
+
+          const { error } = await supabaseAdmin
+            .from("custom_hotel_bookings")
+            .update(customPatch)
+            .eq("payment_reference", reference);
+
+          if (error) {
+            console.error("[GeniusPay webhook] custom_hotel_bookings update failed", error);
+            return new Response("DB error", { status: 500 });
+          }
+
+          return new Response("ok", { status: 200 });
+        }
 
         if (isHotelBooking) {
           const hotelPatch: { payment_meta: any; payment_status?: "pending" | "paid" | "failed" | "refunded"; status?: "pending" | "confirmed" | "cancelled" | "completed" } = {
