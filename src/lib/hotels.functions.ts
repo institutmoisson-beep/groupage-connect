@@ -144,9 +144,11 @@ export const bookHotel = createServerFn({ method: "POST" })
       currency: "XOF",
       status: data.paymentModel === "api_delegated" ? "confirmed" : "pending",
       supplier_confirmation_id:
-        data.paymentModel === "api_delegated"
+        supplierRef ??
+        (data.paymentModel === "api_delegated"
           ? `MSN-API-${Math.random().toString(36).slice(2, 10).toUpperCase()}`
-          : null,
+          : null),
+
       cancellation_policy: quote.cancellation_policy,
       // Modèle 1 (paiement direct) : la marge MSN est déjà dans markup_amount.
       // Modèle 2 (délégué au fournisseur/hôtel) : on trace la commission affiliée attendue,
