@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as SourcingRouteImport } from './routes/sourcing'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -20,14 +21,20 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CargoRouteImport } from './routes/Cargo'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StockIndexRouteImport } from './routes/stock.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as StockSellRouteImport } from './routes/stock.sell'
+import { Route as StockOrdersRouteImport } from './routes/stock.orders'
+import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
 import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
+import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
@@ -35,6 +42,7 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
 import { Route as AdminHotelBookingsRouteImport } from './routes/admin.hotel-bookings'
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
 import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
@@ -45,9 +53,15 @@ import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campai
 import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
 import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
 import { Route as HotelsVoucherBookingIdRouteImport } from './routes/hotels.voucher.$bookingId'
+import { Route as HotelsVoucherDirectBookingIdRouteImport } from './routes/hotels.voucher-direct.$bookingId'
 import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SourcingRoute = SourcingRouteImport.update({
   id: '/sourcing',
   path: '/sourcing',
@@ -103,6 +117,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StockIndexRoute = StockIndexRouteImport.update({
+  id: '/stock/',
+  path: '/stock/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HotelsIndexRoute = HotelsIndexRouteImport.update({
   id: '/hotels/',
   path: '/hotels/',
@@ -112,6 +131,21 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const StockSellRoute = StockSellRouteImport.update({
+  id: '/stock/sell',
+  path: '/stock/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockOrdersRoute = StockOrdersRouteImport.update({
+  id: '/stock/orders',
+  path: '/stock/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockProductIdRoute = StockProductIdRouteImport.update({
+  id: '/stock/$productId',
+  path: '/stock/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
@@ -138,9 +172,19 @@ const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
   path: '/checkout/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSourcingRoute = AdminSourcingRouteImport.update({
@@ -176,6 +220,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
 const AdminMessagesRoute = AdminMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHotelsRoute = AdminHotelsRouteImport.update({
+  id: '/hotels',
+  path: '/hotels',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminHotelBookingsRoute = AdminHotelBookingsRouteImport.update({
@@ -229,6 +278,12 @@ const HotelsVoucherBookingIdRoute = HotelsVoucherBookingIdRouteImport.update({
   path: '/hotels/voucher/$bookingId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HotelsVoucherDirectBookingIdRoute =
+  HotelsVoucherDirectBookingIdRouteImport.update({
+    id: '/hotels/voucher-direct/$bookingId',
+    path: '/hotels/voucher-direct/$bookingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CheckoutSourcingSourcingIdRoute =
   CheckoutSourcingSourcingIdRouteImport.update({
     id: '/checkout/sourcing/$sourcingId',
@@ -254,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -261,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -268,15 +325,22 @@ export interface FileRoutesByFullPath {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
+  '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -293,6 +357,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -300,6 +365,7 @@ export interface FileRoutesByTo {
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -307,15 +373,22 @@ export interface FileRoutesByTo {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
+  '/stock/sell': typeof StockSellRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/stock': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -334,6 +407,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -341,6 +415,7 @@ export interface FileRoutesById {
   '/admin/cargo-packages': typeof AdminCargoPackagesRoute
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -348,15 +423,22 @@ export interface FileRoutesById {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
+  '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
+  '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
+  '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
@@ -376,6 +458,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -383,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/hotel-bookings'
+    | '/admin/hotels'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -390,15 +474,22 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
     | '/payment/callback'
     | '/product/$id'
+    | '/stock/$productId'
+    | '/stock/orders'
+    | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/stock/'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -415,6 +506,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -422,6 +514,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/hotel-bookings'
+    | '/admin/hotels'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -429,15 +522,22 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
     | '/payment/callback'
     | '/product/$id'
+    | '/stock/$productId'
+    | '/stock/orders'
+    | '/stock/sell'
     | '/admin'
     | '/hotels'
+    | '/stock'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -455,6 +555,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -462,6 +563,7 @@ export interface FileRouteTypes {
     | '/admin/cargo-packages'
     | '/admin/commissions'
     | '/admin/hotel-bookings'
+    | '/admin/hotels'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -469,15 +571,22 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
     | '/payment/callback'
     | '/product/$id'
+    | '/stock/$productId'
+    | '/stock/orders'
+    | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/stock/'
     | '/checkout/sourcing/$sourcingId'
+    | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
@@ -496,13 +605,19 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingRoute: typeof SourcingRouteWithChildren
+  WalletRoute: typeof WalletRoute
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   HotelsBookingsRoute: typeof HotelsBookingsRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
+  StockProductIdRoute: typeof StockProductIdRoute
+  StockOrdersRoute: typeof StockOrdersRoute
+  StockSellRoute: typeof StockSellRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
+  StockIndexRoute: typeof StockIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
+  HotelsVoucherDirectBookingIdRoute: typeof HotelsVoucherDirectBookingIdRoute
   HotelsVoucherBookingIdRoute: typeof HotelsVoucherBookingIdRoute
   ReceiptSourcingSourcingIdRoute: typeof ReceiptSourcingSourcingIdRoute
   ApiPublicWebhooksGeniuspayRoute: typeof ApiPublicWebhooksGeniuspayRoute
@@ -510,6 +625,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sourcing': {
       id: '/sourcing'
       path: '/sourcing'
@@ -587,6 +709,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stock/': {
+      id: '/stock/'
+      path: '/stock'
+      fullPath: '/stock/'
+      preLoaderRoute: typeof StockIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hotels/': {
       id: '/hotels/'
       path: '/hotels'
@@ -600,6 +729,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/stock/sell': {
+      id: '/stock/sell'
+      path: '/stock/sell'
+      fullPath: '/stock/sell'
+      preLoaderRoute: typeof StockSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/orders': {
+      id: '/stock/orders'
+      path: '/stock/orders'
+      fullPath: '/stock/orders'
+      preLoaderRoute: typeof StockOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/$productId': {
+      id: '/stock/$productId'
+      path: '/stock/$productId'
+      fullPath: '/stock/$productId'
+      preLoaderRoute: typeof StockProductIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/product/$id': {
       id: '/product/$id'
@@ -636,11 +786,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/withdrawals': {
+      id: '/admin/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AdminWithdrawalsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sourcing': {
@@ -690,6 +854,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/admin/messages'
       preLoaderRoute: typeof AdminMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/hotels': {
+      id: '/admin/hotels'
+      path: '/hotels'
+      fullPath: '/admin/hotels'
+      preLoaderRoute: typeof AdminHotelsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/hotel-bookings': {
@@ -762,6 +933,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotelsVoucherBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hotels/voucher-direct/$bookingId': {
+      id: '/hotels/voucher-direct/$bookingId'
+      path: '/hotels/voucher-direct/$bookingId'
+      fullPath: '/hotels/voucher-direct/$bookingId'
+      preLoaderRoute: typeof HotelsVoucherDirectBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/sourcing/$sourcingId': {
       id: '/checkout/sourcing/$sourcingId'
       path: '/checkout/sourcing/$sourcingId'
@@ -787,6 +965,7 @@ interface AdminRouteChildren {
   AdminCargoPackagesRoute: typeof AdminCargoPackagesRoute
   AdminCommissionsRoute: typeof AdminCommissionsRoute
   AdminHotelBookingsRoute: typeof AdminHotelBookingsRoute
+  AdminHotelsRoute: typeof AdminHotelsRoute
   AdminMessagesRoute: typeof AdminMessagesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
@@ -794,7 +973,9 @@ interface AdminRouteChildren {
   AdminProofsRoute: typeof AdminProofsRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminSourcingRoute: typeof AdminSourcingRoute
+  AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -806,6 +987,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCargoPackagesRoute: AdminCargoPackagesRoute,
   AdminCommissionsRoute: AdminCommissionsRoute,
   AdminHotelBookingsRoute: AdminHotelBookingsRoute,
+  AdminHotelsRoute: AdminHotelsRoute,
   AdminMessagesRoute: AdminMessagesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
@@ -813,7 +995,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProofsRoute: AdminProofsRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminSourcingRoute: AdminSourcingRoute,
+  AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -843,13 +1027,19 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingRoute: SourcingRouteWithChildren,
+  WalletRoute: WalletRoute,
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   HotelsBookingsRoute: HotelsBookingsRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
+  StockProductIdRoute: StockProductIdRoute,
+  StockOrdersRoute: StockOrdersRoute,
+  StockSellRoute: StockSellRoute,
   HotelsIndexRoute: HotelsIndexRoute,
+  StockIndexRoute: StockIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
+  HotelsVoucherDirectBookingIdRoute: HotelsVoucherDirectBookingIdRoute,
   HotelsVoucherBookingIdRoute: HotelsVoucherBookingIdRoute,
   ReceiptSourcingSourcingIdRoute: ReceiptSourcingSourcingIdRoute,
   ApiPublicWebhooksGeniuspayRoute: ApiPublicWebhooksGeniuspayRoute,

@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Hotel, PackageOpen, Search, Ship, Users, User } from "lucide-react";
+import { Home, Hotel, PackageOpen, Search, Ship, ShoppingBag, Users, User } from "lucide-react";
 
 const items: Array<{
-  to: "/" | "/groupage" | "/sourcing" | "/cargo" | "/hotels" | "/mlm" | "/profile";
+  to: "/" | "/groupage" | "/sourcing" | "/cargo" | "/hotels" | "/stock" | "/mlm" | "/profile";
   label: string;
   icon: typeof Home;
   exact?: boolean;
@@ -12,6 +12,7 @@ const items: Array<{
   { to: "/sourcing", label: "Sourcing", icon: Search },
   { to: "/cargo", label: "Cargo", icon: Ship },
   { to: "/hotels", label: "Hôtels", icon: Hotel },
+  { to: "/stock", label: "Stock", icon: ShoppingBag },
   { to: "/mlm", label: "Réseau", icon: Users },
   { to: "/profile", label: "Profil", icon: User },
 ];
@@ -27,9 +28,9 @@ export function BottomNav() {
               activeOptions={{ exact: !!exact }}
               activeProps={{ className: "text-primary" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="flex flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors hover:text-primary"
+              className="flex flex-col items-center justify-center gap-0.5 px-0.5 py-2.5 text-[9px] font-medium transition-colors hover:text-primary"
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-[18px] w-[18px]" />
               {label}
             </Link>
           </li>
