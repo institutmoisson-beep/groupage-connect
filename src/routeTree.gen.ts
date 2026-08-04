@@ -24,6 +24,7 @@ import { Route as StockIndexRouteImport } from './routes/stock.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StockSellRouteImport } from './routes/stock.sell'
+import { Route as StockOrdersRouteImport } from './routes/stock.orders'
 import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
@@ -126,6 +127,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const StockSellRoute = StockSellRouteImport.update({
   id: '/stock/sell',
   path: '/stock/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockOrdersRoute = StockOrdersRouteImport.update({
+  id: '/stock/orders',
+  path: '/stock/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StockProductIdRoute = StockProductIdRouteImport.update({
@@ -307,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
@@ -351,6 +358,7 @@ export interface FileRoutesByTo {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
@@ -397,6 +405,7 @@ export interface FileRoutesById {
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
+  '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
@@ -444,6 +453,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
+    | '/stock/orders'
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
@@ -488,6 +498,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
+    | '/stock/orders'
     | '/stock/sell'
     | '/admin'
     | '/hotels'
@@ -533,6 +544,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
+    | '/stock/orders'
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
@@ -563,6 +575,7 @@ export interface RootRouteChildren {
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   StockProductIdRoute: typeof StockProductIdRoute
+  StockOrdersRoute: typeof StockOrdersRoute
   StockSellRoute: typeof StockSellRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
   StockIndexRoute: typeof StockIndexRoute
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       path: '/stock/sell'
       fullPath: '/stock/sell'
       preLoaderRoute: typeof StockSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/orders': {
+      id: '/stock/orders'
+      path: '/stock/orders'
+      fullPath: '/stock/orders'
+      preLoaderRoute: typeof StockOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stock/$productId': {
@@ -951,6 +971,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   StockProductIdRoute: StockProductIdRoute,
+  StockOrdersRoute: StockOrdersRoute,
   StockSellRoute: StockSellRoute,
   HotelsIndexRoute: HotelsIndexRoute,
   StockIndexRoute: StockIndexRoute,
