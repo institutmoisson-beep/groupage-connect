@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminGuard } from "@/components/AdminGuard";
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF } from "@/lib/format";
 import {
@@ -25,11 +24,7 @@ export const Route = createFileRoute("/admin/stock")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: () => (
-    <AdminGuard>
-      <AdminStock />
-    </AdminGuard>
-  ),
+  component: AdminStock,
 });
 
 function AdminStock() {
