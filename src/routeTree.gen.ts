@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as SourcingRouteImport } from './routes/sourcing'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -54,6 +55,11 @@ import { Route as HotelsVoucherDirectBookingIdRouteImport } from './routes/hotel
 import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SourcingRoute = SourcingRouteImport.update({
   id: '/sourcing',
   path: '/sourcing',
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -336,6 +343,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -383,6 +391,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -431,6 +440,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -476,6 +486,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -522,6 +533,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -569,6 +581,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingRoute: typeof SourcingRouteWithChildren
+  WalletRoute: typeof WalletRoute
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   HotelsBookingsRoute: typeof HotelsBookingsRoute
@@ -588,6 +601,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sourcing': {
       id: '/sourcing'
       path: '/sourcing'
@@ -965,6 +985,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingRoute: SourcingRouteWithChildren,
+  WalletRoute: WalletRoute,
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   HotelsBookingsRoute: HotelsBookingsRoute,
