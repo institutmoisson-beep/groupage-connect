@@ -33,6 +33,7 @@ import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
@@ -175,6 +176,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSourcingRoute = AdminSourcingRouteImport.update({
   id: '/sourcing',
   path: '/sourcing',
@@ -313,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -359,6 +366,7 @@ export interface FileRoutesByTo {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -407,6 +415,7 @@ export interface FileRoutesById {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -456,6 +465,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -502,6 +512,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -549,6 +560,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/stock'
     | '/admin/users'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -769,6 +781,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/sourcing': {
       id: '/admin/sourcing'
       path: '/sourcing'
@@ -935,6 +954,7 @@ interface AdminRouteChildren {
   AdminProofsRoute: typeof AdminProofsRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminSourcingRoute: typeof AdminSourcingRoute
+  AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -955,6 +975,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProofsRoute: AdminProofsRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminSourcingRoute: AdminSourcingRoute,
+  AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
