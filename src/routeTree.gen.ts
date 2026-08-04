@@ -32,6 +32,7 @@ import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
 import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
+import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
@@ -170,6 +171,11 @@ const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
   id: '/checkout/$orderId',
   path: '/checkout/$orderId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -321,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
@@ -368,6 +375,7 @@ export interface FileRoutesByTo {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
@@ -417,6 +425,7 @@ export interface FileRoutesById {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
@@ -467,6 +476,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
@@ -514,6 +524,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
@@ -562,6 +573,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
@@ -774,6 +786,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/withdrawals': {
+      id: '/admin/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AdminWithdrawalsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -956,6 +975,7 @@ interface AdminRouteChildren {
   AdminSourcingRoute: typeof AdminSourcingRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -977,6 +997,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSourcingRoute: AdminSourcingRoute,
   AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
