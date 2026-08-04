@@ -27,7 +27,7 @@ export const Route = createFileRoute("/stock/orders")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: StockOrders;
+  component: StockOrders,
 });
 
 function StockOrders() {
