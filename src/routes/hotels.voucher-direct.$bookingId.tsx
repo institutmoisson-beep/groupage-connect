@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Printer, QrCode, BadgeCheck } from "lucide-react";
 
 import { getCustomHotelBooking } from "@/lib/hotels.functions";
-import { formatMoney } from "@/lib/currency";
+import { formatMoney, type SupportedCurrency } from "@/lib/currency";
 
 export const Route = createFileRoute("/hotels/voucher-direct/$bookingId")({
   validateSearch: (search: Record<string, unknown>) => ({ email: String(search.email ?? "") }),
@@ -84,7 +84,7 @@ function VoucherDirect() {
           <div>
             <h2 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Paiement</h2>
             <p className="text-xs">Prépayé via MSN (Mobile Money / carte)</p>
-            <p className="text-sm font-black text-primary">{formatMoney(Number(data.total_price), data.currency ?? "XOF")}</p>
+            <p className="text-sm font-black text-primary">{formatMoney(Number(data.total_price), (data.currency as SupportedCurrency || "XOF"))}</p>
             <p className="text-[10px] text-muted-foreground">
               Statut : {data.booking_status} · {data.payment_status}
             </p>

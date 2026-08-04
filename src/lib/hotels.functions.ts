@@ -264,7 +264,7 @@ export const initiateHotelPayment = createServerFn({ method: "POST" })
       if (custom.error) throw new Error(custom.error.message);
       if (custom.data) {
         table = "custom_hotel_bookings";
-        booking = custom.data as typeof booking;
+        booking = custom.data as unknown as typeof booking;
       }
     } else if ((standard.data as any).payment_model !== "direct_merchant") {
       throw new Error("Cette réservation ne relève pas du paiement direct.");

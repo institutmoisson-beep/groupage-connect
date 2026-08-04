@@ -259,3 +259,17 @@ export async function hbBook(input: {
     raw: json,
   };
 }
+
+/** Cancellation (`DELETE /bookings/{reference}`). */
+export async function hbCancel(reference: string): Promise<{ status: string; raw: unknown }> {
+  const json = await hbFetch<any>(
+    `/bookings/${encodeURIComponent(reference)}?cancellationFlag=CANCELLATION`,
+    { method: "DELETE" },
+  );
+  return { status: String(json?.booking?.status ?? "CANCELLED"), raw: json };
+}
+
+export function hotelCodeFromId(hotelId: string): string | null {
+  return hotelId.startsWith("hb-") ? hotelId.slice(3) : null;
+}
+
