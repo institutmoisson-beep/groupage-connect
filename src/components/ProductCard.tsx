@@ -4,6 +4,8 @@ import { computePrice, formatXOF } from "@/lib/format";
 import { ProgressBar } from "./ProgressBar";
 import { CountdownTimer } from "./CountdownTimer";
 import { Ship, Plane } from "lucide-react";
+import { OptimizedImage } from "./OptimizedImage";
+
 
 export function ProductCard({ product, campaign }: { product: Product; campaign?: Campaign }) {
   const price = computePrice(product);
