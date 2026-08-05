@@ -27,6 +27,16 @@ export function OptimizedImage({
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  // Une image déjà en cache peut finir de charger avant l'hydratation :
+  // on lit alors `complete` sur le noeud pour éviter une image invisible.
+  const attachRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) {
+      if (node.naturalWidth > 0) setLoaded(true);
+      else setFailed(true);
+    }
+  }, []);
+
+
   if (!src || failed) {
     return (
       <div
