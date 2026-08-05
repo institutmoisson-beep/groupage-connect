@@ -1,37 +1,18 @@
-import imageCompression from "browser-image-compression";
 import { supabase } from "@/integrations/supabase/client";
+import { IMMUTABLE_CACHE_CONTROL, buildMediaPath, optimizeImage } from "@/lib/media-optimizer";
 
 const BUCKET = "direct-messages-media";
 
 /**
- * Upload d'une image de la messagerie personnelle admin <-> client, compressée
- * côté client (max 1600px / ~800KB) avant envoi.
+ * Upload d'une image de la messagerie personnelle admin <-> client, optimisée
+ * côté client (WebP, 1280px max) avant envoi.
  */
-export async function uploadDirectMessageImage(file: File, channelUserId: string): Promise<string> {
-  let toUpload: Blob = file;
-  let ext = (file.name.split(".").pop() || "bin").toLowerCase();
-  let contentType = file.type || "application/octet-stream";
-  try {
-    if (
-      file.type.startsWith("image/") &&
-      file.type !== "image/heic" &&
-      file.type !== "image/heif"
-    ) {
-      const compressed = await imageCompression(file, {
-        maxSizeMB: 0.8,
-        maxWidthOrHeight: 1600,
-        useWebWorker: false,
-        fileType: "image/webp",
-        initialQuality: 0.85,
-      });
-      toUpload = compressed;
-      ext = "webp";
-      contentType = "image/webp";
-    }
-  } catch (e) {
-    console.warn("Compression de l'image échouée, envoi de l'original", e);
-  }
-  return uploadDirectMessageBlob(toUpload, channelUserId, ext, contentType);
+export async function uploadDirectMessageImage(
+  file: File,
+  channelUserId: string,
+): Promise<string> {
+  const media = await optimizeImage(file, "standard");
+  return uploadDirectMessageBlob(media.blob, channelUserId, media.ext, media.contentType);
 }
 
 /** Upload d'un message vocal enregistré (blob audio) de la messagerie personnelle. */
@@ -46,10 +27,10 @@ async function uploadDirectMessageBlob(
   ext: string,
   contentType: string,
 ): Promise<string> {
-  const path = `${channelUserId}/${crypto.randomUUID()}.${ext}`;
+  const path = buildMediaPath(channelUserId, ext);
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(path, blob, { contentType, upsert: false });
+    .upload(path, blob, { contentType, cacheControl: IMMUTABLE_CACHE_CONTROL, upsert: false });
   if (error) throw new Error(error.message || "Échec de l'envoi du fichier");
   const { data, error: sErr } = await supabase.storage
     .from(BUCKET)

@@ -4,6 +4,8 @@ import { computePrice, formatXOF } from "@/lib/format";
 import { ProgressBar } from "./ProgressBar";
 import { CountdownTimer } from "./CountdownTimer";
 import { Ship, Plane } from "lucide-react";
+import { OptimizedImage } from "./OptimizedImage";
+
 
 export function ProductCard({ product, campaign }: { product: Product; campaign?: Campaign }) {
   const price = computePrice(product);
@@ -14,12 +16,12 @@ export function ProductCard({ product, campaign }: { product: Product; campaign?
       className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-card transition-all hover:-translate-y-0.5 hover:shadow-brand"
     >
       <div className="relative aspect-square overflow-hidden bg-muted">
-        <img
+        <OptimizedImage
           src={product.image_urls[0] ?? "/images/prod-drill.jpg"}
           alt={product.title}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+          className="h-full w-full transition-transform group-hover:scale-105"
         />
+
         <div className="absolute right-2 top-2 rounded-md bg-secondary/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary-foreground">
           {product.category}
         </div>
