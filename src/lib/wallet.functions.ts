@@ -63,49 +63,22 @@ const settleSchema = z.object({
   note: z.string().trim().max(500).optional(),
 });
 
-/** Traitement admin d'un retrait : le débit portefeuille est écrit au moment du paiement. */
+/**
+ * Traitement admin d'un retrait via la fonction SQL SECURITY DEFINER `settle_withdrawal`.
+ * On passe par le client authentifié (RLS) plutôt que par supabaseAdmin (service role),
+ * ce dernier ayant déjà causé des échecs silencieux sur Lovable Cloud (cf. MSN Tontine).
+ */
 export const settleWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => settleSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    if (!isAdmin) throw new Error("Accès réservé à l'administration.");
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("withdrawal_requests")
-      .select("id, user_id, amount_xof, status, method")
-      .eq("id", data.withdrawalId)
-      .maybeSingle();
+    const { data: result, error } = await (context.supabase as any)
+      .rpc("settle_withdrawal", {
+        p_withdrawal_id: data.withdrawalId,
+        p_action: data.action,
+        p_note: data.note ?? null,
+      })
+      .single();
     if (error) throw new Error(error.message);
-    if (!row) throw new Error("Demande introuvable.");
-    if (row.status === "paid") throw new Error("Ce retrait est déjà payé.");
-
-    const nextStatus = data.action === "approve" ? "approved" : data.action === "pay" ? "paid" : "rejected";
-
-    const { error: upErr } = await supabaseAdmin
-      .from("withdrawal_requests")
-      .update({
-        status: nextStatus,
-        admin_notes: data.note ?? null,
-        processed_at: data.action === "pay" ? new Date().toISOString() : null,
-      } as never)
-      .eq("id", row.id);
-    if (upErr) throw new Error(upErr.message);
-
-    if (data.action === "pay") {
-      const { error: txErr } = await supabaseAdmin.from("wallet_transactions").insert({
-        user_id: row.user_id,
-        amount_xof: -Math.abs(Number(row.amount_xof)),
-        type: "withdrawal_debit",
-        label: `Retrait payé (${row.method})`,
-        withdrawal_id: row.id,
-      } as never);
-      if (txErr) throw new Error(txErr.message);
-    }
-
-    return { ok: true, status: nextStatus };
+    return { ok: true, status: (result as { status: string }).status };
   });
