@@ -30,6 +30,7 @@ import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-pac
 import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
 import { Route as AdminHotelBookingsRouteImport } from './routes/admin.hotel-bookings'
 import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
+import { Route as AdminLogisticsRouteImport } from './routes/admin.logistics'
 import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
@@ -160,6 +161,11 @@ const AdminHotelBookingsRoute = AdminHotelBookingsRouteImport.update({
 const AdminHotelsRoute = AdminHotelsRouteImport.update({
   id: '/hotels',
   path: '/hotels',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogisticsRoute = AdminLogisticsRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminMessagesRoute = AdminMessagesRouteImport.update({
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -366,6 +373,7 @@ export interface FileRoutesByTo {
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/admin/commissions': typeof AdminCommissionsRoute
   '/admin/hotel-bookings': typeof AdminHotelBookingsRoute
   '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
@@ -467,6 +476,7 @@ export interface FileRouteTypes {
     | '/admin/commissions'
     | '/admin/hotel-bookings'
     | '/admin/hotels'
+    | '/admin/logistics'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -515,6 +525,7 @@ export interface FileRouteTypes {
     | '/admin/commissions'
     | '/admin/hotel-bookings'
     | '/admin/hotels'
+    | '/admin/logistics'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -564,6 +575,7 @@ export interface FileRouteTypes {
     | '/admin/commissions'
     | '/admin/hotel-bookings'
     | '/admin/hotels'
+    | '/admin/logistics'
     | '/admin/messages'
     | '/admin/orders'
     | '/admin/payment-methods'
@@ -772,6 +784,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHotelsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/logistics': {
+      id: '/admin/logistics'
+      path: '/logistics'
+      fullPath: '/admin/logistics'
+      preLoaderRoute: typeof AdminLogisticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/messages': {
       id: '/admin/messages'
       path: '/messages'
@@ -966,6 +985,7 @@ interface AdminRouteChildren {
   AdminCommissionsRoute: typeof AdminCommissionsRoute
   AdminHotelBookingsRoute: typeof AdminHotelBookingsRoute
   AdminHotelsRoute: typeof AdminHotelsRoute
+  AdminLogisticsRoute: typeof AdminLogisticsRoute
   AdminMessagesRoute: typeof AdminMessagesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
@@ -988,6 +1008,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCommissionsRoute: AdminCommissionsRoute,
   AdminHotelBookingsRoute: AdminHotelBookingsRoute,
   AdminHotelsRoute: AdminHotelsRoute,
+  AdminLogisticsRoute: AdminLogisticsRoute,
   AdminMessagesRoute: AdminMessagesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,

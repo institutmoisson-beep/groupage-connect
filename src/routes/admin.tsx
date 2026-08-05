@@ -60,6 +60,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/cargo-dispatch", label: "GPS Dispatch", icon: Truck },
   { to: "/admin/stock", label: "Stock Express", icon: ShoppingBag },
   { to: "/admin/withdrawals", label: "Retraits portefeuille", icon: Banknote },
+  { to: "/admin/logistics", label: "Compte MSN Logistics", icon: Truck },
   { to: "/admin/commissions", label: "Commissions", icon: Wallet },
 ];
 
