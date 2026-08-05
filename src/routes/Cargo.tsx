@@ -516,8 +516,22 @@ function CargoPage() {
                       </div>
                     )}
                     {pkg.status === "DELIVERED" && (
-                      <div className="flex items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1.5 text-[11px] font-bold text-success">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Colis livré
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1.5 text-[11px] font-bold text-success">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Colis livré
+                        </div>
+                        <Link
+                          to="/stock/sell"
+                          search={
+                            {
+                              container: pkg.chinese_tracking_number ?? "",
+                              title: pkg.description ?? "",
+                            } as never
+                          }
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-gradient-brand px-3 py-2 text-[11px] font-bold text-primary-foreground shadow-brand"
+                        >
+                          <PackagePlus className="h-3.5 w-3.5" /> Mettre du stock en vente sur MSN Express
+                        </Link>
                       </div>
                     )}
                   </li>
