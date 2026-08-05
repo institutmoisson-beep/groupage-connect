@@ -58,18 +58,15 @@ export function OptimizedImage({
         {...rest}
         ref={attachRef}
         src={src}
-
         alt={alt}
         loading={priority ? "eager" : "lazy"}
         decoding={priority ? "sync" : "async"}
         fetchPriority={priority ? "high" : "low"}
         onLoad={() => setLoaded(true)}
         onError={() => setFailed(true)}
-        className={cn(
-          "h-full w-full object-cover transition-opacity duration-300",
-          loaded ? "opacity-100" : "opacity-0",
-        )}
+        className="relative h-full w-full object-cover"
       />
+
     </div>
   );
 }
