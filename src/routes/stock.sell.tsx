@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +13,13 @@ import { compressAndUploadImage } from "@/lib/image-upload";
 import { formatXOF } from "@/lib/format";
 import { CATEGORY_LABELS, PRODUCT_STATUS_LABELS, STOCK_CATEGORIES } from "@/lib/stock";
 
+const sellSearchSchema = z.object({
+  container: z.string().trim().max(100).optional(),
+  title: z.string().trim().max(150).optional(),
+});
+
 export const Route = createFileRoute("/stock/sell")({
+  validateSearch: (s: Record<string, unknown>) => sellSearchSchema.parse(s),
   head: () => ({
     meta: [
       { title: "Mettre du stock en vente — MSN Stock Express" },
@@ -47,7 +54,12 @@ const EMPTY = {
 function SellStock() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [form, setForm] = useState(EMPTY);
+  const { container, title } = Route.useSearch();
+  const [form, setForm] = useState(() => ({
+    ...EMPTY,
+    container_tracking_number: container ?? EMPTY.container_tracking_number,
+    title: title ?? EMPTY.title,
+  }));
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -134,6 +146,11 @@ function SellStock() {
           Publiez la marchandise de vos conteneurs dédouanés sur MSN Stock Express. Des revendeurs
           la vendent localement, MSN livre et encaisse, votre part est créditée automatiquement.
         </p>
+        {container && (
+          <p className="mt-2 rounded-lg bg-primary/10 px-2 py-1.5 text-[11px] font-semibold text-primary">
+            Colis lié : {container}
+          </p>
+        )}
 
         {!user ? (
           <Link to="/auth" className="mt-4 inline-block rounded-lg bg-gradient-brand px-4 py-2 text-xs font-bold text-primary-foreground">
