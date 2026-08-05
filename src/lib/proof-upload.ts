@@ -1,34 +1,16 @@
-import imageCompression from "browser-image-compression";
 import { supabase } from "@/integrations/supabase/client";
+import { IMMUTABLE_CACHE_CONTROL, buildMediaPath, optimizeImage } from "@/lib/media-optimizer";
 
 const BUCKET = "payment-proofs";
 
 export type UploadedProof = { url: string; path: string };
 
 export async function uploadPaymentProof(file: File, userId: string): Promise<UploadedProof> {
-  // Try to compress to webp; if the browser/format refuses, fall back to the original file.
-  let toUpload: Blob = file;
-  let ext = (file.name.split(".").pop() || "bin").toLowerCase();
-  let contentType = file.type || "application/octet-stream";
-  try {
-    if (file.type.startsWith("image/") && file.type !== "image/heic" && file.type !== "image/heif") {
-      const compressed = await imageCompression(file, {
-        maxSizeMB: 0.8,
-        maxWidthOrHeight: 1600,
-        useWebWorker: false,
-        fileType: "image/webp",
-        initialQuality: 0.85,
-      });
-      toUpload = compressed;
-      ext = "webp";
-      contentType = "image/webp";
-    }
-  } catch (e) {
-    console.warn("Image compression failed, uploading original", e);
-  }
-  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, toUpload, {
-    contentType,
+  const media = await optimizeImage(file, "document");
+  const path = buildMediaPath(userId, media.ext);
+  const { error } = await supabase.storage.from(BUCKET).upload(path, media.blob, {
+    contentType: media.contentType,
+    cacheControl: IMMUTABLE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw new Error(error.message || "Upload échoué");
