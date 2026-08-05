@@ -67,12 +67,55 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+/**
+ * Mise en cache CDN (edge). Le HTML rendu côté serveur est anonyme — toutes les
+ * données utilisateur sont chargées côté navigateur avec la session — donc il peut
+ * être servi depuis le cache périphérique à des millions de visiteurs sans
+ * retoucher au serveur. `stale-while-revalidate` sert instantanément une version
+ * légèrement ancienne pendant la régénération en arrière-plan.
+ */
+function applyCacheHeaders(request: Request, response: Response): Response {
+  if (request.method !== "GET" || response.status !== 200) return response;
+
+  const url = new URL(request.url);
+  const path = url.pathname;
+
+  // Jamais de cache partagé pour les endpoints dynamiques / server functions.
+  if (path.startsWith("/api/") || path.startsWith("/_serverFn/")) return response;
+
+  // Une requête portant une session ne doit pas alimenter le cache partagé.
+  if (request.headers.get("authorization") || request.headers.get("cookie")) return response;
+
+  const headers = new Headers(response.headers);
+  if (headers.has("cache-control")) return response;
+
+  const isHashedAsset = /\/assets\/|\.[0-9a-f]{8,}\.(js|css|woff2?|png|jpg|jpeg|webp|avif|svg)$/i.test(path);
+  if (isHashedAsset) {
+    headers.set("cache-control", "public, max-age=31536000, immutable");
+  } else if ((headers.get("content-type") ?? "").includes("text/html")) {
+    headers.set(
+      "cache-control",
+      "public, max-age=0, s-maxage=60, stale-while-revalidate=86400, stale-if-error=86400",
+    );
+    headers.set("vary", "Accept-Encoding");
+  } else {
+    return response;
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(request, response);
+      const normalized = await normalizeCatastrophicSsrResponse(request, response);
+      return applyCacheHeaders(request, normalized);
     } catch (error) {
       if (request.signal?.aborted || isClientAbort(error)) {
         return new Response(null, { status: 499 });
@@ -85,4 +128,5 @@ export default {
     }
   },
 };
+
 
