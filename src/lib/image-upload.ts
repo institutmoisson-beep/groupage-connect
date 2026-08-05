@@ -1,5 +1,9 @@
-import imageCompression from "browser-image-compression";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  IMMUTABLE_CACHE_CONTROL,
+  buildMediaPath,
+  optimizeImage,
+} from "@/lib/media-optimizer";
 
 const BUCKET = "product-images";
 // Long-lived signed URL (~10 years) — bucket is private and workspace blocks public buckets.
@@ -9,28 +13,18 @@ export type UploadedImage = { url: string; path: string };
 
 export async function compressAndUploadImage(
   file: File,
-  opts: { prefix?: string; maxSizeMB?: number; maxWidthOrHeight?: number } = {},
+  opts: { prefix?: string } = {},
 ): Promise<UploadedImage> {
-  const { prefix = "products", maxSizeMB = 0.5, maxWidthOrHeight = 1600 } = opts;
+  const { prefix = "products" } = opts;
 
-  const compressed = await imageCompression(file, {
-    maxSizeMB,
-    maxWidthOrHeight,
-    useWebWorker: true,
-    fileType: "image/webp",
-    initialQuality: 0.82,
+  const media = await optimizeImage(file, "standard");
+  const path = buildMediaPath(prefix, media.ext);
+
+  const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, media.blob, {
+    cacheControl: IMMUTABLE_CACHE_CONTROL,
+    contentType: media.contentType,
+    upsert: false,
   });
-
-  const ext = "webp";
-  const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-
-  const { error: upErr } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, compressed, {
-      cacheControl: "31536000",
-      contentType: "image/webp",
-      upsert: false,
-    });
   if (upErr) throw upErr;
 
   const { data, error } = await supabase.storage
