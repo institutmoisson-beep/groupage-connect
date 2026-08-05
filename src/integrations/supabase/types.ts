@@ -785,6 +785,41 @@ export type Database = {
         }
         Relationships: []
       }
+      logistics_ledger: {
+        Row: {
+          amount_xof: number
+          created_at: string
+          id: string
+          label: string
+          stock_order_id: string | null
+          type: string
+        }
+        Insert: {
+          amount_xof: number
+          created_at?: string
+          id?: string
+          label: string
+          stock_order_id?: string | null
+          type?: string
+        }
+        Update: {
+          amount_xof?: number
+          created_at?: string
+          id?: string
+          label?: string
+          stock_order_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logistics_ledger_stock_order_id_fkey"
+            columns: ["stock_order_id"]
+            isOneToOne: false
+            referencedRelation: "stock_express_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           campaign_id: string | null
@@ -1492,6 +1527,12 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      settle_withdrawal: {
+        Args: { p_action: string; p_note?: string; p_withdrawal_id: string }
+        Returns: {
+          status: Database["public"]["Enums"]["withdrawal_status"]
+        }[]
       }
     }
     Enums: {
