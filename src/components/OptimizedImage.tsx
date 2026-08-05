@@ -56,7 +56,9 @@ export function OptimizedImage({
       {!loaded && <div className="absolute inset-0 animate-pulse bg-muted" />}
       <img
         {...rest}
+        ref={attachRef}
         src={src}
+
         alt={alt}
         loading={priority ? "eager" : "lazy"}
         decoding={priority ? "sync" : "async"}
