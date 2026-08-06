@@ -1227,6 +1227,7 @@ export type Database = {
           driver_name: string | null
           final_price: number
           id: string
+          payment_on_delivery: boolean
           product_id: string
           quantity: number
           reseller_id: string
@@ -1250,6 +1251,7 @@ export type Database = {
           driver_name?: string | null
           final_price: number
           id?: string
+          payment_on_delivery?: boolean
           product_id: string
           quantity?: number
           reseller_id: string
@@ -1273,6 +1275,7 @@ export type Database = {
           driver_name?: string | null
           final_price?: number
           id?: string
+          payment_on_delivery?: boolean
           product_id?: string
           quantity?: number
           reseller_id?: string
@@ -1302,6 +1305,7 @@ export type Database = {
           images: Json
           importer_id: string
           media_kit_text: string | null
+          payment_on_delivery: boolean
           status: Database["public"]["Enums"]["stock_product_status"]
           stock_quantity: number
           storage_location: string | null
@@ -1321,6 +1325,7 @@ export type Database = {
           images?: Json
           importer_id: string
           media_kit_text?: string | null
+          payment_on_delivery?: boolean
           status?: Database["public"]["Enums"]["stock_product_status"]
           stock_quantity?: number
           storage_location?: string | null
@@ -1340,6 +1345,7 @@ export type Database = {
           images?: Json
           importer_id?: string
           media_kit_text?: string | null
+          payment_on_delivery?: boolean
           status?: Database["public"]["Enums"]["stock_product_status"]
           stock_quantity?: number
           storage_location?: string | null
@@ -1521,12 +1527,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_wallet: {
+        Args: { p_amount_xof: number; p_label: string; p_user_id: string }
+        Returns: {
+          balance: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      record_offline_stock_sale: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: {
+          status: Database["public"]["Enums"]["stock_product_status"]
+          stock_quantity: number
+        }[]
       }
       settle_withdrawal: {
         Args: { p_action: string; p_note?: string; p_withdrawal_id: string }

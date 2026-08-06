@@ -33,6 +33,7 @@ import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
+import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
@@ -176,6 +177,11 @@ const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
 const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
   id: '/withdrawals',
   path: '/withdrawals',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminWalletsRoute = AdminWalletsRouteImport.update({
+  id: '/wallets',
+  path: '/wallets',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -434,6 +442,7 @@ export interface FileRoutesById {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
@@ -486,6 +495,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -585,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
@@ -805,6 +817,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWithdrawalsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/wallets': {
+      id: '/admin/wallets'
+      path: '/wallets'
+      fullPath: '/admin/wallets'
+      preLoaderRoute: typeof AdminWalletsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -995,6 +1014,7 @@ interface AdminRouteChildren {
   AdminSourcingRoute: typeof AdminSourcingRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminWalletsRoute: typeof AdminWalletsRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -1018,6 +1038,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSourcingRoute: AdminSourcingRoute,
   AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminWalletsRoute: AdminWalletsRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -1068,13 +1089,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

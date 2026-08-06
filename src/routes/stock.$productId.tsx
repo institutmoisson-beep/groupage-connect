@@ -42,7 +42,9 @@ function StockProductDetail() {
     delivery_date: "",
     quantity: 1,
     final_price: "",
+    payment_on_delivery: true,
   });
+
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["stock-product", productId],
@@ -84,9 +86,11 @@ function StockProductDetail() {
         delivery_date: form.delivery_date || null,
         quantity: form.quantity,
         final_price: finalPrice,
+        payment_on_delivery: (product as any).payment_on_delivery === false ? false : form.payment_on_delivery,
         wholesale_total: Number(product.wholesale_price) * form.quantity,
         commission_earned: Number(product.commission_amount) * form.quantity,
       } as never);
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -261,7 +265,34 @@ function StockProductDetail() {
                 className="mt-1 w-full rounded-lg border border-input bg-background px-2 py-2 text-sm"
               />
             </label>
+            <div>
+              <span className="text-[10px] font-semibold uppercase text-muted-foreground">
+                Paiement de la marchandise
+              </span>
+              {(product as any).payment_on_delivery === false ? (
+                <p className="mt-1 rounded-lg border border-border bg-muted/40 px-2 py-2 text-[11px] font-semibold">
+                  Prépaiement exigé par l'importateur : le client règle avant l'expédition.
+                </p>
+              ) : (
+                <div className="mt-1 grid grid-cols-2 gap-2 text-[11px] font-bold">
+                  {[
+                    { v: true, label: "À la livraison (cash)" },
+                    { v: false, label: "Payé d'avance" },
+                  ].map((o) => (
+                    <button
+                      key={String(o.v)}
+                      type="button"
+                      onClick={() => setForm({ ...form, payment_on_delivery: o.v })}
+                      className={`rounded-lg px-2 py-2 ${form.payment_on_delivery === o.v ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+
 
           <p className="mt-3 rounded-lg bg-success/10 p-2 text-center text-xs font-bold text-success">
             Votre commission sur cette commande : {formatXOF(commissionTotal)}
