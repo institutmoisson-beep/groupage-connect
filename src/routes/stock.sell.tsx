@@ -49,6 +49,7 @@ const EMPTY = {
   stock_quantity: "",
   storage_location: "Entrepôt MSN Abidjan - Zone 4",
   media_kit_text: "",
+  payment_on_delivery: true,
 };
 
 function SellStock() {
@@ -106,6 +107,7 @@ function SellStock() {
         stock_quantity: qty,
         storage_location: form.storage_location.trim().slice(0, 200) || null,
         media_kit_text: form.media_kit_text.trim().slice(0, 2000) || null,
+        payment_on_delivery: form.payment_on_delivery,
         images,
       } as never);
       if (error) throw error;
@@ -117,6 +119,36 @@ function SellStock() {
       qc.invalidateQueries({ queryKey: ["stock-my-listings"] });
     },
     onError: (e: Error) => toast.error(e.message),
+  });
+
+  const offlineSale = useMutation({
+    mutationFn: async (v: { id: string; quantity: number }) => {
+      const { error } = await (supabase as any).rpc("record_offline_stock_sale", {
+        p_product_id: v.id,
+        p_quantity: v.quantity,
+      });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("Stock mis à jour après la vente hors application.");
+      qc.invalidateQueries({ queryKey: ["stock-my-listings"] });
+      qc.invalidateQueries({ queryKey: ["stock-catalog"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const removeProduct = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("stock_express_products").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Annonce supprimée.");
+      qc.invalidateQueries({ queryKey: ["stock-my-listings"] });
+      qc.invalidateQueries({ queryKey: ["stock-catalog"] });
+    },
+    onError: () =>
+      toast.error("Suppression impossible : des commandes existent déjà. Masquez l'annonce à la place."),
   });
 
   async function onFiles(files: FileList | null) {
@@ -194,6 +226,29 @@ function SellStock() {
               <Num label="Commission / unité" value={form.commission_amount} onChange={(v) => setForm({ ...form, commission_amount: v })} />
               <Num label="Quantité en stock" value={form.stock_quantity} onChange={(v) => setForm({ ...form, stock_quantity: v })} />
             </div>
+            <div>
+              <span className="text-[10px] font-semibold uppercase text-muted-foreground">
+                Paiement de la marchandise
+              </span>
+              <div className="mt-1 grid grid-cols-2 gap-2 text-[11px] font-bold">
+                {[
+                  { v: true, label: "Accepté à la livraison" },
+                  { v: false, label: "Prépaiement exigé" },
+                ].map((o) => (
+                  <button
+                    key={String(o.v)}
+                    type="button"
+                    onClick={() => setForm({ ...form, payment_on_delivery: o.v })}
+                    className={`rounded-lg px-2 py-2 ${form.payment_on_delivery === o.v ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Cash à la livraison : MSN encaisse chez le client puis crédite votre portefeuille.
+              </p>
+            </div>
             <Text label="Lieu de stockage" value={form.storage_location} onChange={(v) => setForm({ ...form, storage_location: v })} />
             <label className="block">
               <span className="text-[10px] font-semibold uppercase text-muted-foreground">
@@ -259,7 +314,44 @@ function SellStock() {
                     Grossiste {formatXOF(Number(p.wholesale_price))} · Commission{" "}
                     {formatXOF(Number(p.commission_amount))} · {p.stock_quantity} en stock
                   </p>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    {(p as any).payment_on_delivery === false
+                      ? "Prépaiement exigé"
+                      : "Paiement à la livraison accepté"}
+                  </p>
                   {p.admin_notes && <p className="mt-1 text-[11px] text-destructive">{p.admin_notes}</p>}
+                  <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold">
+                    <button
+                      onClick={() => {
+                        const raw = window.prompt(
+                          `Vente hors application — combien d'unités vendues ? (stock restant : ${p.stock_quantity})`,
+                          "1",
+                        );
+                        if (raw === null) return;
+                        const qty = Number(raw);
+                        if (!Number.isFinite(qty) || qty < 1) {
+                          toast.error("Quantité invalide.");
+                          return;
+                        }
+                        offlineSale.mutate({ id: p.id, quantity: Math.floor(qty) });
+                      }}
+                      disabled={p.stock_quantity < 1 || offlineSale.isPending}
+                      className="rounded-lg border border-border px-3 py-1.5 disabled:opacity-50"
+                    >
+                      Vente hors app
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Supprimer définitivement cette annonce ?"))
+                          removeProduct.mutate(p.id);
+                      }}
+                      disabled={removeProduct.isPending}
+                      className="rounded-lg bg-destructive px-3 py-1.5 text-destructive-foreground disabled:opacity-50"
+                    >
+                      <Trash2 className="mr-1 inline h-3 w-3" />
+                      Supprimer
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
