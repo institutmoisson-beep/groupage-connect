@@ -86,9 +86,11 @@ function StockProductDetail() {
         delivery_date: form.delivery_date || null,
         quantity: form.quantity,
         final_price: finalPrice,
+        payment_on_delivery: (product as any).payment_on_delivery === false ? false : form.payment_on_delivery,
         wholesale_total: Number(product.wholesale_price) * form.quantity,
         commission_earned: Number(product.commission_amount) * form.quantity,
       } as never);
+
       if (error) throw error;
     },
     onSuccess: () => {
