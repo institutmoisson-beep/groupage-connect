@@ -128,6 +128,7 @@ function AdminStock() {
                 {CATEGORY_LABELS[p.category] ?? p.category} · Grossiste {formatXOF(Number(p.wholesale_price))} ·
                 Commission {formatXOF(Number(p.commission_amount))} · {p.stock_quantity} en stock
                 {p.container_tracking_number ? ` · Conteneur ${p.container_tracking_number}` : ""}
+                {(p as any).payment_on_delivery === false ? " · Prépaiement exigé" : " · Paiement à la livraison"}
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold">
                 <button
@@ -172,7 +173,8 @@ function AdminStock() {
               <p className="text-[11px] text-muted-foreground">{o.delivery_address}</p>
               <p className="mt-1 text-[11px]">
                 Vente {formatXOF(Number(o.final_price))} · Grossiste {formatXOF(Number(o.wholesale_total))} ·
-                Commission {formatXOF(Number(o.commission_earned))} · x{o.quantity}
+                Commission {formatXOF(Number(o.commission_earned))} · x{o.quantity} ·{" "}
+                {o.payment_on_delivery === false ? "Payé d'avance" : "Paiement à la livraison"}
               </p>
 
               <div className="mt-2 grid grid-cols-2 gap-2">
