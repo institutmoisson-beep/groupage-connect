@@ -42,7 +42,9 @@ function StockProductDetail() {
     delivery_date: "",
     quantity: 1,
     final_price: "",
+    payment_on_delivery: true,
   });
+
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["stock-product", productId],
