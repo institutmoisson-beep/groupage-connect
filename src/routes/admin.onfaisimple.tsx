@@ -1,12 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, Check, ExternalLink, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Check, ExternalLink, Eye, Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF } from "@/lib/format";
 import { compressAndUploadImage } from "@/lib/image-upload";
+import { getPaymentProofImage } from "@/lib/onfaisimple.functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { WALLET_TX_LABELS, WITHDRAWAL_METHOD_LABELS, WITHDRAWAL_STATUS_LABELS } from "@/lib/stock";
 import {
   OFS_CATEGORIES,
@@ -93,6 +101,9 @@ function ProductsPanel() {
   const [image, setImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState(form);
+
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-ofs-products"],
     queryFn: async () => {
@@ -139,6 +150,48 @@ function ProductsPanel() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-ofs-products"] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  function openEdit(p: any) {
+    setEditId(p.id);
+    setEditForm({
+      title: p.title ?? "",
+      category: p.category ?? "electronique",
+      description: p.description ?? "",
+      unit_cost: String(p.unit_cost ?? ""),
+      projected_retail_price: String(p.projected_retail_price ?? ""),
+      user_profit_share_percent: String(p.user_profit_share_percent ?? "60"),
+      total_units: String(p.total_units ?? ""),
+      min_units_per_order: String(p.min_units_per_order ?? "1"),
+      estimated_days: String(p.estimated_days ?? "35"),
+    });
+  }
+
+  const saveEdit = useMutation({
+    mutationFn: async () => {
+      if (!editId) return;
+      const { error } = await supabase
+        .from("onfaisimple_products")
+        .update({
+          title: editForm.title.trim(),
+          category: editForm.category,
+          description: editForm.description.trim() || null,
+          unit_cost: Number(editForm.unit_cost),
+          projected_retail_price: Number(editForm.projected_retail_price),
+          user_profit_share_percent: Number(editForm.user_profit_share_percent),
+          total_units: Number(editForm.total_units),
+          min_units_per_order: Number(editForm.min_units_per_order),
+          estimated_days: Number(editForm.estimated_days),
+        })
+        .eq("id", editId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-ofs-products"] });
+      toast.success("Lot mis à jour.");
+      setEditId(null);
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -264,6 +317,13 @@ function ProductsPanel() {
                     ))}
                   </select>
                   <button
+                    onClick={() => openEdit(p)}
+                    className="grid h-8 w-8 place-items-center rounded-lg border border-border text-primary"
+                    aria-label="Modifier"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
                     onClick={() => {
                       if (confirm(`Supprimer « ${p.title} » ?`)) remove.mutate(p.id);
                     }}
@@ -278,6 +338,67 @@ function ProductsPanel() {
           ))
         )}
       </section>
+
+      <Dialog open={!!editId} onOpenChange={(o) => !o && setEditId(null)}>
+        <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Modifier le lot</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Field label="Titre">
+              <input className={inputCls} value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} />
+            </Field>
+            <Field label="Catégorie">
+              <select
+                className={inputCls}
+                value={editForm.category}
+                onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+              >
+                {OFS_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {OFS_CATEGORY_LABELS[c]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Description">
+              <textarea
+                rows={2}
+                className={inputCls}
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="Coût unitaire (FCFA)">
+                <input className={inputCls} inputMode="numeric" value={editForm.unit_cost} onChange={(e) => setEditForm({ ...editForm, unit_cost: e.target.value })} />
+              </Field>
+              <Field label="Revente estimée">
+                <input className={inputCls} inputMode="numeric" value={editForm.projected_retail_price} onChange={(e) => setEditForm({ ...editForm, projected_retail_price: e.target.value })} />
+              </Field>
+              <Field label="Part client (%)">
+                <input className={inputCls} inputMode="numeric" value={editForm.user_profit_share_percent} onChange={(e) => setEditForm({ ...editForm, user_profit_share_percent: e.target.value })} />
+              </Field>
+              <Field label="Unités totales">
+                <input className={inputCls} inputMode="numeric" value={editForm.total_units} onChange={(e) => setEditForm({ ...editForm, total_units: e.target.value })} />
+              </Field>
+              <Field label="Min. / commande">
+                <input className={inputCls} inputMode="numeric" value={editForm.min_units_per_order} onChange={(e) => setEditForm({ ...editForm, min_units_per_order: e.target.value })} />
+              </Field>
+              <Field label="Délai (jours)">
+                <input className={inputCls} inputMode="numeric" value={editForm.estimated_days} onChange={(e) => setEditForm({ ...editForm, estimated_days: e.target.value })} />
+              </Field>
+            </div>
+            <button
+              disabled={saveEdit.isPending}
+              onClick={() => saveEdit.mutate()}
+              className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            >
+              {saveEdit.isPending ? "Enregistrement…" : "Enregistrer les modifications"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -355,6 +476,49 @@ function ChannelsPanel() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-ofs-channels"] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState(form);
+
+  function openEdit(c: any) {
+    setEditId(c.id);
+    setEditForm({
+      kind: c.kind,
+      name: c.name ?? "",
+      account_identifier: c.account_identifier ?? "",
+      account_holder: c.account_holder ?? "",
+      redirect_url: c.redirect_url ?? "",
+      crypto_network: c.crypto_network ?? "TRC20",
+      instructions: c.instructions ?? "",
+      sort_order: String(c.sort_order ?? "10"),
+    });
+  }
+
+  const saveEdit = useMutation({
+    mutationFn: async () => {
+      if (!editId) return;
+      const { error } = await supabase
+        .from("onfaisimple_payment_channels")
+        .update({
+          kind: editForm.kind,
+          name: editForm.name.trim(),
+          account_identifier: editForm.account_identifier.trim() || null,
+          account_holder: editForm.account_holder.trim() || null,
+          redirect_url: editForm.kind === "redirect" ? editForm.redirect_url.trim() || null : null,
+          crypto_network: editForm.kind === "crypto" ? editForm.crypto_network : null,
+          instructions: editForm.instructions.trim() || null,
+          sort_order: Number(editForm.sort_order) || 0,
+        })
+        .eq("id", editId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-ofs-channels"] });
+      toast.success("Moyen de paiement mis à jour.");
+      setEditId(null);
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -441,6 +605,13 @@ function ChannelsPanel() {
                 {c.active ? "Actif" : "Inactif"}
               </button>
               <button
+                onClick={() => openEdit(c)}
+                className="grid h-8 w-8 place-items-center rounded-lg border border-border text-primary"
+                aria-label="Modifier"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              <button
                 onClick={() => {
                   if (confirm(`Supprimer « ${c.name} » ?`)) remove.mutate(c.id);
                 }}
@@ -453,6 +624,68 @@ function ChannelsPanel() {
           </div>
         ))}
       </section>
+
+      <Dialog open={!!editId} onOpenChange={(o) => !o && setEditId(null)}>
+        <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Modifier le moyen de paiement</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Field label="Type">
+              <select
+                className={inputCls}
+                value={editForm.kind}
+                onChange={(e) => setEditForm({ ...editForm, kind: e.target.value as typeof editForm.kind })}
+              >
+                {KINDS.map((k) => (
+                  <option key={k.k} value={k.k}>
+                    {k.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Nom affiché">
+              <input className={inputCls} value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+            </Field>
+            <Field label={editForm.kind === "crypto" ? "Adresse du wallet" : "Numéro Mobile Money"}>
+              <input className={inputCls} value={editForm.account_identifier} onChange={(e) => setEditForm({ ...editForm, account_identifier: e.target.value })} />
+            </Field>
+            <Field label="Titulaire">
+              <input className={inputCls} value={editForm.account_holder} onChange={(e) => setEditForm({ ...editForm, account_holder: e.target.value })} />
+            </Field>
+            {editForm.kind === "redirect" && (
+              <Field label="Lien de paiement">
+                <input className={inputCls} value={editForm.redirect_url} onChange={(e) => setEditForm({ ...editForm, redirect_url: e.target.value })} />
+              </Field>
+            )}
+            {editForm.kind === "crypto" && (
+              <Field label="Réseau">
+                <select
+                  className={inputCls}
+                  value={editForm.crypto_network}
+                  onChange={(e) => setEditForm({ ...editForm, crypto_network: e.target.value })}
+                >
+                  <option value="TRC20">TRC20</option>
+                  <option value="BEP20">BEP20</option>
+                </select>
+              </Field>
+            )}
+            <Field label="Consignes">
+              <textarea rows={2} className={inputCls} value={editForm.instructions} onChange={(e) => setEditForm({ ...editForm, instructions: e.target.value })} />
+            </Field>
+            <Field label="Ordre d'affichage">
+              <input className={inputCls} inputMode="numeric" value={editForm.sort_order} onChange={(e) => setEditForm({ ...editForm, sort_order: e.target.value })} />
+            </Field>
+            <button
+              disabled={saveEdit.isPending}
+              onClick={() => saveEdit.mutate()}
+              className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            >
+              {saveEdit.isPending ? "Enregistrement…" : "Enregistrer les modifications"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -473,10 +706,49 @@ function useAdminOrders() {
   });
 }
 
+/** Bouton "Voir la preuve" : passe par un server function plutôt que par l'URL Supabase
+ * brute (qui expose le domaine/ID du projet), et affiche l'image dans une modale. */
+function ProofViewerButton({ orderId }: { orderId: string }) {
+  const [open, setOpen] = useState(false);
+  const getProof = useServerFn(getPaymentProofImage);
+
+  const fetchProof = useMutation({
+    mutationFn: () => getProof({ data: { orderId } }),
+    onSuccess: () => setOpen(true),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <button
+        onClick={() => fetchProof.mutate()}
+        disabled={fetchProof.isPending}
+        className="flex items-center gap-1 text-[11px] font-semibold text-primary underline disabled:opacity-50"
+      >
+        {fetchProof.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3" />}
+        Voir la preuve
+      </button>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Preuve de paiement</DialogTitle>
+        </DialogHeader>
+        {fetchProof.data?.dataUrl && (
+          <img
+            src={fetchProof.data.dataUrl}
+            alt="Preuve de paiement"
+            className="max-h-[70vh] w-full rounded-lg object-contain"
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function DepositsPanel() {
   const qc = useQueryClient();
   const { data: orders = [], isLoading } = useAdminOrders();
   const [note, setNote] = useState<Record<string, string>>({});
+  const [tab, setTab] = useState<"pending" | "history">("pending");
 
   const review = useMutation({
     mutationFn: async (input: { id: string; action: "approve" | "reject" }) => {
@@ -495,67 +767,92 @@ function DepositsPanel() {
   });
 
   const pending = orders.filter((o) => o.payment_status === "pending");
+  const history = orders
+    .filter((o) => o.payment_status !== "pending")
+    .filter((o) => o.payment_reference || o.payment_proof_url || o.payment_method);
+
+  const list = tab === "pending" ? pending : history;
 
   return (
-    <div className="space-y-2">
-      {isLoading ? (
-        <p className="text-xs text-muted-foreground">Chargement…</p>
-      ) : pending.length === 0 ? (
-        <p className="text-xs text-muted-foreground">Aucun dépôt en attente de vérification.</p>
-      ) : (
-        pending.map((o) => {
-          const p = o.onfaisimple_products as { title: string } | null;
-          return (
-            <div key={o.id} className="rounded-xl border border-border bg-card p-3">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <div className="text-sm font-bold">{p?.title ?? "Lot"}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {o.contract_reference} · {o.units_count} u. ·{" "}
-                    {formatXOF(Number(o.total_amount))}
+    <div className="space-y-3">
+      <div className="flex gap-1 text-[11px] font-bold">
+        <button
+          onClick={() => setTab("pending")}
+          className={`rounded-lg px-3 py-1.5 ${tab === "pending" ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+        >
+          En attente ({pending.length})
+        </button>
+        <button
+          onClick={() => setTab("history")}
+          className={`rounded-lg px-3 py-1.5 ${tab === "history" ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+        >
+          Historique des dépôts
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {isLoading ? (
+          <p className="text-xs text-muted-foreground">Chargement…</p>
+        ) : list.length === 0 ? (
+          <p className="text-xs text-muted-foreground">
+            {tab === "pending" ? "Aucun dépôt en attente de vérification." : "Aucun dépôt dans l'historique."}
+          </p>
+        ) : (
+          list.map((o) => {
+            const p = o.onfaisimple_products as { title: string } | null;
+            return (
+              <div key={o.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 text-sm font-bold">
+                      {p?.title ?? "Lot"}
+                      {tab === "history" && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold">
+                          {OFS_PAYMENT_STATUS_LABELS[o.payment_status] ?? o.payment_status}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {o.contract_reference} · {o.units_count} u. ·{" "}
+                      {formatXOF(Number(o.total_amount))}
+                    </div>
+                    <div className="text-[11px]">
+                      {o.payment_method} {o.payment_channel_label ? `· ${o.payment_channel_label}` : ""}{" "}
+                      {o.payment_reference ? `· réf ${o.payment_reference}` : ""}
+                    </div>
+                    {o.admin_notes && <p className="mt-1 text-[11px] text-destructive">{o.admin_notes}</p>}
+                    {o.payment_proof_url && <ProofViewerButton orderId={o.id} />}
                   </div>
-                  <div className="text-[11px]">
-                    {o.payment_method} {o.payment_channel_label ? `· ${o.payment_channel_label}` : ""}{" "}
-                    {o.payment_reference ? `· réf ${o.payment_reference}` : ""}
-                  </div>
-                  {o.payment_proof_url && (
-                    <a
-                      href={o.payment_proof_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] font-semibold text-primary underline"
-                    >
-                      Voir la preuve
-                    </a>
+                  {tab === "pending" && (
+                    <div className="flex flex-col items-end gap-2">
+                      <input
+                        value={note[o.id] ?? ""}
+                        onChange={(e) => setNote({ ...note, [o.id]: e.target.value })}
+                        placeholder="Note admin"
+                        className="rounded-lg border border-input bg-background px-2 py-1 text-[11px]"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => review.mutate({ id: o.id, action: "approve" })}
+                          className="flex items-center gap-1 rounded-lg bg-success px-3 py-1.5 text-[11px] font-bold text-success-foreground"
+                        >
+                          <Check className="h-3.5 w-3.5" /> Valider
+                        </button>
+                        <button
+                          onClick={() => review.mutate({ id: o.id, action: "reject" })}
+                          className="flex items-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-[11px] font-bold text-destructive-foreground"
+                        >
+                          <X className="h-3.5 w-3.5" /> Refuser
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <input
-                    value={note[o.id] ?? ""}
-                    onChange={(e) => setNote({ ...note, [o.id]: e.target.value })}
-                    placeholder="Note admin"
-                    className="rounded-lg border border-input bg-background px-2 py-1 text-[11px]"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => review.mutate({ id: o.id, action: "approve" })}
-                      className="flex items-center gap-1 rounded-lg bg-success px-3 py-1.5 text-[11px] font-bold text-success-foreground"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Valider
-                    </button>
-                    <button
-                      onClick={() => review.mutate({ id: o.id, action: "reject" })}
-                      className="flex items-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-[11px] font-bold text-destructive-foreground"
-                    >
-                      <X className="h-3.5 w-3.5" /> Refuser
-                    </button>
-                  </div>
-                </div>
               </div>
-            </div>
-          );
-        })
-      )}
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }
@@ -685,32 +982,49 @@ function TrackingPanel() {
 /* ------------------------------ PORTEFEUILLE ---------------------------- */
 
 function WalletPanel() {
-  const { data: txs = [], isLoading: loadingTxs } = useQuery({
+  // user_id référence auth.users, pas public.profiles : aucune FK n'est déclarée entre ces
+  // deux tables, donc l'embed "profiles:user_id(...)" échoue silencieusement (PGRST200) côté
+  // admin et masque les lignes. On récupère les profils séparément et on fusionne côté client.
+  async function attachProfiles<T extends { user_id: string }>(rows: T[]): Promise<(T & { profiles: { full_name: string | null; phone: string | null } | null })[]> {
+    const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+    if (userIds.length === 0) return rows as (T & { profiles: null })[];
+    const { data: profiles, error } = await supabase.from("profiles").select("id, full_name, phone").in("id", userIds);
+    if (error) throw error;
+    const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    return rows.map((r) => ({ ...r, profiles: profileById.get(r.user_id) ?? null }));
+  }
+
+  const { data: txs = [], isLoading: loadingTxs, isError: txsError, error: txsErrorObj } = useQuery({
     queryKey: ["admin-ofs-wallet-txs"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("wallet_transactions")
-        .select("id, user_id, amount_xof, type, label, created_at, profiles:user_id(full_name, phone)")
+        .select("id, user_id, amount_xof, type, label, created_at")
         .in("type", ["onfaisimple_debit", "onfaisimple_payout"])
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data ?? [];
+      return attachProfiles(data ?? []);
     },
   });
 
-  const { data: withdrawals = [], isLoading: loadingW } = useQuery({
+  const { data: withdrawals = [], isLoading: loadingW, isError: wError, error: wErrorObj } = useQuery({
     queryKey: ["admin-ofs-withdrawals-pending"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("withdrawal_requests")
-        .select("id, user_id, amount_xof, method, status, created_at, profiles:user_id(full_name, phone)")
+        .select("id, user_id, amount_xof, method, status, created_at")
         .in("status", ["pending", "approved"])
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      return attachProfiles(data ?? []);
     },
   });
+
+  useEffect(() => {
+    if (txsError) toast.error(`Erreur transactions OnFaiSimple : ${(txsErrorObj as Error)?.message ?? "inconnue"}`);
+    if (wError) toast.error(`Erreur retraits en cours : ${(wErrorObj as Error)?.message ?? "inconnue"}`);
+  }, [txsError, txsErrorObj, wError, wErrorObj]);
 
   const totalDebit = txs.filter((t) => t.type === "onfaisimple_debit").reduce((s, t) => s + Math.abs(Number(t.amount_xof)), 0);
   const totalPayout = txs.filter((t) => t.type === "onfaisimple_payout").reduce((s, t) => s + Number(t.amount_xof), 0);
