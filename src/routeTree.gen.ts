@@ -30,6 +30,7 @@ import { Route as StockOrdersRouteImport } from './routes/stock.orders'
 import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as OnfaisimpleProductIdRouteImport } from './routes/onfaisimple.$productId'
 import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
@@ -163,6 +164,11 @@ const ProductIdRoute = ProductIdRouteImport.update({
 const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
   id: '/payment/callback',
   path: '/payment/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleProductIdRoute = OnfaisimpleProductIdRouteImport.update({
+  id: '/onfaisimple/$productId',
+  path: '/onfaisimple/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsBookingsRoute = HotelsBookingsRouteImport.update({
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -509,6 +518,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -560,6 +570,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -612,6 +623,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -645,6 +657,7 @@ export interface RootRouteChildren {
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   HotelsBookingsRoute: typeof HotelsBookingsRoute
+  OnfaisimpleProductIdRoute: typeof OnfaisimpleProductIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   StockProductIdRoute: typeof StockProductIdRoute
@@ -807,6 +820,13 @@ declare module '@tanstack/react-router' {
       path: '/payment/callback'
       fullPath: '/payment/callback'
       preLoaderRoute: typeof PaymentCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/$productId': {
+      id: '/onfaisimple/$productId'
+      path: '/onfaisimple/$productId'
+      fullPath: '/onfaisimple/$productId'
+      preLoaderRoute: typeof OnfaisimpleProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/bookings': {
@@ -1093,6 +1113,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   HotelsBookingsRoute: HotelsBookingsRoute,
+  OnfaisimpleProductIdRoute: OnfaisimpleProductIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   StockProductIdRoute: StockProductIdRoute,
