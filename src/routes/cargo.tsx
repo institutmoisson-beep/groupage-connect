@@ -24,7 +24,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { distanceKm, computeDeliveryFeeXof, captureGpsPosition } from "@/lib/geo";
 
-export const Route = createFileRoute("/Cargo")({
+export const Route = createFileRoute("/cargo")({
   head: () => ({
     meta: [
       { title: "MSN Global Cargo — Forwarding Chine → Abidjan" },

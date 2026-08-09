@@ -143,3 +143,31 @@
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+/* ===== OnFaiSimple™ palette (Deep Sapphire Navy / Electric Gold / Emerald) ===== */
+:root {
+  --ofs-navy: oklch(0.24 0.05 264);
+  --ofs-navy-soft: oklch(0.32 0.05 264);
+  --ofs-onnavy: oklch(0.99 0 0);
+  --ofs-gold: oklch(0.79 0.16 76);
+  --ofs-goldink: oklch(0.55 0.14 76);
+  --ofs-emerald: oklch(0.65 0.15 163);
+  --ofs-emerald-light: oklch(0.8 0.14 163);
+  --shadow-ofs: 0 14px 34px -14px color-mix(in oklab, oklch(0.24 0.05 264) 55%, transparent);
+}
+.dark {
+  --ofs-navy: oklch(0.28 0.05 264);
+  --ofs-navy-soft: oklch(0.36 0.05 264);
+}
+@utility bg-ofs-navy { background-color: var(--ofs-navy); }
+@utility bg-ofs-navy-soft { background-color: var(--ofs-navy-soft); }
+@utility text-ofs-navy { color: var(--ofs-navy); }
+@utility text-ofs-onnavy { color: var(--ofs-onnavy); }
+@utility bg-ofs-gold { background-color: var(--ofs-gold); }
+@utility text-ofs-gold { color: var(--ofs-gold); }
+@utility text-ofs-goldink { color: var(--ofs-goldink); }
+@utility border-ofs-gold { border-color: var(--ofs-gold); }
+@utility bg-ofs-emerald { background-color: var(--ofs-emerald); }
+@utility text-ofs-emerald { color: var(--ofs-emerald); }
+@utility text-ofs-emerald-light { color: var(--ofs-emerald-light); }
+@utility shadow-ofs { box-shadow: var(--shadow-ofs); }

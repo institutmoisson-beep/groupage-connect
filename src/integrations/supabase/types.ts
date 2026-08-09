@@ -820,6 +820,226 @@ export type Database = {
           },
         ]
       }
+      onfaisimple_orders: {
+        Row: {
+          admin_notes: string | null
+          cargo_tracking_code: string | null
+          contract_pdf_url: string | null
+          contract_reference: string
+          created_at: string
+          current_stage: Database["public"]["Enums"]["onfaisimple_stage"]
+          expected_payout: number
+          id: string
+          payment_channel_label: string | null
+          payment_method: string | null
+          payment_proof_url: string | null
+          payment_reference: string | null
+          payment_status: Database["public"]["Enums"]["onfaisimple_payment_status"]
+          payout_credited_at: string | null
+          product_id: string
+          signature_pin_verified: boolean
+          total_amount: number
+          units_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          cargo_tracking_code?: string | null
+          contract_pdf_url?: string | null
+          contract_reference?: string
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["onfaisimple_stage"]
+          expected_payout: number
+          id?: string
+          payment_channel_label?: string | null
+          payment_method?: string | null
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["onfaisimple_payment_status"]
+          payout_credited_at?: string | null
+          product_id: string
+          signature_pin_verified?: boolean
+          total_amount: number
+          units_count: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          cargo_tracking_code?: string | null
+          contract_pdf_url?: string | null
+          contract_reference?: string
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["onfaisimple_stage"]
+          expected_payout?: number
+          id?: string
+          payment_channel_label?: string | null
+          payment_method?: string | null
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["onfaisimple_payment_status"]
+          payout_credited_at?: string | null
+          product_id?: string
+          signature_pin_verified?: boolean
+          total_amount?: number
+          units_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onfaisimple_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "onfaisimple_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onfaisimple_payment_channels: {
+        Row: {
+          account_holder: string | null
+          account_identifier: string | null
+          active: boolean
+          created_at: string
+          crypto_network: string | null
+          id: string
+          instructions: string | null
+          kind: Database["public"]["Enums"]["onfaisimple_channel_kind"]
+          logo_url: string | null
+          name: string
+          redirect_url: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          account_holder?: string | null
+          account_identifier?: string | null
+          active?: boolean
+          created_at?: string
+          crypto_network?: string | null
+          id?: string
+          instructions?: string | null
+          kind: Database["public"]["Enums"]["onfaisimple_channel_kind"]
+          logo_url?: string | null
+          name: string
+          redirect_url?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string | null
+          account_identifier?: string | null
+          active?: boolean
+          created_at?: string
+          crypto_network?: string | null
+          id?: string
+          instructions?: string | null
+          kind?: Database["public"]["Enums"]["onfaisimple_channel_kind"]
+          logo_url?: string | null
+          name?: string
+          redirect_url?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      onfaisimple_products: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string
+          description: string | null
+          estimated_days: number
+          funded_units: number
+          id: string
+          images: Json
+          min_units_per_order: number
+          projected_retail_price: number
+          status: Database["public"]["Enums"]["onfaisimple_product_status"]
+          title: string
+          total_units: number
+          unit_cost: number
+          updated_at: string
+          user_profit_share_percent: number
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_days?: number
+          funded_units?: number
+          id?: string
+          images?: Json
+          min_units_per_order?: number
+          projected_retail_price: number
+          status?: Database["public"]["Enums"]["onfaisimple_product_status"]
+          title: string
+          total_units: number
+          unit_cost: number
+          updated_at?: string
+          user_profit_share_percent?: number
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_days?: number
+          funded_units?: number
+          id?: string
+          images?: Json
+          min_units_per_order?: number
+          projected_retail_price?: number
+          status?: Database["public"]["Enums"]["onfaisimple_product_status"]
+          title?: string
+          total_units?: number
+          unit_cost?: number
+          updated_at?: string
+          user_profit_share_percent?: number
+        }
+        Relationships: []
+      }
+      onfaisimple_stage_events: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string
+          photo_url: string | null
+          stage: Database["public"]["Enums"]["onfaisimple_stage"]
+          tracking_code: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id: string
+          photo_url?: string | null
+          stage: Database["public"]["Enums"]["onfaisimple_stage"]
+          tracking_code?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string
+          photo_url?: string | null
+          stage?: Database["public"]["Enums"]["onfaisimple_stage"]
+          tracking_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onfaisimple_stage_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "onfaisimple_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           campaign_id: string | null
@@ -1439,6 +1659,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_signature_pins: {
+        Row: {
+          created_at: string
+          pin_hash: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          pin_hash: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          pin_hash?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount_xof: number
@@ -1540,6 +1781,40 @@ export type Database = {
         }
         Returns: boolean
       }
+      onfaisimple_create_order: {
+        Args: {
+          p_channel_label?: string
+          p_payment_method: string
+          p_payment_proof_url?: string
+          p_payment_reference?: string
+          p_pin: string
+          p_product_id: string
+          p_units: number
+        }
+        Returns: {
+          contract_reference: string
+          order_id: string
+          payment_status: Database["public"]["Enums"]["onfaisimple_payment_status"]
+        }[]
+      }
+      onfaisimple_review_payment: {
+        Args: { p_action: string; p_note?: string; p_order_id: string }
+        Returns: {
+          payment_status: Database["public"]["Enums"]["onfaisimple_payment_status"]
+        }[]
+      }
+      onfaisimple_set_stage: {
+        Args: {
+          p_note?: string
+          p_order_id: string
+          p_photo_url?: string
+          p_stage: Database["public"]["Enums"]["onfaisimple_stage"]
+          p_tracking_code?: string
+        }
+        Returns: {
+          current_stage: Database["public"]["Enums"]["onfaisimple_stage"]
+        }[]
+      }
       record_offline_stock_sale: {
         Args: { p_product_id: string; p_quantity: number }
         Returns: {
@@ -1547,6 +1822,7 @@ export type Database = {
           stock_quantity: number
         }[]
       }
+      set_signature_pin: { Args: { p_pin: string }; Returns: boolean }
       settle_withdrawal: {
         Args: { p_action: string; p_note?: string; p_withdrawal_id: string }
         Returns: {
@@ -1576,6 +1852,17 @@ export type Database = {
         | "hotel_direct"
       hotel_payment_model: "direct_merchant" | "api_delegated"
       hotel_payment_status: "pending" | "paid" | "refunded" | "failed"
+      onfaisimple_channel_kind: "wallet" | "redirect" | "manual" | "crypto"
+      onfaisimple_payment_status: "pending" | "approved" | "rejected"
+      onfaisimple_product_status: "funding" | "closed" | "completed" | "hidden"
+      onfaisimple_stage:
+        | "COMMANDE_VALIDEE"
+        | "ACHAT_CHINE"
+        | "ENTREPOT_CHINE"
+        | "EN_TRANSIT"
+        | "DEDOUANEMENT"
+        | "EN_VENTE"
+        | "GAIN_CLOTURE"
       order_status:
         | "pending"
         | "paid_confirmed"
@@ -1611,6 +1898,8 @@ export type Database = {
         | "delivery_fee"
         | "withdrawal_debit"
         | "adjustment"
+        | "onfaisimple_debit"
+        | "onfaisimple_payout"
       withdrawal_method:
         | "wave"
         | "orange_money"
@@ -1768,6 +2057,18 @@ export const Constants = {
       ],
       hotel_payment_model: ["direct_merchant", "api_delegated"],
       hotel_payment_status: ["pending", "paid", "refunded", "failed"],
+      onfaisimple_channel_kind: ["wallet", "redirect", "manual", "crypto"],
+      onfaisimple_payment_status: ["pending", "approved", "rejected"],
+      onfaisimple_product_status: ["funding", "closed", "completed", "hidden"],
+      onfaisimple_stage: [
+        "COMMANDE_VALIDEE",
+        "ACHAT_CHINE",
+        "ENTREPOT_CHINE",
+        "EN_TRANSIT",
+        "DEDOUANEMENT",
+        "EN_VENTE",
+        "GAIN_CLOTURE",
+      ],
       order_status: [
         "pending",
         "paid_confirmed",
@@ -1806,6 +2107,8 @@ export const Constants = {
         "delivery_fee",
         "withdrawal_debit",
         "adjustment",
+        "onfaisimple_debit",
+        "onfaisimple_payout",
       ],
       withdrawal_method: [
         "wave",

@@ -17,11 +17,12 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MlmRouteImport } from './routes/mlm'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as GroupageRouteImport } from './routes/groupage'
+import { Route as CargoRouteImport } from './routes/cargo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as CargoRouteImport } from './routes/Cargo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StockIndexRouteImport } from './routes/stock.index'
+import { Route as OnfaisimpleIndexRouteImport } from './routes/onfaisimple.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StockSellRouteImport } from './routes/stock.sell'
@@ -29,6 +30,8 @@ import { Route as StockOrdersRouteImport } from './routes/stock.orders'
 import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as OnfaisimpleOrdersRouteImport } from './routes/onfaisimple.orders'
+import { Route as OnfaisimpleProductIdRouteImport } from './routes/onfaisimple.$productId'
 import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
@@ -42,6 +45,7 @@ import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminOnfaisimpleRouteImport } from './routes/admin.onfaisimple'
 import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
 import { Route as AdminLogisticsRouteImport } from './routes/admin.logistics'
 import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
@@ -99,6 +103,11 @@ const GroupageRoute = GroupageRouteImport.update({
   path: '/groupage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CargoRoute = CargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -109,11 +118,6 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CargoRoute = CargoRouteImport.update({
-  id: '/Cargo',
-  path: '/Cargo',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -122,6 +126,11 @@ const IndexRoute = IndexRouteImport.update({
 const StockIndexRoute = StockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleIndexRoute = OnfaisimpleIndexRouteImport.update({
+  id: '/onfaisimple/',
+  path: '/onfaisimple/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsIndexRoute = HotelsIndexRouteImport.update({
@@ -157,6 +166,16 @@ const ProductIdRoute = ProductIdRouteImport.update({
 const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
   id: '/payment/callback',
   path: '/payment/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleOrdersRoute = OnfaisimpleOrdersRouteImport.update({
+  id: '/onfaisimple/orders',
+  path: '/onfaisimple/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleProductIdRoute = OnfaisimpleProductIdRouteImport.update({
+  id: '/onfaisimple/$productId',
+  path: '/onfaisimple/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsBookingsRoute = HotelsBookingsRouteImport.update({
@@ -222,6 +241,11 @@ const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOnfaisimpleRoute = AdminOnfaisimpleRouteImport.update({
+  id: '/onfaisimple',
+  path: '/onfaisimple',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminMessagesRoute = AdminMessagesRouteImport.update({
@@ -311,9 +335,9 @@ const ApiPublicWebhooksGeniuspayRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -332,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/admin/hotels': typeof AdminHotelsRoute
   '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
+  '/admin/onfaisimple': typeof AdminOnfaisimpleRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -345,6 +370,8 @@ export interface FileRoutesByFullPath {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
+  '/onfaisimple/orders': typeof OnfaisimpleOrdersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -352,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -362,8 +390,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -382,6 +410,7 @@ export interface FileRoutesByTo {
   '/admin/hotels': typeof AdminHotelsRoute
   '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
+  '/admin/onfaisimple': typeof AdminOnfaisimpleRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -395,6 +424,8 @@ export interface FileRoutesByTo {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
+  '/onfaisimple/orders': typeof OnfaisimpleOrdersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -402,6 +433,7 @@ export interface FileRoutesByTo {
   '/stock/sell': typeof StockSellRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/onfaisimple': typeof OnfaisimpleIndexRoute
   '/stock': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -413,9 +445,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -434,6 +466,7 @@ export interface FileRoutesById {
   '/admin/hotels': typeof AdminHotelsRoute
   '/admin/logistics': typeof AdminLogisticsRoute
   '/admin/messages': typeof AdminMessagesRoute
+  '/admin/onfaisimple': typeof AdminOnfaisimpleRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/products': typeof AdminProductsRoute
@@ -447,6 +480,8 @@ export interface FileRoutesById {
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/bookings': typeof HotelsBookingsRoute
+  '/onfaisimple/$productId': typeof OnfaisimpleProductIdRoute
+  '/onfaisimple/orders': typeof OnfaisimpleOrdersRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/product/$id': typeof ProductIdRoute
   '/stock/$productId': typeof StockProductIdRoute
@@ -454,6 +489,7 @@ export interface FileRoutesById {
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -466,9 +502,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/Cargo'
     | '/admin'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -487,6 +523,7 @@ export interface FileRouteTypes {
     | '/admin/hotels'
     | '/admin/logistics'
     | '/admin/messages'
+    | '/admin/onfaisimple'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -500,6 +537,8 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
+    | '/onfaisimple/orders'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -507,6 +546,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/onfaisimple/'
     | '/stock/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -517,8 +557,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/Cargo'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -537,6 +577,7 @@ export interface FileRouteTypes {
     | '/admin/hotels'
     | '/admin/logistics'
     | '/admin/messages'
+    | '/admin/onfaisimple'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -550,6 +591,8 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
+    | '/onfaisimple/orders'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -557,6 +600,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin'
     | '/hotels'
+    | '/onfaisimple'
     | '/stock'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -567,9 +611,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/Cargo'
     | '/admin'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -588,6 +632,7 @@ export interface FileRouteTypes {
     | '/admin/hotels'
     | '/admin/logistics'
     | '/admin/messages'
+    | '/admin/onfaisimple'
     | '/admin/orders'
     | '/admin/payment-methods'
     | '/admin/products'
@@ -601,6 +646,8 @@ export interface FileRouteTypes {
     | '/checkout/$orderId'
     | '/hotels/$hotelId'
     | '/hotels/bookings'
+    | '/onfaisimple/$productId'
+    | '/onfaisimple/orders'
     | '/payment/callback'
     | '/product/$id'
     | '/stock/$productId'
@@ -608,6 +655,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/onfaisimple/'
     | '/stock/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -619,9 +667,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CargoRoute: typeof CargoRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CargoRoute: typeof CargoRoute
   GroupageRoute: typeof GroupageRoute
   MessagesRoute: typeof MessagesRoute
   MlmRoute: typeof MlmRoute
@@ -633,12 +681,15 @@ export interface RootRouteChildren {
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   HotelsBookingsRoute: typeof HotelsBookingsRoute
+  OnfaisimpleProductIdRoute: typeof OnfaisimpleProductIdRoute
+  OnfaisimpleOrdersRoute: typeof OnfaisimpleOrdersRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   ProductIdRoute: typeof ProductIdRoute
   StockProductIdRoute: typeof StockProductIdRoute
   StockOrdersRoute: typeof StockOrdersRoute
   StockSellRoute: typeof StockSellRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
+  OnfaisimpleIndexRoute: typeof OnfaisimpleIndexRoute
   StockIndexRoute: typeof StockIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
   HotelsVoucherDirectBookingIdRoute: typeof HotelsVoucherDirectBookingIdRoute
@@ -705,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cargo': {
+      id: '/cargo'
+      path: '/cargo'
+      fullPath: '/cargo'
+      preLoaderRoute: typeof CargoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -719,13 +777,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/Cargo': {
-      id: '/Cargo'
-      path: '/Cargo'
-      fullPath: '/Cargo'
-      preLoaderRoute: typeof CargoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -738,6 +789,13 @@ declare module '@tanstack/react-router' {
       path: '/stock'
       fullPath: '/stock/'
       preLoaderRoute: typeof StockIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/': {
+      id: '/onfaisimple/'
+      path: '/onfaisimple'
+      fullPath: '/onfaisimple/'
+      preLoaderRoute: typeof OnfaisimpleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/': {
@@ -787,6 +845,20 @@ declare module '@tanstack/react-router' {
       path: '/payment/callback'
       fullPath: '/payment/callback'
       preLoaderRoute: typeof PaymentCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/orders': {
+      id: '/onfaisimple/orders'
+      path: '/onfaisimple/orders'
+      fullPath: '/onfaisimple/orders'
+      preLoaderRoute: typeof OnfaisimpleOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/$productId': {
+      id: '/onfaisimple/$productId'
+      path: '/onfaisimple/$productId'
+      fullPath: '/onfaisimple/$productId'
+      preLoaderRoute: typeof OnfaisimpleProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/bookings': {
@@ -878,6 +950,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/onfaisimple': {
+      id: '/admin/onfaisimple'
+      path: '/onfaisimple'
+      fullPath: '/admin/onfaisimple'
+      preLoaderRoute: typeof AdminOnfaisimpleRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/messages': {
@@ -1006,6 +1085,7 @@ interface AdminRouteChildren {
   AdminHotelsRoute: typeof AdminHotelsRoute
   AdminLogisticsRoute: typeof AdminLogisticsRoute
   AdminMessagesRoute: typeof AdminMessagesRoute
+  AdminOnfaisimpleRoute: typeof AdminOnfaisimpleRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -1030,6 +1110,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminHotelsRoute: AdminHotelsRoute,
   AdminLogisticsRoute: AdminLogisticsRoute,
   AdminMessagesRoute: AdminMessagesRoute,
+  AdminOnfaisimpleRoute: AdminOnfaisimpleRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -1059,9 +1140,9 @@ const SourcingRouteWithChildren = SourcingRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CargoRoute: CargoRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  CargoRoute: CargoRoute,
   GroupageRoute: GroupageRoute,
   MessagesRoute: MessagesRoute,
   MlmRoute: MlmRoute,
@@ -1073,12 +1154,15 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   HotelsBookingsRoute: HotelsBookingsRoute,
+  OnfaisimpleProductIdRoute: OnfaisimpleProductIdRoute,
+  OnfaisimpleOrdersRoute: OnfaisimpleOrdersRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
   ProductIdRoute: ProductIdRoute,
   StockProductIdRoute: StockProductIdRoute,
   StockOrdersRoute: StockOrdersRoute,
   StockSellRoute: StockSellRoute,
   HotelsIndexRoute: HotelsIndexRoute,
+  OnfaisimpleIndexRoute: OnfaisimpleIndexRoute,
   StockIndexRoute: StockIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
   HotelsVoucherDirectBookingIdRoute: HotelsVoucherDirectBookingIdRoute,

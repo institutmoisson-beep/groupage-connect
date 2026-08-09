@@ -6,6 +6,7 @@ import {
   ShieldCheck,
   Users,
   Package,
+  PackageCheck,
   Ship,
   Link as LinkIcon,
   ShoppingCart,
@@ -59,6 +60,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/cargo-packages", label: "Manifest Cargo", icon: ClipboardList },
   { to: "/admin/cargo-dispatch", label: "GPS Dispatch", icon: Truck },
   { to: "/admin/stock", label: "Stock Express", icon: ShoppingBag },
+  { to: "/admin/onfaisimple", label: "OnFaiSimple™", icon: PackageCheck },
   { to: "/admin/wallets", label: "Portefeuilles", icon: Wallet },
   { to: "/admin/withdrawals", label: "Retraits portefeuille", icon: Banknote },
 
