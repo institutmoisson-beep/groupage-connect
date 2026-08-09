@@ -181,7 +181,9 @@ function OnFaiSimpleDetail() {
   const createOrder = useMutation({
     mutationFn: async () => {
       const method =
-        channel?.kind === "wallet" ? "wallet" : (channel?.kind ?? "manual") + ":" + (channel?.name ?? "");
+        channel?.kind === "wallet"
+          ? "wallet"
+          : (channel?.kind ?? "manual") + ":" + (channel?.name ?? "");
       const { data, error } = await supabase.rpc("onfaisimple_create_order", {
         p_product_id: productId,
         p_units: units,
@@ -603,8 +605,7 @@ function OnFaiSimpleDetail() {
                   </button>
                 </div>
                 <div className="rounded-xl bg-background px-3 py-2 text-[11px]">
-                  Montant à envoyer :{" "}
-                  <strong>≈ {(total * 0.00165).toFixed(2)} USDT</strong>{" "}
+                  Montant à envoyer : <strong>≈ {(total * 0.00165).toFixed(2)} USDT</strong>{" "}
                   <span className="text-muted-foreground">(1 USDT ≈ 606 FCFA)</span>
                 </div>
                 <input
