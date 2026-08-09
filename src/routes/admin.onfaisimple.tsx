@@ -128,7 +128,7 @@ function ProductsPanel() {
   });
 
   const update = useMutation({
-    mutationFn: async (input: { id: string; patch: { status: string } }) => {
+    mutationFn: async (input: { id: string; patch: { status: "funding" | "closed" | "completed" | "hidden" } }) => {
       const { error } = await supabase
         .from("onfaisimple_products")
         .update(input.patch)
