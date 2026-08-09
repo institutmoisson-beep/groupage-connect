@@ -22,6 +22,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StockIndexRouteImport } from './routes/stock.index'
+import { Route as OnfaisimpleIndexRouteImport } from './routes/onfaisimple.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StockSellRouteImport } from './routes/stock.sell'
@@ -122,6 +123,11 @@ const IndexRoute = IndexRouteImport.update({
 const StockIndexRoute = StockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleIndexRoute = OnfaisimpleIndexRouteImport.update({
+  id: '/onfaisimple/',
+  path: '/onfaisimple/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsIndexRoute = HotelsIndexRouteImport.update({
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/stock/sell': typeof StockSellRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/onfaisimple': typeof OnfaisimpleIndexRoute
   '/stock': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/stock/sell': typeof StockSellRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
@@ -507,6 +516,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/onfaisimple/'
     | '/stock/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin'
     | '/hotels'
+    | '/onfaisimple'
     | '/stock'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -608,6 +619,7 @@ export interface FileRouteTypes {
     | '/stock/sell'
     | '/admin/'
     | '/hotels/'
+    | '/onfaisimple/'
     | '/stock/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
@@ -639,6 +651,7 @@ export interface RootRouteChildren {
   StockOrdersRoute: typeof StockOrdersRoute
   StockSellRoute: typeof StockSellRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
+  OnfaisimpleIndexRoute: typeof OnfaisimpleIndexRoute
   StockIndexRoute: typeof StockIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
   HotelsVoucherDirectBookingIdRoute: typeof HotelsVoucherDirectBookingIdRoute
@@ -738,6 +751,13 @@ declare module '@tanstack/react-router' {
       path: '/stock'
       fullPath: '/stock/'
       preLoaderRoute: typeof StockIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/': {
+      id: '/onfaisimple/'
+      path: '/onfaisimple'
+      fullPath: '/onfaisimple/'
+      preLoaderRoute: typeof OnfaisimpleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/': {
@@ -1079,6 +1099,7 @@ const rootRouteChildren: RootRouteChildren = {
   StockOrdersRoute: StockOrdersRoute,
   StockSellRoute: StockSellRoute,
   HotelsIndexRoute: HotelsIndexRoute,
+  OnfaisimpleIndexRoute: OnfaisimpleIndexRoute,
   StockIndexRoute: StockIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
   HotelsVoucherDirectBookingIdRoute: HotelsVoucherDirectBookingIdRoute,
