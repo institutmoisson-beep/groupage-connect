@@ -17,9 +17,9 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as MlmRouteImport } from './routes/mlm'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as GroupageRouteImport } from './routes/groupage'
+import { Route as CargoRouteImport } from './routes/cargo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as CargoRouteImport } from './routes/Cargo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StockIndexRouteImport } from './routes/stock.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
@@ -99,6 +99,11 @@ const GroupageRoute = GroupageRouteImport.update({
   path: '/groupage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CargoRoute = CargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -107,11 +112,6 @@ const AuthRoute = AuthRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CargoRoute = CargoRouteImport.update({
-  id: '/Cargo',
-  path: '/Cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -311,9 +311,9 @@ const ApiPublicWebhooksGeniuspayRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -362,8 +362,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -413,9 +413,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/Cargo': typeof CargoRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cargo': typeof CargoRoute
   '/groupage': typeof GroupageRoute
   '/messages': typeof MessagesRoute
   '/mlm': typeof MlmRoute
@@ -466,9 +466,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/Cargo'
     | '/admin'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -517,8 +517,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/Cargo'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -567,9 +567,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/Cargo'
     | '/admin'
     | '/auth'
+    | '/cargo'
     | '/groupage'
     | '/messages'
     | '/mlm'
@@ -619,9 +619,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CargoRoute: typeof CargoRoute
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CargoRoute: typeof CargoRoute
   GroupageRoute: typeof GroupageRoute
   MessagesRoute: typeof MessagesRoute
   MlmRoute: typeof MlmRoute
@@ -705,6 +705,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cargo': {
+      id: '/cargo'
+      path: '/cargo'
+      fullPath: '/cargo'
+      preLoaderRoute: typeof CargoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -717,13 +724,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/Cargo': {
-      id: '/Cargo'
-      path: '/Cargo'
-      fullPath: '/Cargo'
-      preLoaderRoute: typeof CargoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1059,9 +1059,9 @@ const SourcingRouteWithChildren = SourcingRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CargoRoute: CargoRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  CargoRoute: CargoRoute,
   GroupageRoute: GroupageRoute,
   MessagesRoute: MessagesRoute,
   MlmRoute: MlmRoute,
@@ -1089,13 +1089,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
