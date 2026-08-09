@@ -187,9 +187,9 @@ function OnFaiSimpleDetail() {
         p_units: units,
         p_pin: pin,
         p_payment_method: channel?.kind === "wallet" ? "wallet" : method,
-        p_channel_label: channel?.name ?? null,
-        p_payment_reference: reference || null,
-        p_payment_proof_url: proofUrl,
+        p_channel_label: channel?.name ?? undefined,
+        p_payment_reference: reference || undefined,
+        p_payment_proof_url: proofUrl ?? undefined,
       });
       if (error) throw error;
       return data?.[0];
