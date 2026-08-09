@@ -3,19 +3,30 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, Check, ExternalLink, Eye, Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Check,
+  Download,
+  ExternalLink,
+  Eye,
+  FileText,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF } from "@/lib/format";
 import { compressAndUploadImage } from "@/lib/image-upload";
 import { getPaymentProofImage } from "@/lib/onfaisimple.functions";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WALLET_TX_LABELS, WITHDRAWAL_METHOD_LABELS, WITHDRAWAL_STATUS_LABELS } from "@/lib/stock";
+import { downloadTextFile } from "@/lib/proof-upload";
 import {
   OFS_CATEGORIES,
   OFS_CATEGORY_LABELS,
@@ -23,6 +34,7 @@ import {
   OFS_PRODUCT_STATUS_LABELS,
   OFS_STAGES,
   OFS_STAGE_LABELS,
+  ofsMandateText,
   type OfsStage,
 } from "@/lib/onfaisimple";
 
@@ -36,7 +48,7 @@ export const Route = createFileRoute("/admin/onfaisimple")({
   component: AdminOnFaiSimple,
 });
 
-type Tab = "products" | "channels" | "deposits" | "tracking" | "wallet";
+type Tab = "products" | "channels" | "deposits" | "tracking" | "contracts" | "wallet";
 
 function AdminOnFaiSimple() {
   const [tab, setTab] = useState<Tab>("products");
@@ -45,6 +57,7 @@ function AdminOnFaiSimple() {
     { k: "channels", label: "Moyens de paiement" },
     { k: "deposits", label: "Dépôts & preuves" },
     { k: "tracking", label: "Suivi 7 étapes" },
+    { k: "contracts", label: "Contrats" },
     { k: "wallet", label: "Portefeuille" },
   ];
 
@@ -78,6 +91,7 @@ function AdminOnFaiSimple() {
       {tab === "channels" && <ChannelsPanel />}
       {tab === "deposits" && <DepositsPanel />}
       {tab === "tracking" && <TrackingPanel />}
+      {tab === "contracts" && <ContractsPanel />}
       {tab === "wallet" && <WalletPanel />}
     </div>
   );
@@ -134,7 +148,14 @@ function ProductsPanel() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-ofs-products"] });
-      setForm({ ...form, title: "", description: "", unit_cost: "", projected_retail_price: "", total_units: "" });
+      setForm({
+        ...form,
+        title: "",
+        description: "",
+        unit_cost: "",
+        projected_retail_price: "",
+        total_units: "",
+      });
       setImage(null);
       toast.success("Lot créé.");
     },
@@ -142,7 +163,10 @@ function ProductsPanel() {
   });
 
   const update = useMutation({
-    mutationFn: async (input: { id: string; patch: { status: "funding" | "closed" | "completed" | "hidden" } }) => {
+    mutationFn: async (input: {
+      id: string;
+      patch: { status: "funding" | "closed" | "completed" | "hidden" };
+    }) => {
       const { error } = await supabase
         .from("onfaisimple_products")
         .update(input.patch)
@@ -212,7 +236,11 @@ function ProductsPanel() {
       <section className="space-y-2 rounded-xl border border-border bg-card p-4">
         <h2 className="text-sm font-bold">Nouveau lot</h2>
         <Field label="Titre">
-          <input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          <input
+            className={inputCls}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
         </Field>
         <Field label="Catégorie">
           <select
@@ -237,26 +265,60 @@ function ProductsPanel() {
         </Field>
         <div className="grid grid-cols-2 gap-2">
           <Field label="Coût unitaire (FCFA)">
-            <input className={inputCls} inputMode="numeric" value={form.unit_cost} onChange={(e) => setForm({ ...form, unit_cost: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.unit_cost}
+              onChange={(e) => setForm({ ...form, unit_cost: e.target.value })}
+            />
           </Field>
           <Field label="Revente estimée">
-            <input className={inputCls} inputMode="numeric" value={form.projected_retail_price} onChange={(e) => setForm({ ...form, projected_retail_price: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.projected_retail_price}
+              onChange={(e) => setForm({ ...form, projected_retail_price: e.target.value })}
+            />
           </Field>
           <Field label="Part client (%)">
-            <input className={inputCls} inputMode="numeric" value={form.user_profit_share_percent} onChange={(e) => setForm({ ...form, user_profit_share_percent: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.user_profit_share_percent}
+              onChange={(e) => setForm({ ...form, user_profit_share_percent: e.target.value })}
+            />
           </Field>
           <Field label="Unités totales">
-            <input className={inputCls} inputMode="numeric" value={form.total_units} onChange={(e) => setForm({ ...form, total_units: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.total_units}
+              onChange={(e) => setForm({ ...form, total_units: e.target.value })}
+            />
           </Field>
           <Field label="Min. / commande">
-            <input className={inputCls} inputMode="numeric" value={form.min_units_per_order} onChange={(e) => setForm({ ...form, min_units_per_order: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.min_units_per_order}
+              onChange={(e) => setForm({ ...form, min_units_per_order: e.target.value })}
+            />
           </Field>
           <Field label="Délai (jours)">
-            <input className={inputCls} inputMode="numeric" value={form.estimated_days} onChange={(e) => setForm({ ...form, estimated_days: e.target.value })} />
+            <input
+              className={inputCls}
+              inputMode="numeric"
+              value={form.estimated_days}
+              onChange={(e) => setForm({ ...form, estimated_days: e.target.value })}
+            />
           </Field>
         </div>
         <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border py-2 text-xs font-semibold">
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {uploading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
           {image ? "Image ajoutée ✓" : "Image du produit"}
           <input
             type="file"
@@ -278,7 +340,13 @@ function ProductsPanel() {
           />
         </label>
         <button
-          disabled={!form.title || !form.unit_cost || !form.projected_retail_price || !form.total_units || create.isPending}
+          disabled={
+            !form.title ||
+            !form.unit_cost ||
+            !form.projected_retail_price ||
+            !form.total_units ||
+            create.isPending
+          }
           onClick={() => create.mutate()}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
         >
@@ -307,7 +375,9 @@ function ProductsPanel() {
                 <div className="flex items-center gap-2">
                   <select
                     value={p.status}
-                    onChange={(e) => update.mutate({ id: p.id, patch: { status: e.target.value as "funding" } })}
+                    onChange={(e) =>
+                      update.mutate({ id: p.id, patch: { status: e.target.value as "funding" } })
+                    }
                     className="rounded-lg border border-input bg-background px-2 py-1 text-[11px]"
                   >
                     {Object.entries(OFS_PRODUCT_STATUS_LABELS).map(([k, v]) => (
@@ -346,7 +416,11 @@ function ProductsPanel() {
           </DialogHeader>
           <div className="space-y-2">
             <Field label="Titre">
-              <input className={inputCls} value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} />
+              <input
+                className={inputCls}
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              />
             </Field>
             <Field label="Catégorie">
               <select
@@ -371,22 +445,58 @@ function ProductsPanel() {
             </Field>
             <div className="grid grid-cols-2 gap-2">
               <Field label="Coût unitaire (FCFA)">
-                <input className={inputCls} inputMode="numeric" value={editForm.unit_cost} onChange={(e) => setEditForm({ ...editForm, unit_cost: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.unit_cost}
+                  onChange={(e) => setEditForm({ ...editForm, unit_cost: e.target.value })}
+                />
               </Field>
               <Field label="Revente estimée">
-                <input className={inputCls} inputMode="numeric" value={editForm.projected_retail_price} onChange={(e) => setEditForm({ ...editForm, projected_retail_price: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.projected_retail_price}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, projected_retail_price: e.target.value })
+                  }
+                />
               </Field>
               <Field label="Part client (%)">
-                <input className={inputCls} inputMode="numeric" value={editForm.user_profit_share_percent} onChange={(e) => setEditForm({ ...editForm, user_profit_share_percent: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.user_profit_share_percent}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, user_profit_share_percent: e.target.value })
+                  }
+                />
               </Field>
               <Field label="Unités totales">
-                <input className={inputCls} inputMode="numeric" value={editForm.total_units} onChange={(e) => setEditForm({ ...editForm, total_units: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.total_units}
+                  onChange={(e) => setEditForm({ ...editForm, total_units: e.target.value })}
+                />
               </Field>
               <Field label="Min. / commande">
-                <input className={inputCls} inputMode="numeric" value={editForm.min_units_per_order} onChange={(e) => setEditForm({ ...editForm, min_units_per_order: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.min_units_per_order}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, min_units_per_order: e.target.value })
+                  }
+                />
               </Field>
               <Field label="Délai (jours)">
-                <input className={inputCls} inputMode="numeric" value={editForm.estimated_days} onChange={(e) => setEditForm({ ...editForm, estimated_days: e.target.value })} />
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={editForm.estimated_days}
+                  onChange={(e) => setEditForm({ ...editForm, estimated_days: e.target.value })}
+                />
               </Field>
             </div>
             <button
@@ -540,17 +650,33 @@ function ChannelsPanel() {
           </select>
         </Field>
         <Field label="Nom affiché">
-          <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input
+            className={inputCls}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
         </Field>
         <Field label={form.kind === "crypto" ? "Adresse du wallet" : "Numéro Mobile Money"}>
-          <input className={inputCls} value={form.account_identifier} onChange={(e) => setForm({ ...form, account_identifier: e.target.value })} />
+          <input
+            className={inputCls}
+            value={form.account_identifier}
+            onChange={(e) => setForm({ ...form, account_identifier: e.target.value })}
+          />
         </Field>
         <Field label="Titulaire">
-          <input className={inputCls} value={form.account_holder} onChange={(e) => setForm({ ...form, account_holder: e.target.value })} />
+          <input
+            className={inputCls}
+            value={form.account_holder}
+            onChange={(e) => setForm({ ...form, account_holder: e.target.value })}
+          />
         </Field>
         {form.kind === "redirect" && (
           <Field label="Lien de paiement">
-            <input className={inputCls} value={form.redirect_url} onChange={(e) => setForm({ ...form, redirect_url: e.target.value })} />
+            <input
+              className={inputCls}
+              value={form.redirect_url}
+              onChange={(e) => setForm({ ...form, redirect_url: e.target.value })}
+            />
           </Field>
         )}
         {form.kind === "crypto" && (
@@ -566,10 +692,20 @@ function ChannelsPanel() {
           </Field>
         )}
         <Field label="Consignes">
-          <textarea rows={2} className={inputCls} value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} />
+          <textarea
+            rows={2}
+            className={inputCls}
+            value={form.instructions}
+            onChange={(e) => setForm({ ...form, instructions: e.target.value })}
+          />
         </Field>
         <Field label="Ordre d'affichage">
-          <input className={inputCls} inputMode="numeric" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} />
+          <input
+            className={inputCls}
+            inputMode="numeric"
+            value={form.sort_order}
+            onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
+          />
         </Field>
         <button
           disabled={!form.name || create.isPending}
@@ -582,7 +718,10 @@ function ChannelsPanel() {
 
       <section className="space-y-2">
         {channels.map((c) => (
-          <div key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+          <div
+            key={c.id}
+            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3"
+          >
             <div className="min-w-0">
               <div className="text-sm font-bold">
                 {c.name}{" "}
@@ -635,7 +774,9 @@ function ChannelsPanel() {
               <select
                 className={inputCls}
                 value={editForm.kind}
-                onChange={(e) => setEditForm({ ...editForm, kind: e.target.value as typeof editForm.kind })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, kind: e.target.value as typeof editForm.kind })
+                }
               >
                 {KINDS.map((k) => (
                   <option key={k.k} value={k.k}>
@@ -645,17 +786,33 @@ function ChannelsPanel() {
               </select>
             </Field>
             <Field label="Nom affiché">
-              <input className={inputCls} value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+              <input
+                className={inputCls}
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
             </Field>
             <Field label={editForm.kind === "crypto" ? "Adresse du wallet" : "Numéro Mobile Money"}>
-              <input className={inputCls} value={editForm.account_identifier} onChange={(e) => setEditForm({ ...editForm, account_identifier: e.target.value })} />
+              <input
+                className={inputCls}
+                value={editForm.account_identifier}
+                onChange={(e) => setEditForm({ ...editForm, account_identifier: e.target.value })}
+              />
             </Field>
             <Field label="Titulaire">
-              <input className={inputCls} value={editForm.account_holder} onChange={(e) => setEditForm({ ...editForm, account_holder: e.target.value })} />
+              <input
+                className={inputCls}
+                value={editForm.account_holder}
+                onChange={(e) => setEditForm({ ...editForm, account_holder: e.target.value })}
+              />
             </Field>
             {editForm.kind === "redirect" && (
               <Field label="Lien de paiement">
-                <input className={inputCls} value={editForm.redirect_url} onChange={(e) => setEditForm({ ...editForm, redirect_url: e.target.value })} />
+                <input
+                  className={inputCls}
+                  value={editForm.redirect_url}
+                  onChange={(e) => setEditForm({ ...editForm, redirect_url: e.target.value })}
+                />
               </Field>
             )}
             {editForm.kind === "crypto" && (
@@ -671,10 +828,20 @@ function ChannelsPanel() {
               </Field>
             )}
             <Field label="Consignes">
-              <textarea rows={2} className={inputCls} value={editForm.instructions} onChange={(e) => setEditForm({ ...editForm, instructions: e.target.value })} />
+              <textarea
+                rows={2}
+                className={inputCls}
+                value={editForm.instructions}
+                onChange={(e) => setEditForm({ ...editForm, instructions: e.target.value })}
+              />
             </Field>
             <Field label="Ordre d'affichage">
-              <input className={inputCls} inputMode="numeric" value={editForm.sort_order} onChange={(e) => setEditForm({ ...editForm, sort_order: e.target.value })} />
+              <input
+                className={inputCls}
+                inputMode="numeric"
+                value={editForm.sort_order}
+                onChange={(e) => setEditForm({ ...editForm, sort_order: e.target.value })}
+              />
             </Field>
             <button
               disabled={saveEdit.isPending}
@@ -692,13 +859,30 @@ function ChannelsPanel() {
 
 /* ------------------------------- DEPOTS -------------------------------- */
 
+// user_id référence auth.users, pas public.profiles : aucune FK n'est déclarée entre ces
+// deux tables, donc l'embed "profiles:user_id(...)" échoue silencieusement (PGRST200) côté
+// admin et masque les lignes. On récupère les profils séparément et on fusionne côté client.
+async function attachProfiles<T extends { user_id: string }>(
+  rows: T[],
+): Promise<(T & { profiles: { full_name: string | null; phone: string | null } | null })[]> {
+  const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+  if (userIds.length === 0) return rows as (T & { profiles: null })[];
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, phone")
+    .in("id", userIds);
+  if (error) throw error;
+  const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+  return rows.map((r) => ({ ...r, profiles: profileById.get(r.user_id) ?? null }));
+}
+
 function useAdminOrders() {
   return useQuery({
     queryKey: ["admin-ofs-orders"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("onfaisimple_orders")
-        .select("*, onfaisimple_products(title)")
+        .select("*, onfaisimple_products(title, estimated_days, user_profit_share_percent)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -725,7 +909,11 @@ function ProofViewerButton({ orderId }: { orderId: string }) {
         disabled={fetchProof.isPending}
         className="flex items-center gap-1 text-[11px] font-semibold text-primary underline disabled:opacity-50"
       >
-        {fetchProof.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3" />}
+        {fetchProof.isPending ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          <Eye className="h-3 w-3" />
+        )}
         Voir la preuve
       </button>
       <DialogContent className="max-w-lg">
@@ -795,7 +983,9 @@ function DepositsPanel() {
           <p className="text-xs text-muted-foreground">Chargement…</p>
         ) : list.length === 0 ? (
           <p className="text-xs text-muted-foreground">
-            {tab === "pending" ? "Aucun dépôt en attente de vérification." : "Aucun dépôt dans l'historique."}
+            {tab === "pending"
+              ? "Aucun dépôt en attente de vérification."
+              : "Aucun dépôt dans l'historique."}
           </p>
         ) : (
           list.map((o) => {
@@ -817,10 +1007,13 @@ function DepositsPanel() {
                       {formatXOF(Number(o.total_amount))}
                     </div>
                     <div className="text-[11px]">
-                      {o.payment_method} {o.payment_channel_label ? `· ${o.payment_channel_label}` : ""}{" "}
+                      {o.payment_method}{" "}
+                      {o.payment_channel_label ? `· ${o.payment_channel_label}` : ""}{" "}
                       {o.payment_reference ? `· réf ${o.payment_reference}` : ""}
                     </div>
-                    {o.admin_notes && <p className="mt-1 text-[11px] text-destructive">{o.admin_notes}</p>}
+                    {o.admin_notes && (
+                      <p className="mt-1 text-[11px] text-destructive">{o.admin_notes}</p>
+                    )}
                     {o.payment_proof_url && <ProofViewerButton orderId={o.id} />}
                   </div>
                   {tab === "pending" && (
@@ -897,13 +1090,12 @@ function TrackingPanel() {
       ) : (
         active.map((o) => {
           const p = o.onfaisimple_products as { title: string } | null;
-          const d =
-            draft[o.id] ?? {
-              stage: o.current_stage as OfsStage,
-              note: "",
-              tracking: o.cargo_tracking_code ?? "",
-              photo: "",
-            };
+          const d = draft[o.id] ?? {
+            stage: o.current_stage as OfsStage,
+            note: "",
+            tracking: o.cargo_tracking_code ?? "",
+            photo: "",
+          };
           return (
             <div key={o.id} className="rounded-xl border border-border bg-card p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -924,7 +1116,9 @@ function TrackingPanel() {
                 <select
                   className={inputCls}
                   value={d.stage}
-                  onChange={(e) => setDraft({ ...draft, [o.id]: { ...d, stage: e.target.value as OfsStage } })}
+                  onChange={(e) =>
+                    setDraft({ ...draft, [o.id]: { ...d, stage: e.target.value as OfsStage } })
+                  }
                 >
                   {OFS_STAGES.map((s, i) => (
                     <option key={s} value={s}>
@@ -942,7 +1136,9 @@ function TrackingPanel() {
                   className={inputCls}
                   placeholder="Code conteneur / suivi cargo"
                   value={d.tracking}
-                  onChange={(e) => setDraft({ ...draft, [o.id]: { ...d, tracking: e.target.value } })}
+                  onChange={(e) =>
+                    setDraft({ ...draft, [o.id]: { ...d, tracking: e.target.value } })
+                  }
                 />
                 <div className="flex gap-2">
                   <label className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-dashed border-border text-[11px] font-semibold">
@@ -955,7 +1151,9 @@ function TrackingPanel() {
                         const f = e.target.files?.[0];
                         if (!f) return;
                         try {
-                          const up = await compressAndUploadImage(f, { prefix: "onfaisimple-stages" });
+                          const up = await compressAndUploadImage(f, {
+                            prefix: "onfaisimple-stages",
+                          });
                           setDraft({ ...draft, [o.id]: { ...d, photo: up.url } });
                         } catch (err) {
                           toast.error(err instanceof Error ? err.message : "Upload échoué");
@@ -979,22 +1177,128 @@ function TrackingPanel() {
   );
 }
 
+/* ------------------------------- CONTRATS -------------------------------- */
+
+/** Tous les mandats sont signés électroniquement (code PIN) dès leur création :
+ * cette liste couvre donc l'intégralité des contrats de mandat de vente commerciale
+ * signés par les utilisateurs, toujours consultables et téléchargeables par l'admin. */
+function ContractsPanel() {
+  const { data: rawOrders = [], isLoading } = useAdminOrders();
+  const [query, setQuery] = useState("");
+
+  const orderIdsKey = rawOrders.map((o) => o.id).join(",");
+  const { data: orders = [] } = useQuery({
+    queryKey: ["admin-ofs-orders-with-profiles", orderIdsKey],
+    enabled: rawOrders.length > 0,
+    queryFn: () => attachProfiles(rawOrders),
+    placeholderData: (prev) => prev,
+  });
+
+  type ContractOrder = (typeof orders)[number];
+
+  function buildContractText(o: ContractOrder) {
+    const p = o.onfaisimple_products as {
+      title: string;
+      estimated_days: number;
+      user_profit_share_percent: number;
+    } | null;
+    const profile = o.profiles as { full_name: string | null; phone: string | null } | null;
+    return ofsMandateText({
+      reference: o.contract_reference,
+      fullName: profile?.full_name ?? "Mandant",
+      productTitle: p?.title ?? "Lot OnFaiSimple",
+      units: o.units_count,
+      total: Number(o.total_amount),
+      payout: Number(o.expected_payout),
+      days: p?.estimated_days ?? 0,
+      sharePercent: p?.user_profit_share_percent ?? 0,
+      signedAt: new Date(o.created_at).toLocaleString("fr-FR"),
+    });
+  }
+
+  const filtered = orders.filter((o) => {
+    if (!query.trim()) return true;
+    const p = o.onfaisimple_products as { title: string } | null;
+    const profile = o.profiles as { full_name: string | null; phone: string | null } | null;
+    const haystack =
+      `${o.contract_reference} ${profile?.full_name ?? ""} ${profile?.phone ?? ""} ${p?.title ?? ""}`.toLowerCase();
+    return haystack.includes(query.trim().toLowerCase());
+  });
+
+  return (
+    <div className="space-y-3">
+      <p className="text-[11px] text-muted-foreground">
+        Chaque mandat créé par un utilisateur constitue un contrat signé électroniquement (code
+        PIN). Il reste archivé ici en permanence et téléchargeable à tout moment.
+      </p>
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher par référence, nom, téléphone ou lot…"
+          className={`${inputCls} pl-8`}
+        />
+      </div>
+
+      <div className="space-y-2">
+        {isLoading ? (
+          <p className="text-xs text-muted-foreground">Chargement…</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-xs text-muted-foreground">Aucun contrat trouvé.</p>
+        ) : (
+          filtered.map((o) => {
+            const p = o.onfaisimple_products as { title: string } | null;
+            const profile = o.profiles as { full_name: string | null; phone: string | null } | null;
+            return (
+              <div
+                key={o.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-sm font-bold">
+                    <FileText className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    {o.contract_reference}
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold">
+                      {OFS_PAYMENT_STATUS_LABELS[o.payment_status] ?? o.payment_status}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {profile?.full_name ?? "Utilisateur"}
+                    {profile?.phone ? ` · ${profile.phone}` : ""} — {p?.title ?? "Lot"}
+                  </div>
+                  <div className="text-[11px]">
+                    {o.units_count} u. · Capital {formatXOF(Number(o.total_amount))} · Versement
+                    attendu {formatXOF(Number(o.expected_payout))} · signé le{" "}
+                    {new Date(o.created_at).toLocaleDateString("fr-FR")}
+                  </div>
+                </div>
+                <button
+                  onClick={() =>
+                    downloadTextFile(`Contrat-${o.contract_reference}.txt`, buildContractText(o))
+                  }
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-ofs-navy px-3 py-1.5 text-[11px] font-bold text-ofs-onnavy"
+                >
+                  <Download className="h-3.5 w-3.5" /> Télécharger
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------ PORTEFEUILLE ---------------------------- */
 
 function WalletPanel() {
-  // user_id référence auth.users, pas public.profiles : aucune FK n'est déclarée entre ces
-  // deux tables, donc l'embed "profiles:user_id(...)" échoue silencieusement (PGRST200) côté
-  // admin et masque les lignes. On récupère les profils séparément et on fusionne côté client.
-  async function attachProfiles<T extends { user_id: string }>(rows: T[]): Promise<(T & { profiles: { full_name: string | null; phone: string | null } | null })[]> {
-    const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
-    if (userIds.length === 0) return rows as (T & { profiles: null })[];
-    const { data: profiles, error } = await supabase.from("profiles").select("id, full_name, phone").in("id", userIds);
-    if (error) throw error;
-    const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
-    return rows.map((r) => ({ ...r, profiles: profileById.get(r.user_id) ?? null }));
-  }
-
-  const { data: txs = [], isLoading: loadingTxs, isError: txsError, error: txsErrorObj } = useQuery({
+  const {
+    data: txs = [],
+    isLoading: loadingTxs,
+    isError: txsError,
+    error: txsErrorObj,
+  } = useQuery({
     queryKey: ["admin-ofs-wallet-txs"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -1008,7 +1312,12 @@ function WalletPanel() {
     },
   });
 
-  const { data: withdrawals = [], isLoading: loadingW, isError: wError, error: wErrorObj } = useQuery({
+  const {
+    data: withdrawals = [],
+    isLoading: loadingW,
+    isError: wError,
+    error: wErrorObj,
+  } = useQuery({
     queryKey: ["admin-ofs-withdrawals-pending"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -1022,12 +1331,20 @@ function WalletPanel() {
   });
 
   useEffect(() => {
-    if (txsError) toast.error(`Erreur transactions OnFaiSimple : ${(txsErrorObj as Error)?.message ?? "inconnue"}`);
-    if (wError) toast.error(`Erreur retraits en cours : ${(wErrorObj as Error)?.message ?? "inconnue"}`);
+    if (txsError)
+      toast.error(
+        `Erreur transactions OnFaiSimple : ${(txsErrorObj as Error)?.message ?? "inconnue"}`,
+      );
+    if (wError)
+      toast.error(`Erreur retraits en cours : ${(wErrorObj as Error)?.message ?? "inconnue"}`);
   }, [txsError, txsErrorObj, wError, wErrorObj]);
 
-  const totalDebit = txs.filter((t) => t.type === "onfaisimple_debit").reduce((s, t) => s + Math.abs(Number(t.amount_xof)), 0);
-  const totalPayout = txs.filter((t) => t.type === "onfaisimple_payout").reduce((s, t) => s + Number(t.amount_xof), 0);
+  const totalDebit = txs
+    .filter((t) => t.type === "onfaisimple_debit")
+    .reduce((s, t) => s + Math.abs(Number(t.amount_xof)), 0);
+  const totalPayout = txs
+    .filter((t) => t.type === "onfaisimple_payout")
+    .reduce((s, t) => s + Number(t.amount_xof), 0);
 
   return (
     <div className="space-y-5">
@@ -1037,7 +1354,9 @@ function WalletPanel() {
           <p className="text-sm font-black">{formatXOF(totalDebit)}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-3">
-          <p className="text-[10px] uppercase text-muted-foreground">Total capital + profit versé</p>
+          <p className="text-[10px] uppercase text-muted-foreground">
+            Total capital + profit versé
+          </p>
           <p className="text-sm font-black text-success">{formatXOF(totalPayout)}</p>
         </div>
       </div>
@@ -1051,15 +1370,25 @@ function WalletPanel() {
           {loadingTxs ? (
             <p className="text-xs text-muted-foreground">Chargement…</p>
           ) : txs.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Aucune transaction OnFaiSimple pour l'instant.</p>
+            <p className="text-xs text-muted-foreground">
+              Aucune transaction OnFaiSimple pour l'instant.
+            </p>
           ) : (
             txs.map((t) => {
-              const profile = t.profiles as { full_name: string | null; phone: string | null } | null;
+              const profile = t.profiles as {
+                full_name: string | null;
+                phone: string | null;
+              } | null;
               const credit = Number(t.amount_xof) >= 0;
               return (
-                <div key={t.id} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3"
+                >
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-bold">{profile?.full_name ?? "Utilisateur"}</p>
+                    <p className="truncate text-xs font-bold">
+                      {profile?.full_name ?? "Utilisateur"}
+                    </p>
                     <p className="truncate text-[11px] text-muted-foreground">
                       {WALLET_TX_LABELS[t.type] ?? t.type} · {t.label}
                     </p>
@@ -1067,8 +1396,14 @@ function WalletPanel() {
                       {new Date(t.created_at).toLocaleString("fr-FR")}
                     </p>
                   </div>
-                  <span className={`shrink-0 text-xs font-black ${credit ? "text-success" : "text-destructive"}`}>
-                    {credit ? <ArrowDownLeft className="mr-1 inline h-3.5 w-3.5" /> : <ArrowUpRight className="mr-1 inline h-3.5 w-3.5" />}
+                  <span
+                    className={`shrink-0 text-xs font-black ${credit ? "text-success" : "text-destructive"}`}
+                  >
+                    {credit ? (
+                      <ArrowDownLeft className="mr-1 inline h-3.5 w-3.5" />
+                    ) : (
+                      <ArrowUpRight className="mr-1 inline h-3.5 w-3.5" />
+                    )}
                     {formatXOF(Math.abs(Number(t.amount_xof)))}
                   </span>
                 </div>
@@ -1089,9 +1424,9 @@ function WalletPanel() {
           </Link>
         </div>
         <p className="mt-0.5 text-[11px] text-muted-foreground">
-          Le portefeuille MSN est unifié : ces retraits proviennent du solde global (Stock Express
-          + OnFaiSimple confondus), pas uniquement des gains OnFaiSimple. Validez-les depuis « Retraits
-          portefeuille ».
+          Le portefeuille MSN est unifié : ces retraits proviennent du solde global (Stock Express +
+          OnFaiSimple confondus), pas uniquement des gains OnFaiSimple. Validez-les depuis «
+          Retraits portefeuille ».
         </p>
         <div className="mt-2 space-y-2">
           {loadingW ? (
@@ -1100,13 +1435,22 @@ function WalletPanel() {
             <p className="text-xs text-muted-foreground">Aucune demande de retrait en attente.</p>
           ) : (
             withdrawals.map((w) => {
-              const profile = w.profiles as { full_name: string | null; phone: string | null } | null;
+              const profile = w.profiles as {
+                full_name: string | null;
+                phone: string | null;
+              } | null;
               return (
-                <div key={w.id} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+                <div
+                  key={w.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3"
+                >
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-bold">{profile?.full_name ?? "Utilisateur"}</p>
+                    <p className="truncate text-xs font-bold">
+                      {profile?.full_name ?? "Utilisateur"}
+                    </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {WITHDRAWAL_METHOD_LABELS[w.method] ?? w.method} · {new Date(w.created_at).toLocaleDateString("fr-FR")}
+                      {WITHDRAWAL_METHOD_LABELS[w.method] ?? w.method} ·{" "}
+                      {new Date(w.created_at).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
