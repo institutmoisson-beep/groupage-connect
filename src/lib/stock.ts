@@ -65,6 +65,8 @@ export const WALLET_TX_LABELS: Record<string, string> = {
   delivery_fee: "Frais de livraison",
   withdrawal_debit: "Retrait",
   adjustment: "Ajustement",
+  onfaisimple_debit: "OnFaiSimple™ — financement",
+  onfaisimple_payout: "OnFaiSimple™ — capital + profit",
 };
 
 export interface StockProductLike {
