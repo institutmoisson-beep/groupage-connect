@@ -34,3 +34,16 @@ export async function downloadFile(url: string, filename: string) {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
 }
+
+/** Force le téléchargement d'un contenu texte généré côté client (ex. contrat de mandat). */
+export function downloadTextFile(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+}
