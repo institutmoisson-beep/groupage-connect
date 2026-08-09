@@ -1,12 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Check, ExternalLink, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF } from "@/lib/format";
 import { compressAndUploadImage } from "@/lib/image-upload";
+import { WALLET_TX_LABELS, WITHDRAWAL_METHOD_LABELS, WITHDRAWAL_STATUS_LABELS } from "@/lib/stock";
 import {
   OFS_CATEGORIES,
   OFS_CATEGORY_LABELS,
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/admin/onfaisimple")({
   component: AdminOnFaiSimple,
 });
 
-type Tab = "products" | "channels" | "deposits" | "tracking";
+type Tab = "products" | "channels" | "deposits" | "tracking" | "wallet";
 
 function AdminOnFaiSimple() {
   const [tab, setTab] = useState<Tab>("products");
@@ -36,6 +37,7 @@ function AdminOnFaiSimple() {
     { k: "channels", label: "Moyens de paiement" },
     { k: "deposits", label: "Dépôts & preuves" },
     { k: "tracking", label: "Suivi 7 étapes" },
+    { k: "wallet", label: "Portefeuille" },
   ];
 
   return (
@@ -68,6 +70,7 @@ function AdminOnFaiSimple() {
       {tab === "channels" && <ChannelsPanel />}
       {tab === "deposits" && <DepositsPanel />}
       {tab === "tracking" && <TrackingPanel />}
+      {tab === "wallet" && <WalletPanel />}
     </div>
   );
 }
@@ -675,6 +678,135 @@ function TrackingPanel() {
           );
         })
       )}
+    </div>
+  );
+}
+
+/* ------------------------------ PORTEFEUILLE ---------------------------- */
+
+function WalletPanel() {
+  const { data: txs = [], isLoading: loadingTxs } = useQuery({
+    queryKey: ["admin-ofs-wallet-txs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("wallet_transactions")
+        .select("id, user_id, amount_xof, type, label, created_at, profiles:user_id(full_name, phone)")
+        .in("type", ["onfaisimple_debit", "onfaisimple_payout"])
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const { data: withdrawals = [], isLoading: loadingW } = useQuery({
+    queryKey: ["admin-ofs-withdrawals-pending"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("withdrawal_requests")
+        .select("id, user_id, amount_xof, method, status, created_at, profiles:user_id(full_name, phone)")
+        .in("status", ["pending", "approved"])
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const totalDebit = txs.filter((t) => t.type === "onfaisimple_debit").reduce((s, t) => s + Math.abs(Number(t.amount_xof)), 0);
+  const totalPayout = txs.filter((t) => t.type === "onfaisimple_payout").reduce((s, t) => s + Number(t.amount_xof), 0);
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-xl border border-border bg-card p-3">
+          <p className="text-[10px] uppercase text-muted-foreground">Total financé (débits)</p>
+          <p className="text-sm font-black">{formatXOF(totalDebit)}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-3">
+          <p className="text-[10px] uppercase text-muted-foreground">Total capital + profit versé</p>
+          <p className="text-sm font-black text-success">{formatXOF(totalPayout)}</p>
+        </div>
+      </div>
+
+      <section>
+        <h2 className="text-sm font-bold">Historique des transactions OnFaiSimple™</h2>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Débits de financement et versements capital + profit, portefeuille MSN unifié.
+        </p>
+        <div className="mt-2 space-y-2">
+          {loadingTxs ? (
+            <p className="text-xs text-muted-foreground">Chargement…</p>
+          ) : txs.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Aucune transaction OnFaiSimple pour l'instant.</p>
+          ) : (
+            txs.map((t) => {
+              const profile = t.profiles as { full_name: string | null; phone: string | null } | null;
+              const credit = Number(t.amount_xof) >= 0;
+              return (
+                <div key={t.id} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold">{profile?.full_name ?? "Utilisateur"}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">
+                      {WALLET_TX_LABELS[t.type] ?? t.type} · {t.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(t.created_at).toLocaleString("fr-FR")}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 text-xs font-black ${credit ? "text-success" : "text-destructive"}`}>
+                    {credit ? <ArrowDownLeft className="mr-1 inline h-3.5 w-3.5" /> : <ArrowUpRight className="mr-1 inline h-3.5 w-3.5" />}
+                    {formatXOF(Math.abs(Number(t.amount_xof)))}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </section>
+
+      <section>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-bold">Demandes de retrait en cours</h2>
+          <Link
+            to="/admin/withdrawals"
+            className="flex items-center gap-1 text-[11px] font-semibold text-primary underline"
+          >
+            Traiter tous les retraits <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Le portefeuille MSN est unifié : ces retraits proviennent du solde global (Stock Express
+          + OnFaiSimple confondus), pas uniquement des gains OnFaiSimple. Validez-les depuis « Retraits
+          portefeuille ».
+        </p>
+        <div className="mt-2 space-y-2">
+          {loadingW ? (
+            <p className="text-xs text-muted-foreground">Chargement…</p>
+          ) : withdrawals.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Aucune demande de retrait en attente.</p>
+          ) : (
+            withdrawals.map((w) => {
+              const profile = w.profiles as { full_name: string | null; phone: string | null } | null;
+              return (
+                <div key={w.id} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold">{profile?.full_name ?? "Utilisateur"}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {WITHDRAWAL_METHOD_LABELS[w.method] ?? w.method} · {new Date(w.created_at).toLocaleDateString("fr-FR")}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-xs font-black">{formatXOF(Number(w.amount_xof))}</span>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold">
+                      {WITHDRAWAL_STATUS_LABELS[w.status] ?? w.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </section>
     </div>
   );
 }
