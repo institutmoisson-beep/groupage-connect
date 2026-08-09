@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -29,19 +29,39 @@ function AdminWithdrawals() {
   const settle = useServerFn(settleWithdrawal);
   const [filter, setFilter] = useState<"pending" | "approved" | "paid" | "rejected" | "all">("pending");
 
-  const { data: rows } = useQuery({
+  const { data: rows, isError, error } = useQuery({
     queryKey: ["admin-withdrawals", filter],
     queryFn: async () => {
+      // withdrawal_requests.user_id référence auth.users, pas public.profiles : il n'y a
+      // aucune FK que PostgREST puisse embarquer automatiquement. L'embed
+      // "profiles:user_id(...)" échoue silencieusement (PGRST200) et vide la liste côté
+      // admin. On récupère donc les deux tables séparément puis on les fusionne côté client
+      // (même correctif que pour admin.roles.tsx).
       let q = supabase
         .from("withdrawal_requests")
-        .select("*, profiles:user_id(full_name, phone)")
+        .select("*")
         .order("created_at", { ascending: false });
       if (filter !== "all") q = q.eq("status", filter);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
+      const { data: withdrawals, error: wErr } = await q;
+      if (wErr) throw wErr;
+
+      const userIds = Array.from(new Set((withdrawals ?? []).map((w: any) => w.user_id)));
+      if (userIds.length === 0) return [];
+
+      const { data: profiles, error: pErr } = await supabase
+        .from("profiles")
+        .select("id, full_name, phone")
+        .in("id", userIds);
+      if (pErr) throw pErr;
+
+      const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      return (withdrawals ?? []).map((w: any) => ({ ...w, profiles: profileById.get(w.user_id) ?? null }));
     },
   });
+
+  useEffect(() => {
+    if (isError) toast.error(`Erreur de chargement des retraits : ${(error as Error)?.message ?? "inconnue"}`);
+  }, [isError, error]);
 
   const act = useMutation({
     mutationFn: (v: { withdrawalId: string; action: "approve" | "pay" | "reject"; note?: string }) =>
