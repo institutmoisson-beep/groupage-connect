@@ -128,7 +128,7 @@ function ProductsPanel() {
   });
 
   const update = useMutation({
-    mutationFn: async (input: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async (input: { id: string; patch: { status: string } }) => {
       const { error } = await supabase
         .from("onfaisimple_products")
         .update(input.patch)
@@ -251,7 +251,7 @@ function ProductsPanel() {
                 <div className="flex items-center gap-2">
                   <select
                     value={p.status}
-                    onChange={(e) => update.mutate({ id: p.id, patch: { status: e.target.value } })}
+                    onChange={(e) => update.mutate({ id: p.id, patch: { status: e.target.value as "funding" } })}
                     className="rounded-lg border border-input bg-background px-2 py-1 text-[11px]"
                   >
                     {Object.entries(OFS_PRODUCT_STATUS_LABELS).map(([k, v]) => (
@@ -335,7 +335,7 @@ function ChannelsPanel() {
   });
 
   const update = useMutation({
-    mutationFn: async (input: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async (input: { id: string; patch: { active: boolean } }) => {
       const { error } = await supabase
         .from("onfaisimple_payment_channels")
         .update(input.patch)
@@ -462,7 +462,7 @@ function useAdminOrders() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("onfaisimple_orders")
-        .select("*, onfaisimple_products(title), profiles:user_id(full_name, phone)")
+        .select("*, onfaisimple_products(title)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -502,15 +502,14 @@ function DepositsPanel() {
       ) : (
         pending.map((o) => {
           const p = o.onfaisimple_products as { title: string } | null;
-          const prof = o.profiles as { full_name: string | null; phone: string | null } | null;
           return (
             <div key={o.id} className="rounded-xl border border-border bg-card p-3">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-bold">{p?.title ?? "Lot"}</div>
                   <div className="text-[11px] text-muted-foreground">
-                    {o.contract_reference} · {prof?.full_name ?? "Client"} {prof?.phone ?? ""} ·{" "}
-                    {o.units_count} u. · {formatXOF(Number(o.total_amount))}
+                    {o.contract_reference} · {o.units_count} u. ·{" "}
+                    {formatXOF(Number(o.total_amount))}
                   </div>
                   <div className="text-[11px]">
                     {o.payment_method} {o.payment_channel_label ? `· ${o.payment_channel_label}` : ""}{" "}
