@@ -1,7 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Circle, Loader2, PackageCheck, Wallet } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Download,
+  FileText,
+  Loader2,
+  PackageCheck,
+  Wallet,
+} from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
@@ -9,11 +17,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { playNotificationSound } from "@/lib/notification-sound";
+import { downloadTextFile } from "@/lib/proof-upload";
 import {
   OFS_PAYMENT_STATUS_LABELS,
   OFS_STAGES,
   OFS_STAGE_HINTS,
   OFS_STAGE_LABELS,
+  ofsMandateText,
   type OfsStage,
 } from "@/lib/onfaisimple";
 
@@ -51,13 +61,46 @@ function OnFaiSimpleOrders() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("onfaisimple_orders")
-        .select("*, onfaisimple_products(title, images, estimated_days)")
+        .select("*, onfaisimple_products(title, images, estimated_days, user_profit_share_percent)")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
+
+  const { data: profile } = useQuery({
+    queryKey: ["ofs-profile", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  function downloadContract(o: (typeof orders)[number]) {
+    const product = o.onfaisimple_products as {
+      title: string;
+      estimated_days: number;
+      user_profit_share_percent: number;
+    } | null;
+    const text = ofsMandateText({
+      reference: o.contract_reference,
+      fullName: profile?.full_name ?? user?.email ?? "Le Mandant",
+      productTitle: product?.title ?? "Lot OnFaiSimple",
+      units: o.units_count,
+      total: Number(o.total_amount),
+      payout: Number(o.expected_payout),
+      days: product?.estimated_days ?? 0,
+      sharePercent: product?.user_profit_share_percent ?? 0,
+      signedAt: new Date(o.created_at).toLocaleString("fr-FR"),
+    });
+    downloadTextFile(`Contrat-${o.contract_reference}.txt`, text);
+  }
 
   const { data: events = [] } = useQuery({
     queryKey: ["ofs-events", openId],
@@ -196,6 +239,20 @@ function OnFaiSimpleOrders() {
                       </div>
                     )}
                   </button>
+
+                  <div className="border-t border-border px-3 py-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        downloadContract(o);
+                      }}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-ofs-navy/5 py-2 text-[11px] font-bold text-ofs-navy hover:bg-ofs-navy/10"
+                    >
+                      <FileText className="h-3.5 w-3.5" />
+                      Télécharger mon contrat de mandat signé
+                      <Download className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
 
                   {open && (
                     <div className="border-t border-border bg-muted/20 p-3">
