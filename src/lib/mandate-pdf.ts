@@ -21,6 +21,9 @@ const GOLD: [number, number, number] = [245, 158, 11];
 const EMERALD: [number, number, number] = [16, 185, 129];
 const GREY: [number, number, number] = [110, 118, 132];
 
+/** Formatage FCFA sans espace insécable (non supportée par les polices PDF de base). */
+const xof = (n: number) => `${Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} FCFA`;
+
 const M = 16; // marge
 const W = 210;
 const H = 297;
@@ -93,8 +96,8 @@ export function buildMandatePdf(input: MandatePdfInput): jsPDF {
     ["Mandant", input.fullName || "Le Mandant"],
     ["Lot financé", input.productTitle],
     ["Unités", String(input.units)],
-    ["Capital de financement", `${input.total.toLocaleString("fr-FR")} FCFA`],
-    ["Versement attendu", `${input.payout.toLocaleString("fr-FR")} FCFA`],
+    ["Capital de financement", xof(input.total)],
+    ["Versement attendu", xof(input.payout)],
     ["Part de marge Mandant", `${input.sharePercent}%`],
     ["Délai estimé du cycle", `${input.days} jours`],
   ];
@@ -222,7 +225,7 @@ export function buildMandatePdf(input: MandatePdfInput): jsPDF {
   doc.setTextColor(...EMERALD);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7);
-  doc.text("\u2713 Contrat signé et archivé", M + 4, sigY + 37);
+  doc.text("Contrat signé électroniquement et archivé", M + 4, sigY + 37);
 
   footer();
   return doc;
