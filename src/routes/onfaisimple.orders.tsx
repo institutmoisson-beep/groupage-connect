@@ -247,7 +247,7 @@ function OnFaiSimpleOrders() {
                       className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-ofs-navy/5 py-2 text-[11px] font-bold text-ofs-navy hover:bg-ofs-navy/10"
                     >
                       <FileText className="h-3.5 w-3.5" />
-                      Télécharger mon contrat de mandat signé
+                      Télécharger mon contrat de mandat signé (PDF)
                       <Download className="h-3.5 w-3.5" />
                     </button>
                   </div>
