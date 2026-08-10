@@ -137,7 +137,8 @@ export function buildMandatePdf(input: MandatePdfInput): jsPDF {
     const wrapped = doc.splitTextToSize(line, CONTENT) as string[];
     need(wrapped.length * (isHeading ? 5 : 4.4) + (isHeading ? 4 : 1));
     if (isHeading) y += 3;
-    doc.setTextColor(...(isHeading ? NAVY : [40, 44, 52]));
+    const body: [number, number, number] = [40, 44, 52];
+    doc.setTextColor(...(isHeading ? NAVY : body));
     if (isArticle) {
       doc.setFillColor(...GOLD);
       doc.rect(M, y - 3.4, 1.4, 4, "F");
