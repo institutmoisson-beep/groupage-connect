@@ -26,7 +26,7 @@ import { compressAndUploadImage } from "@/lib/image-upload";
 import { getPaymentProofImage } from "@/lib/onfaisimple.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WALLET_TX_LABELS, WITHDRAWAL_METHOD_LABELS, WITHDRAWAL_STATUS_LABELS } from "@/lib/stock";
-import { downloadTextFile } from "@/lib/proof-upload";
+import { downloadMandatePdf } from "@/lib/mandate-pdf";
 import {
   OFS_CATEGORIES,
   OFS_CATEGORY_LABELS,
@@ -34,7 +34,6 @@ import {
   OFS_PRODUCT_STATUS_LABELS,
   OFS_STAGES,
   OFS_STAGE_LABELS,
-  ofsMandateText,
   type OfsStage,
 } from "@/lib/onfaisimple";
 
@@ -1196,14 +1195,14 @@ function ContractsPanel() {
 
   type ContractOrder = (typeof orders)[number];
 
-  function buildContractText(o: ContractOrder) {
+  function downloadContract(o: ContractOrder) {
     const p = o.onfaisimple_products as {
       title: string;
       estimated_days: number;
       user_profit_share_percent: number;
     } | null;
     const profile = o.profiles as { full_name: string | null; phone: string | null } | null;
-    return ofsMandateText({
+    downloadMandatePdf({
       reference: o.contract_reference,
       fullName: profile?.full_name ?? "Mandant",
       productTitle: p?.title ?? "Lot OnFaiSimple",
@@ -1213,6 +1212,7 @@ function ContractsPanel() {
       days: p?.estimated_days ?? 0,
       sharePercent: p?.user_profit_share_percent ?? 0,
       signedAt: new Date(o.created_at).toLocaleString("fr-FR"),
+      phone: profile?.phone ?? null,
     });
   }
 
@@ -1275,7 +1275,7 @@ function ContractsPanel() {
                 </div>
                 <button
                   onClick={() =>
-                    downloadTextFile(`Contrat-${o.contract_reference}.txt`, buildContractText(o))
+                    downloadContract(o)
                   }
                   className="flex shrink-0 items-center gap-1.5 rounded-lg bg-ofs-navy px-3 py-1.5 text-[11px] font-bold text-ofs-onnavy"
                 >

@@ -17,13 +17,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { playNotificationSound } from "@/lib/notification-sound";
-import { downloadTextFile } from "@/lib/proof-upload";
+import { downloadMandatePdf } from "@/lib/mandate-pdf";
 import {
   OFS_PAYMENT_STATUS_LABELS,
   OFS_STAGES,
   OFS_STAGE_HINTS,
   OFS_STAGE_LABELS,
-  ofsMandateText,
   type OfsStage,
 } from "@/lib/onfaisimple";
 
@@ -88,7 +87,7 @@ function OnFaiSimpleOrders() {
       estimated_days: number;
       user_profit_share_percent: number;
     } | null;
-    const text = ofsMandateText({
+    downloadMandatePdf({
       reference: o.contract_reference,
       fullName: profile?.full_name ?? user?.email ?? "Le Mandant",
       productTitle: product?.title ?? "Lot OnFaiSimple",
@@ -99,7 +98,6 @@ function OnFaiSimpleOrders() {
       sharePercent: product?.user_profit_share_percent ?? 0,
       signedAt: new Date(o.created_at).toLocaleString("fr-FR"),
     });
-    downloadTextFile(`Contrat-${o.contract_reference}.txt`, text);
   }
 
   const { data: events = [] } = useQuery({
@@ -249,7 +247,7 @@ function OnFaiSimpleOrders() {
                       className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-ofs-navy/5 py-2 text-[11px] font-bold text-ofs-navy hover:bg-ofs-navy/10"
                     >
                       <FileText className="h-3.5 w-3.5" />
-                      Télécharger mon contrat de mandat signé
+                      Télécharger mon contrat de mandat signé (PDF)
                       <Download className="h-3.5 w-3.5" />
                     </button>
                   </div>
