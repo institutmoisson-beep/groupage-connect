@@ -5,6 +5,7 @@ import {
   PackageCheck,
   PackageOpen,
   Search,
+  ShieldCheck,
   Ship,
   ShoppingBag,
   Users,
@@ -12,7 +13,17 @@ import {
 } from "lucide-react";
 
 const items: Array<{
-  to: "/" | "/groupage" | "/sourcing" | "/cargo" | "/hotels" | "/stock" | "/onfaisimple" | "/mlm" | "/profile";
+  to:
+    | "/"
+    | "/groupage"
+    | "/sourcing"
+    | "/cargo"
+    | "/hotels"
+    | "/stock"
+    | "/onfaisimple"
+    | "/vida"
+    | "/mlm"
+    | "/profile";
   label: string;
   icon: typeof Home;
   exact?: boolean;
@@ -25,6 +36,7 @@ const items: Array<{
   { to: "/hotels", label: "Hôtels", icon: Hotel },
   { to: "/stock", label: "Stock", icon: ShoppingBag },
   { to: "/onfaisimple", label: "OnFaiSimple", icon: PackageCheck, badge: true },
+  { to: "/vida", label: "ViDa", icon: ShieldCheck },
   { to: "/mlm", label: "Réseau", icon: Users },
   { to: "/profile", label: "Profil", icon: User },
 ];
