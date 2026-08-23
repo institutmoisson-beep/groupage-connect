@@ -23,6 +23,9 @@ import {
   BedDouble,
   Volume2,
   VolumeX,
+  ShieldHalf,
+  UserCog,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -61,6 +64,9 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/cargo-dispatch", label: "GPS Dispatch", icon: Truck },
   { to: "/admin/stock", label: "Stock Express", icon: ShoppingBag },
   { to: "/admin/onfaisimple", label: "OnFaiSimple™", icon: PackageCheck },
+  { to: "/admin/vida", label: "ViDa — Escrow", icon: ShieldHalf },
+  { to: "/admin/vida-agents", label: "ViDa — Agents & Rôles", icon: UserCog },
+  { to: "/admin/vida-products", label: "ViDa — Règles produits", icon: SlidersHorizontal },
   { to: "/admin/wallets", label: "Portefeuilles", icon: Wallet },
   { to: "/admin/withdrawals", label: "Retraits portefeuille", icon: Banknote },
 
