@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { formatXOF, computePrice } from "@/lib/format";
 import { compressAndUploadImage } from "@/lib/image-upload";
 import {
@@ -48,12 +49,34 @@ type DraftItem = {
 
 function AdminVidaProducts() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const updateRules = useServerFn(vidaAdminUpdateProductRules);
   const createProduct = useServerFn(vidaAdminCreateProduct);
   const updateProduct = useServerFn(vidaAdminUpdateProduct);
   const setActive = useServerFn(vidaAdminSetProductActive);
 
   const [showCreate, setShowCreate] = useState(false);
+
+  // ---- Comptes "Vendeur" ViDa approuvés — un produit doit obligatoirement leur appartenir ----
+  const { data: vendors } = useQuery({
+    queryKey: ["admin-vida-vendors"],
+    queryFn: async () => {
+      const { data: roles, error } = await supabase
+        .from("vida_roles")
+        .select("user_id, is_approved, is_suspended")
+        .eq("role", "vendor")
+        .eq("is_approved", true)
+        .eq("is_suspended", false);
+      if (error) throw error;
+      const ids = (roles ?? []).map((r: any) => r.user_id);
+      if (ids.length === 0) return [];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, phone")
+        .in("id", ids);
+      return (profiles ?? []).map((p: any) => ({ id: p.id, label: p.full_name ?? p.phone ?? p.id }));
+    },
+  });
 
   // ---- Produits ViDa déjà créés (avec le contenu de leur pack, s'il y en a un) ----
   const { data: products, isLoading } = useQuery({
@@ -172,6 +195,8 @@ function AdminVidaProducts() {
       {showCreate && (
         <CreateProductPanel
           catalog={catalog ?? []}
+          vendors={vendors ?? []}
+          currentUserId={user?.id ?? null}
           saving={create.isPending}
           onCreate={(v) => create.mutate(v)}
         />
@@ -184,6 +209,7 @@ function AdminVidaProducts() {
             key={p.id}
             product={p}
             catalog={catalog ?? []}
+            vendors={vendors ?? []}
             savingBase={save.isPending}
             savingRules={saveRules.isPending}
             togglingActive={toggleActive.isPending}
@@ -208,10 +234,14 @@ function AdminVidaProducts() {
 
 function CreateProductPanel({
   catalog,
+  vendors,
+  currentUserId,
   saving,
   onCreate,
 }: {
   catalog: any[];
+  vendors: { id: string; label: string }[];
+  currentUserId: string | null;
   saving: boolean;
   onCreate: (v: {
     title: string;
@@ -225,10 +255,12 @@ function CreateProductPanel({
     cancellationPenaltyPercentage: number;
     agentCommissionPercentage: number;
     platformCommissionPercentage: number;
+    vendorId: string;
     items: { productId: string | null; title: string; quantity: number; unitPriceXof: number }[];
   }) => void;
 }) {
   const [items, setItems] = useState<DraftItem[]>([]);
+  const [vendorId, setVendorId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -289,6 +321,7 @@ function CreateProductPanel({
   async function handleCreate() {
     if (!title.trim()) return toast.error("Le titre est obligatoire.");
     if (Number(priceXof) <= 0) return toast.error("Le prix de vente doit être supérieur à 0.");
+    if (!vendorId) return toast.error("Choisissez le vendeur propriétaire de ce produit.");
     onCreate({
       title: title.trim(),
       description: description.trim(),
@@ -301,6 +334,7 @@ function CreateProductPanel({
       cancellationPenaltyPercentage: Number(penalty),
       agentCommissionPercentage: Number(agentPct),
       platformCommissionPercentage: Number(platformPct),
+      vendorId,
       items: items.map((it) => ({
         productId: it.productId,
         title: it.title,
@@ -400,6 +434,30 @@ function CreateProductPanel({
             onChange={setDeliveryFeeXof}
           />
           <Input label="Stock" type="number" value={stockQuantity} onChange={setStockQuantity} />
+          <label className="block text-[10px] text-muted-foreground">
+            Vendeur (propriétaire du produit)
+            <select
+              value={vendorId}
+              onChange={(e) => setVendorId(e.target.value)}
+              className="mt-0.5 w-full rounded-lg border border-input bg-background p-1.5 text-xs text-foreground"
+            >
+              <option value="">— Choisir —</option>
+              {currentUserId && (
+                <option value={currentUserId}>Mon compte administrateur (plateforme)</option>
+              )}
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+            {vendors.length === 0 && (
+              <span className="mt-1 block text-[10px] text-muted-foreground">
+                Aucun compte "Vendeur" approuvé pour l'instant — vous pouvez utiliser votre
+                compte administrateur, ou en approuver un dans « ViDa — Agents & Rôles ».
+              </span>
+            )}
+          </label>
           <label className="flex items-center gap-2 text-xs">
             <input
               type="checkbox"
@@ -508,6 +566,7 @@ function CatalogPicker({
 function ProductRow({
   product,
   catalog,
+  vendors,
   savingBase,
   savingRules,
   togglingActive,
@@ -517,6 +576,7 @@ function ProductRow({
 }: {
   product: any;
   catalog: any[];
+  vendors: { id: string; label: string }[];
   savingBase: boolean;
   savingRules: boolean;
   togglingActive: boolean;
@@ -528,6 +588,7 @@ function ProductRow({
     deliveryFeeXof: number;
     stockQuantity: number;
     isActive: boolean;
+    vendorId?: string;
   }) => void;
   onSaveRules: (v: {
     cancellationWindowHours: number;
@@ -601,7 +662,12 @@ function ProductRow({
             </div>
           )}
 
-          <BaseFieldsForm product={product} saving={savingBase} onSave={onSaveBase} />
+          <BaseFieldsForm
+            product={product}
+            vendors={vendors}
+            saving={savingBase}
+            onSave={onSaveBase}
+          />
           <ProductRuleFields product={product} saving={savingRules} onSave={onSaveRules} />
         </div>
       )}
@@ -611,10 +677,12 @@ function ProductRow({
 
 function BaseFieldsForm({
   product,
+  vendors,
   saving,
   onSave,
 }: {
   product: any;
+  vendors: { id: string; label: string }[];
   saving: boolean;
   onSave: (v: {
     title: string;
@@ -624,6 +692,7 @@ function BaseFieldsForm({
     deliveryFeeXof: number;
     stockQuantity: number;
     isActive: boolean;
+    vendorId?: string;
   }) => void;
 }) {
   const [title, setTitle] = useState(product.title);
@@ -632,6 +701,7 @@ function BaseFieldsForm({
   const [priceXof, setPriceXof] = useState(String(product.price_xof));
   const [deliveryFeeXof, setDeliveryFeeXof] = useState(String(product.delivery_fee_xof ?? 0));
   const [stockQuantity, setStockQuantity] = useState(String(product.stock_quantity));
+  const [vendorId, setVendorId] = useState(product.vendor_id ?? "");
 
   return (
     <div>
@@ -648,6 +718,23 @@ function BaseFieldsForm({
           onChange={setDeliveryFeeXof}
         />
         <Input label="Stock" type="number" value={stockQuantity} onChange={setStockQuantity} />
+        <label className="block text-[10px] text-muted-foreground">
+          Vendeur (propriétaire du produit)
+          <select
+            value={vendorId}
+            onChange={(e) => setVendorId(e.target.value)}
+            className="mt-0.5 w-full rounded-lg border border-input bg-background p-1.5 text-xs text-foreground"
+          >
+            {!vendors.some((v) => v.id === vendorId) && vendorId && (
+              <option value={vendorId}>Vendeur actuel ({vendorId.slice(0, 8)}…)</option>
+            )}
+            {vendors.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       <button
         onClick={() =>
@@ -659,6 +746,7 @@ function BaseFieldsForm({
             deliveryFeeXof: Number(deliveryFeeXof),
             stockQuantity: Number(stockQuantity),
             isActive: product.is_active,
+            vendorId: vendorId || undefined,
           })
         }
         disabled={saving}
