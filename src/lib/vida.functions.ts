@@ -220,6 +220,8 @@ const createProductSchema = z.object({
   cancellationPenaltyPercentage: z.number().min(0).max(100).default(10),
   agentCommissionPercentage: z.number().min(0).max(100).default(5),
   platformCommissionPercentage: z.number().min(0).max(100).default(10),
+  /** Compte "Vendeur" ViDa propriétaire du produit — colonne vendor_id NOT NULL en base. */
+  vendorId: z.string().uuid(),
   /** Vide = produit "simple" sans pack. 1 élément = produit simple lié au catalogue.
    * Plusieurs éléments = pack composé de plusieurs produits existants. */
   items: z.array(productItemSchema).max(30).default([]),
@@ -244,6 +246,7 @@ export const vidaAdminCreateProduct = createServerFn({ method: "POST" })
       p_cancellation_penalty_percentage: data.cancellationPenaltyPercentage,
       p_agent_commission_percentage: data.agentCommissionPercentage,
       p_platform_commission_percentage: data.platformCommissionPercentage,
+      p_vendor_id: data.vendorId,
       p_items: data.items.map((it) => ({
         productId: it.productId ?? null,
         title: it.title,
@@ -264,6 +267,8 @@ const updateProductSchema = z.object({
   deliveryFeeXof: z.number().min(0).default(0),
   stockQuantity: z.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
+  /** Omis = on ne change pas le vendeur actuel. */
+  vendorId: z.string().uuid().optional(),
   /** Omis (undefined) = on ne touche pas au contenu du pack. Fourni = on le remplace entièrement. */
   items: z.array(productItemSchema).max(30).optional(),
 });
@@ -283,6 +288,7 @@ export const vidaAdminUpdateProduct = createServerFn({ method: "POST" })
       p_delivery_fee_xof: data.deliveryFeeXof,
       p_stock_quantity: data.stockQuantity,
       p_is_active: data.isActive,
+      p_vendor_id: data.vendorId ?? null,
       p_items: data.items
         ? data.items.map((it) => ({
             productId: it.productId ?? null,
