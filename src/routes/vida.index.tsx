@@ -117,6 +117,18 @@ function VidaCatalog() {
             </li>
           )}
         </ul>
+
+        <div className="mt-6 flex flex-wrap justify-center gap-2 text-[10px] font-bold text-muted-foreground">
+          <Link to="/vida-agent" className="rounded-full border border-border px-3 py-1.5">
+            Espace Agent Mobile Money
+          </Link>
+          <Link to="/vida-courier" className="rounded-full border border-border px-3 py-1.5">
+            Espace Livreur
+          </Link>
+          <Link to="/vida-vendor" className="rounded-full border border-border px-3 py-1.5">
+            Espace Vendeur
+          </Link>
+        </div>
       </main>
       <BottomNav />
     </div>
