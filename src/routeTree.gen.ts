@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as VidaVendorRouteImport } from './routes/vida-vendor'
+import { Route as VidaCourierRouteImport } from './routes/vida-courier'
+import { Route as VidaAgentRouteImport } from './routes/vida-agent'
 import { Route as SourcingRouteImport } from './routes/sourcing'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -21,10 +24,13 @@ import { Route as CargoRouteImport } from './routes/cargo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VidaIndexRouteImport } from './routes/vida.index'
 import { Route as StockIndexRouteImport } from './routes/stock.index'
 import { Route as OnfaisimpleIndexRouteImport } from './routes/onfaisimple.index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VidaOrdersRouteImport } from './routes/vida.orders'
+import { Route as VidaProductIdRouteImport } from './routes/vida.$productId'
 import { Route as StockSellRouteImport } from './routes/stock.sell'
 import { Route as StockOrdersRouteImport } from './routes/stock.orders'
 import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
@@ -37,6 +43,9 @@ import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
 import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
+import { Route as AdminVidaProductsRouteImport } from './routes/admin.vida-products'
+import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
+import { Route as AdminVidaRouteImport } from './routes/admin.vida'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
@@ -56,6 +65,7 @@ import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dis
 import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
+import { Route as VidaOrdersOrderIdRouteImport } from './routes/vida.orders.$orderId'
 import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
 import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
 import { Route as HotelsVoucherBookingIdRouteImport } from './routes/hotels.voucher.$bookingId'
@@ -66,6 +76,21 @@ import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/pub
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VidaVendorRoute = VidaVendorRouteImport.update({
+  id: '/vida-vendor',
+  path: '/vida-vendor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VidaCourierRoute = VidaCourierRouteImport.update({
+  id: '/vida-courier',
+  path: '/vida-courier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VidaAgentRoute = VidaAgentRouteImport.update({
+  id: '/vida-agent',
+  path: '/vida-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SourcingRoute = SourcingRouteImport.update({
@@ -123,6 +148,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VidaIndexRoute = VidaIndexRouteImport.update({
+  id: '/vida/',
+  path: '/vida/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StockIndexRoute = StockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
@@ -142,6 +172,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const VidaOrdersRoute = VidaOrdersRouteImport.update({
+  id: '/vida/orders',
+  path: '/vida/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VidaProductIdRoute = VidaProductIdRouteImport.update({
+  id: '/vida/$productId',
+  path: '/vida/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const StockSellRoute = StockSellRouteImport.update({
   id: '/stock/sell',
@@ -201,6 +241,21 @@ const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
 const AdminWalletsRoute = AdminWalletsRouteImport.update({
   id: '/wallets',
   path: '/wallets',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaProductsRoute = AdminVidaProductsRouteImport.update({
+  id: '/vida-products',
+  path: '/vida-products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaAgentsRoute = AdminVidaAgentsRouteImport.update({
+  id: '/vida-agents',
+  path: '/vida-agents',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaRoute = AdminVidaRouteImport.update({
+  id: '/vida',
+  path: '/vida',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -298,6 +353,11 @@ const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
   path: '/campaign-products',
   getParentRoute: () => AdminRoute,
 } as any)
+const VidaOrdersOrderIdRoute = VidaOrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => VidaOrdersRoute,
+} as any)
 const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
   id: '/$sourcingId/chat',
   path: '/$sourcingId/chat',
@@ -345,6 +405,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/vida-agent': typeof VidaAgentRoute
+  '/vida-courier': typeof VidaCourierRoute
+  '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
@@ -365,6 +428,9 @@ export interface FileRoutesByFullPath {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/vida': typeof AdminVidaRoute
+  '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -377,15 +443,19 @@ export interface FileRoutesByFullPath {
   '/stock/$productId': typeof StockProductIdRoute
   '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
+  '/vida/$productId': typeof VidaProductIdRoute
+  '/vida/orders': typeof VidaOrdersRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
+  '/vida/': typeof VidaIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
+  '/vida/orders/$orderId': typeof VidaOrdersOrderIdRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesByTo {
@@ -399,6 +469,9 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/vida-agent': typeof VidaAgentRoute
+  '/vida-courier': typeof VidaCourierRoute
+  '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
@@ -419,6 +492,9 @@ export interface FileRoutesByTo {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/vida': typeof AdminVidaRoute
+  '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -431,15 +507,19 @@ export interface FileRoutesByTo {
   '/stock/$productId': typeof StockProductIdRoute
   '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
+  '/vida/$productId': typeof VidaProductIdRoute
+  '/vida/orders': typeof VidaOrdersRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
   '/onfaisimple': typeof OnfaisimpleIndexRoute
   '/stock': typeof StockIndexRoute
+  '/vida': typeof VidaIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
+  '/vida/orders/$orderId': typeof VidaOrdersOrderIdRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRoutesById {
@@ -455,6 +535,9 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing': typeof SourcingRouteWithChildren
+  '/vida-agent': typeof VidaAgentRoute
+  '/vida-courier': typeof VidaCourierRoute
+  '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
@@ -475,6 +558,9 @@ export interface FileRoutesById {
   '/admin/sourcing': typeof AdminSourcingRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/vida': typeof AdminVidaRoute
+  '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -487,15 +573,19 @@ export interface FileRoutesById {
   '/stock/$productId': typeof StockProductIdRoute
   '/stock/orders': typeof StockOrdersRoute
   '/stock/sell': typeof StockSellRoute
+  '/vida/$productId': typeof VidaProductIdRoute
+  '/vida/orders': typeof VidaOrdersRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/onfaisimple/': typeof OnfaisimpleIndexRoute
   '/stock/': typeof StockIndexRoute
+  '/vida/': typeof VidaIndexRoute
   '/checkout/sourcing/$sourcingId': typeof CheckoutSourcingSourcingIdRoute
   '/hotels/voucher-direct/$bookingId': typeof HotelsVoucherDirectBookingIdRoute
   '/hotels/voucher/$bookingId': typeof HotelsVoucherBookingIdRoute
   '/receipt/sourcing/$sourcingId': typeof ReceiptSourcingSourcingIdRoute
   '/sourcing/$sourcingId/chat': typeof SourcingSourcingIdChatRoute
+  '/vida/orders/$orderId': typeof VidaOrdersOrderIdRoute
   '/api/public/webhooks/geniuspay': typeof ApiPublicWebhooksGeniuspayRoute
 }
 export interface FileRouteTypes {
@@ -512,6 +602,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/vida-agent'
+    | '/vida-courier'
+    | '/vida-vendor'
     | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
@@ -532,6 +625,9 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/vida'
+    | '/admin/vida-agents'
+    | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -544,15 +640,19 @@ export interface FileRouteTypes {
     | '/stock/$productId'
     | '/stock/orders'
     | '/stock/sell'
+    | '/vida/$productId'
+    | '/vida/orders'
     | '/admin/'
     | '/hotels/'
     | '/onfaisimple/'
     | '/stock/'
+    | '/vida/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
+    | '/vida/orders/$orderId'
     | '/api/public/webhooks/geniuspay'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -566,6 +666,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/vida-agent'
+    | '/vida-courier'
+    | '/vida-vendor'
     | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
@@ -586,6 +689,9 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/vida'
+    | '/admin/vida-agents'
+    | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -598,15 +704,19 @@ export interface FileRouteTypes {
     | '/stock/$productId'
     | '/stock/orders'
     | '/stock/sell'
+    | '/vida/$productId'
+    | '/vida/orders'
     | '/admin'
     | '/hotels'
     | '/onfaisimple'
     | '/stock'
+    | '/vida'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
+    | '/vida/orders/$orderId'
     | '/api/public/webhooks/geniuspay'
   id:
     | '__root__'
@@ -621,6 +731,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sitemap.xml'
     | '/sourcing'
+    | '/vida-agent'
+    | '/vida-courier'
+    | '/vida-vendor'
     | '/wallet'
     | '/admin/campaign-products'
     | '/admin/campaigns'
@@ -641,6 +754,9 @@ export interface FileRouteTypes {
     | '/admin/sourcing'
     | '/admin/stock'
     | '/admin/users'
+    | '/admin/vida'
+    | '/admin/vida-agents'
+    | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -653,15 +769,19 @@ export interface FileRouteTypes {
     | '/stock/$productId'
     | '/stock/orders'
     | '/stock/sell'
+    | '/vida/$productId'
+    | '/vida/orders'
     | '/admin/'
     | '/hotels/'
     | '/onfaisimple/'
     | '/stock/'
+    | '/vida/'
     | '/checkout/sourcing/$sourcingId'
     | '/hotels/voucher-direct/$bookingId'
     | '/hotels/voucher/$bookingId'
     | '/receipt/sourcing/$sourcingId'
     | '/sourcing/$sourcingId/chat'
+    | '/vida/orders/$orderId'
     | '/api/public/webhooks/geniuspay'
   fileRoutesById: FileRoutesById
 }
@@ -677,6 +797,9 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingRoute: typeof SourcingRouteWithChildren
+  VidaAgentRoute: typeof VidaAgentRoute
+  VidaCourierRoute: typeof VidaCourierRoute
+  VidaVendorRoute: typeof VidaVendorRoute
   WalletRoute: typeof WalletRoute
   CheckoutOrderIdRoute: typeof CheckoutOrderIdRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
@@ -688,9 +811,12 @@ export interface RootRouteChildren {
   StockProductIdRoute: typeof StockProductIdRoute
   StockOrdersRoute: typeof StockOrdersRoute
   StockSellRoute: typeof StockSellRoute
+  VidaProductIdRoute: typeof VidaProductIdRoute
+  VidaOrdersRoute: typeof VidaOrdersRouteWithChildren
   HotelsIndexRoute: typeof HotelsIndexRoute
   OnfaisimpleIndexRoute: typeof OnfaisimpleIndexRoute
   StockIndexRoute: typeof StockIndexRoute
+  VidaIndexRoute: typeof VidaIndexRoute
   CheckoutSourcingSourcingIdRoute: typeof CheckoutSourcingSourcingIdRoute
   HotelsVoucherDirectBookingIdRoute: typeof HotelsVoucherDirectBookingIdRoute
   HotelsVoucherBookingIdRoute: typeof HotelsVoucherBookingIdRoute
@@ -705,6 +831,27 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vida-vendor': {
+      id: '/vida-vendor'
+      path: '/vida-vendor'
+      fullPath: '/vida-vendor'
+      preLoaderRoute: typeof VidaVendorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vida-courier': {
+      id: '/vida-courier'
+      path: '/vida-courier'
+      fullPath: '/vida-courier'
+      preLoaderRoute: typeof VidaCourierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vida-agent': {
+      id: '/vida-agent'
+      path: '/vida-agent'
+      fullPath: '/vida-agent'
+      preLoaderRoute: typeof VidaAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sourcing': {
@@ -784,6 +931,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vida/': {
+      id: '/vida/'
+      path: '/vida'
+      fullPath: '/vida/'
+      preLoaderRoute: typeof VidaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stock/': {
       id: '/stock/'
       path: '/stock'
@@ -811,6 +965,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/vida/orders': {
+      id: '/vida/orders'
+      path: '/vida/orders'
+      fullPath: '/vida/orders'
+      preLoaderRoute: typeof VidaOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vida/$productId': {
+      id: '/vida/$productId'
+      path: '/vida/$productId'
+      fullPath: '/vida/$productId'
+      preLoaderRoute: typeof VidaProductIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/stock/sell': {
       id: '/stock/sell'
@@ -894,6 +1062,27 @@ declare module '@tanstack/react-router' {
       path: '/wallets'
       fullPath: '/admin/wallets'
       preLoaderRoute: typeof AdminWalletsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-products': {
+      id: '/admin/vida-products'
+      path: '/vida-products'
+      fullPath: '/admin/vida-products'
+      preLoaderRoute: typeof AdminVidaProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-agents': {
+      id: '/admin/vida-agents'
+      path: '/vida-agents'
+      fullPath: '/admin/vida-agents'
+      preLoaderRoute: typeof AdminVidaAgentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida': {
+      id: '/admin/vida'
+      path: '/vida'
+      fullPath: '/admin/vida'
+      preLoaderRoute: typeof AdminVidaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/users': {
@@ -1029,6 +1218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCampaignProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/vida/orders/$orderId': {
+      id: '/vida/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/vida/orders/$orderId'
+      preLoaderRoute: typeof VidaOrdersOrderIdRouteImport
+      parentRoute: typeof VidaOrdersRoute
+    }
     '/sourcing/$sourcingId/chat': {
       id: '/sourcing/$sourcingId/chat'
       path: '/$sourcingId/chat'
@@ -1094,6 +1290,9 @@ interface AdminRouteChildren {
   AdminSourcingRoute: typeof AdminSourcingRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminVidaRoute: typeof AdminVidaRoute
+  AdminVidaAgentsRoute: typeof AdminVidaAgentsRoute
+  AdminVidaProductsRoute: typeof AdminVidaProductsRoute
   AdminWalletsRoute: typeof AdminWalletsRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1119,6 +1318,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSourcingRoute: AdminSourcingRoute,
   AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminVidaRoute: AdminVidaRoute,
+  AdminVidaAgentsRoute: AdminVidaAgentsRoute,
+  AdminVidaProductsRoute: AdminVidaProductsRoute,
   AdminWalletsRoute: AdminWalletsRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -1138,6 +1340,18 @@ const SourcingRouteWithChildren = SourcingRoute._addFileChildren(
   SourcingRouteChildren,
 )
 
+interface VidaOrdersRouteChildren {
+  VidaOrdersOrderIdRoute: typeof VidaOrdersOrderIdRoute
+}
+
+const VidaOrdersRouteChildren: VidaOrdersRouteChildren = {
+  VidaOrdersOrderIdRoute: VidaOrdersOrderIdRoute,
+}
+
+const VidaOrdersRouteWithChildren = VidaOrdersRoute._addFileChildren(
+  VidaOrdersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -1150,6 +1364,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingRoute: SourcingRouteWithChildren,
+  VidaAgentRoute: VidaAgentRoute,
+  VidaCourierRoute: VidaCourierRoute,
+  VidaVendorRoute: VidaVendorRoute,
   WalletRoute: WalletRoute,
   CheckoutOrderIdRoute: CheckoutOrderIdRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
@@ -1161,9 +1378,12 @@ const rootRouteChildren: RootRouteChildren = {
   StockProductIdRoute: StockProductIdRoute,
   StockOrdersRoute: StockOrdersRoute,
   StockSellRoute: StockSellRoute,
+  VidaProductIdRoute: VidaProductIdRoute,
+  VidaOrdersRoute: VidaOrdersRouteWithChildren,
   HotelsIndexRoute: HotelsIndexRoute,
   OnfaisimpleIndexRoute: OnfaisimpleIndexRoute,
   StockIndexRoute: StockIndexRoute,
+  VidaIndexRoute: VidaIndexRoute,
   CheckoutSourcingSourcingIdRoute: CheckoutSourcingSourcingIdRoute,
   HotelsVoucherDirectBookingIdRoute: HotelsVoucherDirectBookingIdRoute,
   HotelsVoucherBookingIdRoute: HotelsVoucherBookingIdRoute,
@@ -1173,3 +1393,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

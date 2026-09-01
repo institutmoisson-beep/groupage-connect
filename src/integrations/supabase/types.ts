@@ -1680,6 +1680,304 @@ export type Database = {
         }
         Relationships: []
       }
+      vida_agent_configurations: {
+        Row: {
+          agent_id: string
+          cash_in_hand: number
+          is_active: boolean
+          max_cash_limit: number
+          recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+          security_deposit_amount: number
+          updated_at: string
+          virtual_float_balance: number
+        }
+        Insert: {
+          agent_id: string
+          cash_in_hand?: number
+          is_active?: boolean
+          max_cash_limit?: number
+          recovery_mode?: Database["public"]["Enums"]["vida_recovery_mode"]
+          security_deposit_amount?: number
+          updated_at?: string
+          virtual_float_balance?: number
+        }
+        Update: {
+          agent_id?: string
+          cash_in_hand?: number
+          is_active?: boolean
+          max_cash_limit?: number
+          recovery_mode?: Database["public"]["Enums"]["vida_recovery_mode"]
+          security_deposit_amount?: number
+          updated_at?: string
+          virtual_float_balance?: number
+        }
+        Relationships: []
+      }
+      vida_cash_recovery_ledger: {
+        Row: {
+          agent_id: string
+          amount_settled: number
+          collector_id: string | null
+          counterparty_id: string | null
+          created_at: string
+          id: string
+          mode_used: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id: string | null
+          reference_code: string
+          status: string
+        }
+        Insert: {
+          agent_id: string
+          amount_settled: number
+          collector_id?: string | null
+          counterparty_id?: string | null
+          created_at?: string
+          id?: string
+          mode_used: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id?: string | null
+          reference_code: string
+          status?: string
+        }
+        Update: {
+          agent_id?: string
+          amount_settled?: number
+          collector_id?: string | null
+          counterparty_id?: string | null
+          created_at?: string
+          id?: string
+          mode_used?: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id?: string | null
+          reference_code?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vida_cash_recovery_ledger_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "vida_escrow_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vida_escrow_orders: {
+        Row: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        Insert: {
+          agent_commission?: number
+          agent_id?: string | null
+          cancel_reason?: string | null
+          cancellation_deadline?: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_address?: string | null
+          delivery_fee?: number
+          delivery_otp?: string | null
+          delivery_phone?: string | null
+          deposited_at?: string | null
+          id?: string
+          order_code: string
+          payment_channel?: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission?: number
+          product_id: string
+          refund_amount?: number
+          status?: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at?: string
+          vendor_payout?: number
+        }
+        Update: {
+          agent_commission?: number
+          agent_id?: string | null
+          cancel_reason?: string | null
+          cancellation_deadline?: string | null
+          cancellation_penalty_percentage?: number
+          cancellation_window_hours?: number
+          client_id?: string
+          courier_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_address?: string | null
+          delivery_fee?: number
+          delivery_otp?: string | null
+          delivery_phone?: string | null
+          deposited_at?: string | null
+          id?: string
+          order_code?: string
+          payment_channel?: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission?: number
+          product_id?: string
+          refund_amount?: number
+          status?: Database["public"]["Enums"]["vida_order_status"]
+          total_amount?: number
+          updated_at?: string
+          vendor_payout?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vida_escrow_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "vida_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vida_product_items: {
+        Row: {
+          created_at: string
+          id: string
+          quantity: number
+          source_product_id: string | null
+          title_snapshot: string
+          unit_price_xof: number
+          vida_product_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          quantity?: number
+          source_product_id?: string | null
+          title_snapshot: string
+          unit_price_xof?: number
+          vida_product_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          quantity?: number
+          source_product_id?: string | null
+          title_snapshot?: string
+          unit_price_xof?: number
+          vida_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vida_product_items_source_product_id_fkey"
+            columns: ["source_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vida_product_items_vida_product_id_fkey"
+            columns: ["vida_product_id"]
+            isOneToOne: false
+            referencedRelation: "vida_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vida_products: {
+        Row: {
+          agent_commission_percentage: number
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          created_at: string
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          platform_commission_percentage: number
+          price_xof: number
+          stock_quantity: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          agent_commission_percentage?: number
+          cancellation_penalty_percentage?: number
+          cancellation_window_hours?: number
+          created_at?: string
+          delivery_fee_xof?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          platform_commission_percentage?: number
+          price_xof: number
+          stock_quantity?: number
+          title: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          agent_commission_percentage?: number
+          cancellation_penalty_percentage?: number
+          cancellation_window_hours?: number
+          created_at?: string
+          delivery_fee_xof?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          platform_commission_percentage?: number
+          price_xof?: number
+          stock_quantity?: number
+          title?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
+      vida_roles: {
+        Row: {
+          created_at: string
+          id: string
+          is_approved: boolean
+          is_suspended: boolean
+          role: Database["public"]["Enums"]["vida_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_suspended?: boolean
+          role: Database["public"]["Enums"]["vida_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_suspended?: boolean
+          role?: Database["public"]["Enums"]["vida_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount_xof: number
@@ -1765,7 +2063,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      vida_active_agents: {
+        Row: {
+          agent_id: string | null
+          city: string | null
+          full_name: string | null
+          is_active: boolean | null
+          phone: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_adjust_wallet: {
@@ -1777,6 +2084,13 @@ export type Database = {
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_vida_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["vida_role"]
           _user_id: string
         }
         Returns: boolean
@@ -1829,6 +2143,444 @@ export type Database = {
           status: Database["public"]["Enums"]["withdrawal_status"]
         }[]
       }
+      vida_admin_configure_agent: {
+        Args: {
+          p_agent_id: string
+          p_is_active: boolean
+          p_max_cash_limit: number
+          p_recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+          p_security_deposit: number
+        }
+        Returns: {
+          agent_id: string
+          cash_in_hand: number
+          is_active: boolean
+          max_cash_limit: number
+          recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+          security_deposit_amount: number
+          updated_at: string
+          virtual_float_balance: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_agent_configurations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_create_product: {
+        Args: {
+          p_agent_commission_percentage: number
+          p_cancellation_penalty_percentage: number
+          p_cancellation_window_hours: number
+          p_delivery_fee_xof: number
+          p_description: string
+          p_image_url: string
+          p_is_active: boolean
+          p_items?: Json
+          p_platform_commission_percentage: number
+          p_price_xof: number
+          p_stock_quantity: number
+          p_title: string
+          p_vendor_id: string
+        }
+        Returns: {
+          agent_commission_percentage: number
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          created_at: string
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          platform_commission_percentage: number
+          price_xof: number
+          stock_quantity: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_set_product_active: {
+        Args: { p_is_active: boolean; p_product_id: string }
+        Returns: {
+          agent_commission_percentage: number
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          created_at: string
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          platform_commission_percentage: number
+          price_xof: number
+          stock_quantity: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_set_role_status: {
+        Args: {
+          p_is_approved: boolean
+          p_is_suspended: boolean
+          p_role: Database["public"]["Enums"]["vida_role"]
+          p_user_id: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          is_approved: boolean
+          is_suspended: boolean
+          role: Database["public"]["Enums"]["vida_role"]
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_roles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_update_product: {
+        Args: {
+          p_delivery_fee_xof: number
+          p_description: string
+          p_image_url: string
+          p_is_active: boolean
+          p_items?: Json
+          p_price_xof: number
+          p_product_id: string
+          p_stock_quantity: number
+          p_title: string
+          p_vendor_id?: string
+        }
+        Returns: {
+          agent_commission_percentage: number
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          created_at: string
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          platform_commission_percentage: number
+          price_xof: number
+          stock_quantity: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_update_product_rules: {
+        Args: {
+          p_agent_commission_percentage: number
+          p_cancellation_penalty_percentage: number
+          p_cancellation_window_hours: number
+          p_platform_commission_percentage: number
+          p_product_id: string
+        }
+        Returns: {
+          agent_commission_percentage: number
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          created_at: string
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          platform_commission_percentage: number
+          price_xof: number
+          stock_quantity: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_products"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_agent_lock_funds: {
+        Args: { p_order_code: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_agent_process_refund: {
+        Args: { p_order_id: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_agent_settle_recovery: {
+        Args: {
+          p_amount: number
+          p_counterparty_id: string
+          p_order_id: string
+          p_reference_code: string
+        }
+        Returns: {
+          agent_id: string
+          amount_settled: number
+          collector_id: string | null
+          counterparty_id: string | null
+          created_at: string
+          id: string
+          mode_used: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id: string | null
+          reference_code: string
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recovery_ledger"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_api_topup_confirm: {
+        Args: { p_reference_code: string }
+        Returns: {
+          agent_id: string
+          amount_settled: number
+          collector_id: string | null
+          counterparty_id: string | null
+          created_at: string
+          id: string
+          mode_used: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id: string | null
+          reference_code: string
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recovery_ledger"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_cancel_order: {
+        Args: { p_order_id: string; p_reason: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_collector_confirm_pickup: {
+        Args: { p_reference_code: string }
+        Returns: {
+          agent_id: string
+          amount_settled: number
+          collector_id: string | null
+          counterparty_id: string | null
+          created_at: string
+          id: string
+          mode_used: Database["public"]["Enums"]["vida_recovery_mode"]
+          order_id: string | null
+          reference_code: string
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recovery_ledger"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_confirm_delivery: {
+        Args: { p_order_id: string; p_otp: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_create_order: {
+        Args: {
+          p_agent_id: string
+          p_delivery_address: string
+          p_delivery_phone: string
+          p_payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          p_product_id: string
+        }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_generate_order_code: { Args: never; Returns: string }
+      vida_generate_otp: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "member"
@@ -1892,6 +2644,17 @@ export type Database = {
         | "sold_out"
         | "hidden"
         | "rejected"
+      vida_order_status:
+        | "pending_deposit"
+        | "funds_locked"
+        | "in_transit"
+        | "delivered"
+        | "cancelled_pending_refund"
+        | "refunded"
+        | "disputed"
+      vida_payment_channel: "agent_cash" | "mobile_money_online"
+      vida_recovery_mode: "AUTO_LOOP" | "API_TOPUP" | "PHYSICAL_COLLECT"
+      vida_role: "agent" | "courier" | "vendor"
       wallet_tx_type:
         | "wholesale_credit"
         | "commission_credit"
@@ -2101,6 +2864,18 @@ export const Constants = {
         "hidden",
         "rejected",
       ],
+      vida_order_status: [
+        "pending_deposit",
+        "funds_locked",
+        "in_transit",
+        "delivered",
+        "cancelled_pending_refund",
+        "refunded",
+        "disputed",
+      ],
+      vida_payment_channel: ["agent_cash", "mobile_money_online"],
+      vida_recovery_mode: ["AUTO_LOOP", "API_TOPUP", "PHYSICAL_COLLECT"],
+      vida_role: ["agent", "courier", "vendor"],
       wallet_tx_type: [
         "wholesale_credit",
         "commission_credit",
