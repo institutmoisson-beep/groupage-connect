@@ -83,17 +83,27 @@ function AdminVidaAgents() {
   const configByAgent = new Map((configs ?? []).map((c: any) => [c.agent_id, c]));
 
   const grantRole = useMutation({
-    mutationFn: () =>
-      setRoleStatus({
-        data: { userId: newUserId.trim(), role: newRole, isApproved: true, isSuspended: false },
-      }),
+    mutationFn: async () => {
+      let userId = selectedUserId;
+      const typed = userQuery.trim();
+      if (!userId && typed.includes("@")) {
+        const found = await findByEmail({ data: { email: typed } });
+        userId = found.id;
+      }
+      if (!userId) throw new Error("Sélectionnez un utilisateur ou saisissez son email.");
+      return setRoleStatus({
+        data: { userId, role: newRole, isApproved: true, isSuspended: false },
+      });
+    },
     onSuccess: () => {
       toast.success("Rôle ViDa attribué et approuvé.");
-      setNewUserId("");
+      setSelectedUserId("");
+      setUserQuery("");
       qc.invalidateQueries({ queryKey: ["admin-vida-roles"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   const toggleRole = useMutation({
     mutationFn: (v: {
