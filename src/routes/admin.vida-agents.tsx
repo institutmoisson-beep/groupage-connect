@@ -145,13 +145,50 @@ function AdminVidaAgents() {
 
       <section className="rounded-xl border border-border bg-card p-3">
         <p className="text-xs font-bold">Attribuer un rôle ViDa</p>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <p className="mt-0.5 text-[10px] text-muted-foreground">
+          Recherchez par nom, téléphone ou email, ou saisissez directement l'email du compte.
+        </p>
+
+        <div className="relative mt-2">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <input
-            value={newUserId}
-            onChange={(e) => setNewUserId(e.target.value)}
-            placeholder="UUID utilisateur (auth.users.id)"
-            className="min-w-[240px] flex-1 rounded-lg border border-input bg-background p-2 text-xs"
+            value={userQuery}
+            onChange={(e) => {
+              setUserQuery(e.target.value);
+              setSelectedUserId("");
+            }}
+            placeholder="Nom, email ou téléphone de l'utilisateur…"
+            className="w-full rounded-lg border border-input bg-background py-2 pl-8 pr-3 text-xs"
           />
+        </div>
+
+        <div className="mt-2 max-h-52 overflow-y-auto rounded-lg border border-border">
+          {usersLoading && <p className="p-2 text-[10px] text-muted-foreground">Chargement…</p>}
+          {!usersLoading && filteredUsers.length === 0 && (
+            <p className="p-2 text-[10px] text-muted-foreground">
+              Aucun compte trouvé — vous pouvez saisir l'email exact ci-dessus.
+            </p>
+          )}
+          {filteredUsers.map((u) => (
+            <button
+              key={u.id}
+              onClick={() => {
+                setSelectedUserId(u.id);
+                setUserQuery(u.email ?? u.fullName ?? u.id);
+              }}
+              className={`flex w-full flex-col items-start border-b border-border px-2 py-1.5 text-left last:border-b-0 ${
+                selectedUserId === u.id ? "bg-primary/10" : "hover:bg-muted/50"
+              }`}
+            >
+              <span className="text-[11px] font-bold">{u.fullName ?? u.email ?? u.id}</span>
+              <span className="text-[10px] text-muted-foreground">
+                {u.email ?? "—"} · {u.phone ?? "—"}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-2">
           <select
             value={newRole}
             onChange={(e) => setNewRole(e.target.value as (typeof VIDA_ROLES)[number])}
@@ -165,13 +202,14 @@ function AdminVidaAgents() {
           </select>
           <button
             onClick={() => grantRole.mutate()}
-            disabled={grantRole.isPending || !newUserId.trim()}
-            className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            disabled={grantRole.isPending || (!selectedUserId && !userQuery.includes("@"))}
+            className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
           >
-            Attribuer
+            {grantRole.isPending ? "Attribution…" : "Attribuer le rôle"}
           </button>
         </div>
       </section>
+
 
       <section>
         <h2 className="text-sm font-black">Comptes ViDa</h2>
