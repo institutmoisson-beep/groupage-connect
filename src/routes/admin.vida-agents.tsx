@@ -1,14 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { UserCheck, UserX } from "lucide-react";
+import { UserCheck, UserX, Search } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatXOF } from "@/lib/format";
 import { VIDA_RECOVERY_MODE_LABELS } from "@/lib/vida";
 import { vidaAdminConfigureAgent, vidaAdminSetRoleStatus } from "@/lib/vida.functions";
+import { adminFindUserByEmail, adminListUsers } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/admin/vida-agents")({
   head: () => ({
@@ -27,9 +28,29 @@ function AdminVidaAgents() {
   const qc = useQueryClient();
   const configureAgent = useServerFn(vidaAdminConfigureAgent);
   const setRoleStatus = useServerFn(vidaAdminSetRoleStatus);
+  const listUsers = useServerFn(adminListUsers);
+  const findByEmail = useServerFn(adminFindUserByEmail);
 
-  const [newUserId, setNewUserId] = useState("");
+  const [userQuery, setUserQuery] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [newRole, setNewRole] = useState<(typeof VIDA_ROLES)[number]>("agent");
+
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ["admin-user-directory"],
+    queryFn: () => listUsers({ data: undefined }),
+  });
+
+  const filteredUsers = useMemo(() => {
+    const needle = userQuery.trim().toLowerCase();
+    const rows = users ?? [];
+    if (!needle) return rows.slice(0, 50);
+    return rows
+      .filter((u) =>
+        `${u.fullName ?? ""} ${u.email ?? ""} ${u.phone ?? ""}`.toLowerCase().includes(needle),
+      )
+      .slice(0, 50);
+  }, [users, userQuery]);
+
 
   const { data: roles } = useQuery({
     queryKey: ["admin-vida-roles"],
