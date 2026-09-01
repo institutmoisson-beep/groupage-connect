@@ -35,7 +35,6 @@ function VidaCatalog() {
         .from("vida_products")
         .select("*")
         .eq("is_active", true)
-        .gt("stock_quantity", 0)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -104,9 +103,15 @@ function VidaCatalog() {
                   <p className="mt-1 text-sm font-black text-primary">
                     {formatXOF(Number(p.price_xof))}
                   </p>
-                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-[9px] font-bold text-secondary">
-                    <ShieldCheck className="h-2.5 w-2.5" /> Paiement Séquestre Garanti
-                  </span>
+                  {Number(p.stock_quantity) > 0 ? (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-[9px] font-bold text-secondary">
+                      <ShieldCheck className="h-2.5 w-2.5" /> Paiement Séquestre Garanti
+                    </span>
+                  ) : (
+                    <span className="mt-1 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[9px] font-bold text-muted-foreground">
+                      Rupture de stock
+                    </span>
+                  )}
                 </div>
               </Link>
             </li>
