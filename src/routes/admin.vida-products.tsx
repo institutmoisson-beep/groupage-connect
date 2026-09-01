@@ -27,6 +27,7 @@ import {
   vidaAdminUpdateProduct,
   vidaAdminSetProductActive,
 } from "@/lib/vida.functions";
+import { adminListUsers } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/admin/vida-products")({
   head: () => ({
@@ -455,12 +456,9 @@ function CreateProductPanel({
                 </option>
               ))}
             </select>
-            {vendors.length === 0 && (
-              <span className="mt-1 block text-[10px] text-muted-foreground">
-                Aucun compte "Vendeur" approuvé pour l'instant — vous pouvez utiliser votre
-                compte administrateur, ou en approuver un dans « ViDa — Agents & Rôles ».
-              </span>
-            )}
+            <span className="mt-1 block text-[10px] text-muted-foreground">
+              Tous les comptes sont listés ; les vendeurs ViDa approuvés apparaissent en premier.
+            </span>
           </label>
           <label className="flex items-center gap-2 text-xs">
             <input
