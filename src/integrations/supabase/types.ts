@@ -1430,6 +1430,36 @@ export type Database = {
           },
         ]
       }
+      staff_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          module: Database["public"]["Enums"]["staff_module"]
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module: Database["public"]["Enums"]["staff_module"]
+          note?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module?: Database["public"]["Enums"]["staff_module"]
+          note?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       stock_express_orders: {
         Row: {
           admin_notes: string | null
@@ -2081,9 +2111,63 @@ export type Database = {
           balance: number
         }[]
       }
+      admin_list_staff_assignments: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean
+          module: Database["public"]["Enums"]["staff_module"]
+          note: string
+          user_id: string
+        }[]
+      }
+      admin_remove_staff_module: {
+        Args: {
+          p_module: Database["public"]["Enums"]["staff_module"]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      admin_set_staff_module: {
+        Args: {
+          p_is_active?: boolean
+          p_module: Database["public"]["Enums"]["staff_module"]
+          p_note?: string
+          p_user_id: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          is_active: boolean
+          module: Database["public"]["Enums"]["staff_module"]
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "staff_assignments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      can_manage_module: {
+        Args: { _module: Database["public"]["Enums"]["staff_module"] }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_staff_module: {
+        Args: {
+          _module: Database["public"]["Enums"]["staff_module"]
           _user_id: string
         }
         Returns: boolean
@@ -2444,6 +2528,42 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      vida_assign_courier: {
+        Args: { p_courier_id: string; p_order_id: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       vida_cancel_order: {
         Args: { p_order_id: string; p_reason: string }
         Returns: {
@@ -2537,6 +2657,42 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      vida_courier_pickup: {
+        Args: { p_order_id: string }
+        Returns: {
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       vida_create_order: {
         Args: {
           p_agent_id: string
@@ -2579,8 +2735,33 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      vida_delivery_board: {
+        Args: never
+        Returns: {
+          courier_id: string
+          courier_name: string
+          created_at: string
+          delivery_address: string
+          delivery_fee: number
+          delivery_phone: string
+          id: string
+          order_code: string
+          product_title: string
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+        }[]
+      }
       vida_generate_order_code: { Args: never; Returns: string }
       vida_generate_otp: { Args: never; Returns: string }
+      vida_list_couriers: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          phone: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "member"
@@ -2637,6 +2818,27 @@ export type Database = {
         | "abidjan"
         | "delivered"
         | "cancelled"
+      staff_module:
+        | "users"
+        | "products"
+        | "campaigns"
+        | "orders"
+        | "hotels"
+        | "hotel_bookings"
+        | "payment_methods"
+        | "payment_proofs"
+        | "sourcing"
+        | "messages"
+        | "cargo"
+        | "stock"
+        | "onfaisimple"
+        | "vida_orders"
+        | "vida_delivery"
+        | "vida_products"
+        | "wallets"
+        | "withdrawals"
+        | "commissions"
+        | "logistics"
       stock_order_status: "pending" | "dispatched" | "delivered" | "cancelled"
       stock_product_status:
         | "pending_review"
@@ -2685,12 +2887,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2714,11 +2916,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2739,11 +2941,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2764,11 +2966,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2781,11 +2983,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2855,6 +3057,28 @@ export const Constants = {
         "abidjan",
         "delivered",
         "cancelled",
+      ],
+      staff_module: [
+        "users",
+        "products",
+        "campaigns",
+        "orders",
+        "hotels",
+        "hotel_bookings",
+        "payment_methods",
+        "payment_proofs",
+        "sourcing",
+        "messages",
+        "cargo",
+        "stock",
+        "onfaisimple",
+        "vida_orders",
+        "vida_delivery",
+        "vida_products",
+        "wallets",
+        "withdrawals",
+        "commissions",
+        "logistics",
       ],
       stock_order_status: ["pending", "dispatched", "delivered", "cancelled"],
       stock_product_status: [

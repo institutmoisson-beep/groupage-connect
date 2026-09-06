@@ -30,6 +30,7 @@ import {
 
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-admin";
+import { useStaffModules } from "@/hooks/use-staff-modules";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminInboxWatcher } from "@/components/AdminInboxWatcher";
 import {
@@ -49,6 +50,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin", label: "Tableau de bord", icon: Home, exact: true },
   { to: "/admin/users", label: "Utilisateurs", icon: Users },
   { to: "/admin/roles", label: "Rôles", icon: ShieldCheck },
+  { to: "/admin/staff", label: "Rôles délégués", icon: UserCog },
   { to: "/admin/products", label: "Produits", icon: Package },
   { to: "/admin/campaigns", label: "Campagnes", icon: Ship },
   { to: "/admin/campaign-products", label: "Produits/Campagnes", icon: LinkIcon },
@@ -66,6 +68,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
   { to: "/admin/onfaisimple", label: "OnFaiSimple™", icon: PackageCheck },
   { to: "/admin/vida", label: "ViDa — Escrow", icon: ShieldHalf },
   { to: "/admin/vida-agents", label: "ViDa — Agents & Rôles", icon: UserCog },
+  { to: "/admin/vida-delivery", label: "ViDa — Livraisons", icon: Truck },
   { to: "/admin/vida-products", label: "ViDa — Règles produits", icon: SlidersHorizontal },
   { to: "/admin/wallets", label: "Portefeuilles", icon: Wallet },
   { to: "/admin/withdrawals", label: "Retraits portefeuille", icon: Banknote },
@@ -77,6 +80,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean
 function AdminLayout() {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useIsAdmin();
+  const { allowedRoutes, loading: staffLoading } = useStaffModules();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [muted, setMuted] = useState(isNotificationSoundMuted());
@@ -89,12 +93,20 @@ function AdminLayout() {
   }
 
   useEffect(() => {
-    if (loading || roleLoading) return;
+    if (loading || roleLoading || staffLoading) return;
     if (!user) navigate({ to: "/auth", search: { redirect: pathname } as never });
-    else if (!isAdmin) navigate({ to: "/" });
-  }, [user, isAdmin, loading, roleLoading, navigate, pathname]);
+    else if (!isAdmin) {
+      if (allowedRoutes.length === 0) navigate({ to: "/" });
+      else if (!allowedRoutes.some((r) => pathname === r || pathname.startsWith(`${r}/`)))
+        navigate({ to: allowedRoutes[0] as never });
+    }
+  }, [user, isAdmin, loading, roleLoading, staffLoading, allowedRoutes, navigate, pathname]);
 
-  if (loading || roleLoading || !user || !isAdmin) {
+  const visibleNav = isAdmin
+    ? NAV
+    : NAV.filter((item) => allowedRoutes.includes(item.to));
+
+  if (loading || roleLoading || staffLoading || !user || (!isAdmin && allowedRoutes.length === 0)) {
     return (
       <div className="grid min-h-screen place-items-center bg-background">
         <p className="text-sm text-muted-foreground">Vérification des accès…</p>
@@ -112,9 +124,11 @@ function AdminLayout() {
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-display text-sm font-black">MSN Admin</div>
+              <div className="font-display text-sm font-black">
+                {isAdmin ? "MSN Admin" : "MSN Gestion déléguée"}
+              </div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                Gestion complète
+                {isAdmin ? "Gestion complète" : "Modules confiés"}
               </div>
             </div>
           </div>
@@ -145,7 +159,7 @@ function AdminLayout() {
           </div>
         </div>
         <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pb-2 text-xs">
-          {NAV.map(({ to, label, icon: Icon, exact }) => (
+          {visibleNav.map(({ to, label, icon: Icon, exact }) => (
             <Link
               key={to}
               to={to as never}
