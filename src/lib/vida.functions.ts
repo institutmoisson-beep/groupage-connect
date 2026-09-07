@@ -323,3 +323,67 @@ export const vidaAdminSetProductActive = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return row;
   });
+
+// ============ LIVRAISONS (dispatch admin & livreur) ============
+
+/** Liste des livreurs approuvés (pour le sélecteur de dispatch admin). */
+export const vidaListCouriers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("vida_list_couriers");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      user_id: string;
+      full_name: string | null;
+      phone: string | null;
+      email: string | null;
+    }>;
+  });
+
+/** Tableau de bord des livraisons ViDa (admin ou gestionnaire délégué du module). */
+export const vidaDeliveryBoard = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("vida_delivery_board");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      id: string;
+      order_code: string;
+      product_title: string;
+      status: string;
+      total_amount: number;
+      delivery_fee: number;
+      delivery_address: string | null;
+      delivery_phone: string | null;
+      courier_id: string | null;
+      courier_name: string | null;
+      created_at: string;
+    }>;
+  });
+
+/** Confie la livraison d'une commande à un livreur choisi par l'administration. */
+export const vidaAssignCourier = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ orderId: z.string().uuid(), courierId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await (context.supabase as any).rpc("vida_assign_courier", {
+      p_order_id: data.orderId,
+      p_courier_id: data.courierId,
+    });
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+/** Le livreur prend le colis en charge : la commande passe en livraison. */
+export const vidaCourierPickup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await (context.supabase as any).rpc("vida_courier_pickup", {
+      p_order_id: data.orderId,
+    });
+    if (error) throw new Error(error.message);
+    return row;
+  });
