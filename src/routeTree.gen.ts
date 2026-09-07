@@ -44,10 +44,12 @@ import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
 import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
 import { Route as AdminVidaProductsRouteImport } from './routes/admin.vida-products'
+import { Route as AdminVidaDeliveryRouteImport } from './routes/admin.vida-delivery'
 import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
 import { Route as AdminVidaRouteImport } from './routes/admin.vida'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
@@ -248,6 +250,11 @@ const AdminVidaProductsRoute = AdminVidaProductsRouteImport.update({
   path: '/vida-products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminVidaDeliveryRoute = AdminVidaDeliveryRouteImport.update({
+  id: '/vida-delivery',
+  path: '/vida-delivery',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminVidaAgentsRoute = AdminVidaAgentsRouteImport.update({
   id: '/vida-agents',
   path: '/vida-agents',
@@ -266,6 +273,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AdminStockRoute = AdminStockRouteImport.update({
   id: '/stock',
   path: '/stock',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSourcingRoute = AdminSourcingRouteImport.update({
@@ -426,10 +438,12 @@ export interface FileRoutesByFullPath {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -490,10 +504,12 @@ export interface FileRoutesByTo {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -556,10 +572,12 @@ export interface FileRoutesById {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
+  '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -623,10 +641,12 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
     | '/admin/vida-agents'
+    | '/admin/vida-delivery'
     | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
@@ -687,10 +707,12 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
     | '/admin/vida-agents'
+    | '/admin/vida-delivery'
     | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
@@ -752,10 +774,12 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
     | '/admin/vida-agents'
+    | '/admin/vida-delivery'
     | '/admin/vida-products'
     | '/admin/wallets'
     | '/admin/withdrawals'
@@ -1071,6 +1095,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVidaProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/vida-delivery': {
+      id: '/admin/vida-delivery'
+      path: '/vida-delivery'
+      fullPath: '/admin/vida-delivery'
+      preLoaderRoute: typeof AdminVidaDeliveryRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/vida-agents': {
       id: '/admin/vida-agents'
       path: '/vida-agents'
@@ -1097,6 +1128,13 @@ declare module '@tanstack/react-router' {
       path: '/stock'
       fullPath: '/admin/stock'
       preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sourcing': {
@@ -1288,10 +1326,12 @@ interface AdminRouteChildren {
   AdminProofsRoute: typeof AdminProofsRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminSourcingRoute: typeof AdminSourcingRoute
+  AdminStaffRoute: typeof AdminStaffRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVidaRoute: typeof AdminVidaRoute
   AdminVidaAgentsRoute: typeof AdminVidaAgentsRoute
+  AdminVidaDeliveryRoute: typeof AdminVidaDeliveryRoute
   AdminVidaProductsRoute: typeof AdminVidaProductsRoute
   AdminWalletsRoute: typeof AdminWalletsRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
@@ -1316,10 +1356,12 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProofsRoute: AdminProofsRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminSourcingRoute: AdminSourcingRoute,
+  AdminStaffRoute: AdminStaffRoute,
   AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminVidaRoute: AdminVidaRoute,
   AdminVidaAgentsRoute: AdminVidaAgentsRoute,
+  AdminVidaDeliveryRoute: AdminVidaDeliveryRoute,
   AdminVidaProductsRoute: AdminVidaProductsRoute,
   AdminWalletsRoute: AdminWalletsRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,

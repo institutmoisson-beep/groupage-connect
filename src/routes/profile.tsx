@@ -7,6 +7,8 @@ import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-admin";
+import { useStaffModules } from "@/hooks/use-staff-modules";
+import { STAFF_MODULE_META, type StaffModule } from "@/lib/staff-modules";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/profile")({
 function ProfilePage() {
   const { user, loading } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { modules, isStaff } = useStaffModules();
   const navigate = useNavigate();
 
   const { data: profile } = useQuery({
@@ -117,6 +120,39 @@ function ProfilePage() {
           </div>
           <span className="text-muted-foreground">›</span>
         </Link>
+
+        {!isAdmin && isStaff && (
+          <div className="mt-3 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <div>
+                <div className="text-sm font-bold">Gestion déléguée</div>
+                <div className="text-[11px] text-muted-foreground">
+                  Modules qui vous ont été confiés par l'administration
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 space-y-2">
+              {modules.map((m) => {
+                const meta = STAFF_MODULE_META[m as StaffModule];
+                if (!meta) return null;
+                return (
+                  <Link
+                    key={m}
+                    to={meta.to as never}
+                    className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2"
+                  >
+                    <div>
+                      <div className="text-xs font-semibold">{meta.label}</div>
+                      <div className="text-[10px] text-muted-foreground">{meta.hint}</div>
+                    </div>
+                    <span className="text-muted-foreground">›</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {isAdmin && (
           <Link

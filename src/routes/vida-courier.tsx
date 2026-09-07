@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
 import { formatXOF } from "@/lib/format";
 import { vidaFormatOrderCode } from "@/lib/vida";
-import { vidaConfirmDelivery } from "@/lib/vida.functions";
+import { vidaConfirmDelivery, vidaCourierPickup } from "@/lib/vida.functions";
 
 export const Route = createFileRoute("/vida-courier")({
   head: () => ({ meta: [{ title: "App Livreur — ViDa" }, { name: "robots", content: "noindex" }] }),
@@ -23,6 +23,7 @@ function VidaCourierPortal() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const confirmDelivery = useServerFn(vidaConfirmDelivery);
+  const pickupFn = useServerFn(vidaCourierPickup);
 
   const [otpByOrder, setOtpByOrder] = useState<Record<string, string>>({});
 
@@ -47,6 +48,15 @@ function VidaCourierPortal() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const pickup = useMutation({
+    mutationFn: (orderId: string) => pickupFn({ data: { orderId } }),
+    onSuccess: () => {
+      toast.success("Colis pris en charge — la commande est en livraison.");
+      qc.invalidateQueries({ queryKey: ["vida-courier-dispatch"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const confirm = useMutation({
@@ -110,6 +120,15 @@ function VidaCourierPortal() {
               {formatXOF(Number(o.delivery_fee))} de frais de course
             </p>
 
+            {o.status === "funds_locked" ? (
+              <button
+                onClick={() => pickup.mutate(o.id)}
+                disabled={pickup.isPending}
+                className="mt-2 w-full rounded-lg bg-primary px-3 py-2 text-xs font-black text-primary-foreground disabled:opacity-50"
+              >
+                Prise en charge du colis
+              </button>
+            ) : (
             <div className="mt-2 flex items-center gap-2">
               <div className="relative flex-1">
                 <KeyRound className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -129,6 +148,7 @@ function VidaCourierPortal() {
                 Valider
               </button>
             </div>
+            )}
           </div>
         ))}
         {!isLoading && (orders ?? []).length === 0 && (
