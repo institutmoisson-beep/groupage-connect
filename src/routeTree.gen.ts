@@ -49,6 +49,7 @@ import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
 import { Route as AdminVidaRouteImport } from './routes/admin.vida'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
@@ -274,6 +275,11 @@ const AdminStockRoute = AdminStockRouteImport.update({
   path: '/stock',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSourcingRoute = AdminSourcingRouteImport.update({
   id: '/sourcing',
   path: '/sourcing',
@@ -432,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
@@ -497,6 +504,7 @@ export interface FileRoutesByTo {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
@@ -564,6 +572,7 @@ export interface FileRoutesById {
   '/admin/proofs': typeof AdminProofsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/sourcing': typeof AdminSourcingRoute
+  '/admin/staff': typeof AdminStaffRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vida': typeof AdminVidaRoute
@@ -632,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
@@ -697,6 +707,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
@@ -763,6 +774,7 @@ export interface FileRouteTypes {
     | '/admin/proofs'
     | '/admin/roles'
     | '/admin/sourcing'
+    | '/admin/staff'
     | '/admin/stock'
     | '/admin/users'
     | '/admin/vida'
@@ -1118,6 +1130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStockRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/sourcing': {
       id: '/admin/sourcing'
       path: '/sourcing'
@@ -1307,6 +1326,7 @@ interface AdminRouteChildren {
   AdminProofsRoute: typeof AdminProofsRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminSourcingRoute: typeof AdminSourcingRoute
+  AdminStaffRoute: typeof AdminStaffRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVidaRoute: typeof AdminVidaRoute
@@ -1336,6 +1356,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProofsRoute: AdminProofsRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminSourcingRoute: AdminSourcingRoute,
+  AdminStaffRoute: AdminStaffRoute,
   AdminStockRoute: AdminStockRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminVidaRoute: AdminVidaRoute,
