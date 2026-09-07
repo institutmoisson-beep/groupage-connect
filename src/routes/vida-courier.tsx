@@ -148,7 +148,7 @@ function VidaCourierPortal() {
                 Valider
               </button>
             </div>
-            )
+            )}
           </div>
         ))}
         {!isLoading && (orders ?? []).length === 0 && (
