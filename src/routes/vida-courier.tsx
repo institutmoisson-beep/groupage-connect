@@ -32,21 +32,33 @@ function VidaCourierPortal() {
       navigate({ to: "/auth", search: { redirect: "/vida-courier" } as never });
   }, [loading, user, navigate]);
 
-  // Colis prêts à livrer (fonds verrouillés) : soit déjà assignés à ce livreur,
-  // soit en attente de prise en charge (dispatch ouvert).
+  // Toutes les courses qui me sont confiées par l'administration (même si le dépôt
+  // client n'est pas encore verrouillé), plus le dispatch ouvert prêt à livrer.
   const { data: orders, isLoading } = useQuery({
     queryKey: ["vida-courier-dispatch", user?.id],
     enabled: !!user && hasRole,
-    refetchInterval: 20_000,
+    refetchInterval: 15_000,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vida_escrow_orders")
-        .select("*, vida_products(title)")
-        .in("status", ["funds_locked", "in_transit"])
-        .or(`courier_id.eq.${user!.id},courier_id.is.null`)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data;
+      const [mine, open] = await Promise.all([
+        supabase
+          .from("vida_escrow_orders")
+          .select("*, vida_products(title)")
+          .eq("courier_id", user!.id)
+          .in("status", ["pending_deposit", "funds_locked", "in_transit"])
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("vida_escrow_orders")
+          .select("*, vida_products(title)")
+          .is("courier_id", null)
+          .eq("status", "funds_locked")
+          .order("created_at", { ascending: true }),
+      ]);
+      if (mine.error) throw mine.error;
+      if (open.error) throw open.error;
+      const seen = new Set<string>();
+      return [...(mine.data ?? []), ...(open.data ?? [])].filter((o: any) =>
+        seen.has(o.id) ? false : (seen.add(o.id), true),
+      );
     },
   });
 
