@@ -11,6 +11,24 @@ import { useStaffModules } from "@/hooks/use-staff-modules";
 import { STAFF_MODULE_META, type StaffModule } from "@/lib/staff-modules";
 import { supabase } from "@/integrations/supabase/client";
 
+const VIDA_PORTALS = {
+  agent: {
+    to: "/vida-agent",
+    label: "Terminal Agent ViDa",
+    hint: "Verrouiller les dépôts clients, remboursements et récupération de cash",
+  },
+  courier: {
+    to: "/vida-courier",
+    label: "Espace Livreur ViDa",
+    hint: "Courses à livrer, prise en charge et validation par code",
+  },
+  vendor: {
+    to: "/vida-vendor",
+    label: "Espace Vendeur ViDa",
+    hint: "Vos produits, ventes et paiements après livraison",
+  },
+} as const;
+
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Mon profil — MSN Courtier" }] }),
   component: ProfilePage,
