@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Banknote, QrCode, RefreshCcw, ShieldAlert, Wallet } from "lucide-react";
 
+import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
