@@ -180,6 +180,7 @@ function VidaCourierPortal() {
               >
                 Valider
               </button>
+              </div>
             </div>
             )}
           </div>
