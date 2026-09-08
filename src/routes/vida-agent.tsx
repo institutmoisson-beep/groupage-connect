@@ -187,6 +187,19 @@ function VidaAgentPortal() {
           <p className="mt-1 text-[10px] text-muted-foreground">
             Scannez le QR du client ou saisissez le code voucher à 8 caractères.
           </p>
+          <div className="mt-2">
+            <QrScanButton
+              label="Scanner le QR du client"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-secondary px-3 py-2.5 text-xs font-black text-secondary-foreground"
+              onResult={(raw) => {
+                const { code } = parseVidaQr(raw);
+                const clean = (code ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+                if (clean.length !== 8) return toast.error("QR non reconnu — code voucher invalide.");
+                setVoucherInput(clean);
+                toast.success(`Code lu : ${clean}`);
+              }}
+            />
+          </div>
           <div className="mt-2 flex gap-2">
             <input
               value={voucherInput}
