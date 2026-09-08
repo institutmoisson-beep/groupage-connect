@@ -132,7 +132,16 @@ function VidaCourierPortal() {
               {formatXOF(Number(o.delivery_fee))} de frais de course
             </p>
 
-            {o.status === "funds_locked" ? (
+            <p className="mt-1 text-[10px] font-bold text-muted-foreground">
+              {o.courier_id ? "Course qui vous est confiée" : "Course ouverte au dispatch"}
+            </p>
+
+            {o.status === "pending_deposit" ? (
+              <p className="mt-2 rounded-lg bg-muted/50 px-2 py-2 text-[11px] text-muted-foreground">
+                En attente du dépôt du client chez l'agent. La prise en charge s'activera dès que
+                les fonds seront verrouillés.
+              </p>
+            ) : o.status === "funds_locked" ? (
               <button
                 onClick={() => pickup.mutate(o.id)}
                 disabled={pickup.isPending}
@@ -141,7 +150,19 @@ function VidaCourierPortal() {
                 Prise en charge du colis
               </button>
             ) : (
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 space-y-2">
+              <QrScanButton
+                label="Scanner le QR / OTP du client"
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-black text-secondary-foreground"
+                onResult={(raw) => {
+                  const { otp, code } = parseVidaQr(raw);
+                  const value = (otp ?? code ?? "").replace(/\D/g, "").slice(0, 6);
+                  if (value.length !== 6) return toast.error("QR non reconnu — OTP invalide.");
+                  setOtpByOrder((s) => ({ ...s, [o.id]: value }));
+                  toast.success("Code de livraison lu.");
+                }}
+              />
+              <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <KeyRound className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input
