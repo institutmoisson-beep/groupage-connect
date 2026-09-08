@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck, MessageCircle } from "lucide-react";
+import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
