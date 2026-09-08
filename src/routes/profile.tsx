@@ -158,7 +158,36 @@ function ProfilePage() {
           <span className="text-muted-foreground">›</span>
         </Link>
 
-        {!isAdmin && isStaff && (
+        {vidaPortals.length > 0 && (
+          <div className="mt-3 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-primary" />
+              <div>
+                <div className="text-sm font-bold">Mes espaces ViDa</div>
+                <div className="text-[11px] text-muted-foreground">
+                  Rôles validés par l'administration
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 space-y-2">
+              {vidaPortals.map((p) => (
+                <Link
+                  key={p.to}
+                  to={p.to as never}
+                  className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2"
+                >
+                  <div>
+                    <div className="text-xs font-semibold">{p.label}</div>
+                    <div className="text-[10px] text-muted-foreground">{p.hint}</div>
+                  </div>
+                  <span className="text-muted-foreground">›</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isStaff && (
           <div className="mt-3 rounded-xl border border-border bg-card p-4">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" />
