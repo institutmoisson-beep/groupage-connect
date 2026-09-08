@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck, MessageCircle } from "lucide-react";
+import { LogOut, LogIn, Package, MapPin, Phone, ShieldCheck, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
@@ -10,6 +10,24 @@ import { useIsAdmin } from "@/hooks/use-admin";
 import { useStaffModules } from "@/hooks/use-staff-modules";
 import { STAFF_MODULE_META, type StaffModule } from "@/lib/staff-modules";
 import { supabase } from "@/integrations/supabase/client";
+
+const VIDA_PORTALS = {
+  agent: {
+    to: "/vida-agent",
+    label: "Terminal Agent ViDa",
+    hint: "Verrouiller les dépôts clients, remboursements et récupération de cash",
+  },
+  courier: {
+    to: "/vida-courier",
+    label: "Espace Livreur ViDa",
+    hint: "Courses à livrer, prise en charge et validation par code",
+  },
+  vendor: {
+    to: "/vida-vendor",
+    label: "Espace Vendeur ViDa",
+    hint: "Vos produits, ventes et paiements après livraison",
+  },
+} as const;
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Mon profil — MSN Courtier" }] }),
@@ -30,6 +48,25 @@ function ProfilePage() {
       return data;
     },
   });
+
+  // Rôles ViDa approuvés : ouvre les terminaux Agent / Livreur / Vendeur.
+  const { data: vidaRoles } = useQuery({
+    queryKey: ["my-vida-roles", user?.id],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("vida_roles")
+        .select("role, is_approved, is_suspended")
+        .eq("user_id", user!.id);
+      return data ?? [];
+    },
+  });
+
+  const vidaPortals = (vidaRoles ?? [])
+    .filter((r) => r.is_approved && !r.is_suspended)
+    .map((r) => VIDA_PORTALS[r.role as keyof typeof VIDA_PORTALS])
+    .filter(Boolean);
 
   if (loading) return null;
   if (!user) {
@@ -121,7 +158,36 @@ function ProfilePage() {
           <span className="text-muted-foreground">›</span>
         </Link>
 
-        {!isAdmin && isStaff && (
+        {vidaPortals.length > 0 && (
+          <div className="mt-3 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-primary" />
+              <div>
+                <div className="text-sm font-bold">Mes espaces ViDa</div>
+                <div className="text-[11px] text-muted-foreground">
+                  Rôles validés par l'administration
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 space-y-2">
+              {vidaPortals.map((p) => (
+                <Link
+                  key={p.to}
+                  to={p.to as never}
+                  className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2"
+                >
+                  <div>
+                    <div className="text-xs font-semibold">{p.label}</div>
+                    <div className="text-[10px] text-muted-foreground">{p.hint}</div>
+                  </div>
+                  <span className="text-muted-foreground">›</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isStaff && (
           <div className="mt-3 rounded-xl border border-border bg-card p-4">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" />

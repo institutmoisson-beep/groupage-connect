@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { KeyRound, MapPin, Phone, ShieldAlert, Truck } from "lucide-react";
 
+import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
@@ -32,21 +33,33 @@ function VidaCourierPortal() {
       navigate({ to: "/auth", search: { redirect: "/vida-courier" } as never });
   }, [loading, user, navigate]);
 
-  // Colis prêts à livrer (fonds verrouillés) : soit déjà assignés à ce livreur,
-  // soit en attente de prise en charge (dispatch ouvert).
+  // Toutes les courses qui me sont confiées par l'administration (même si le dépôt
+  // client n'est pas encore verrouillé), plus le dispatch ouvert prêt à livrer.
   const { data: orders, isLoading } = useQuery({
     queryKey: ["vida-courier-dispatch", user?.id],
     enabled: !!user && hasRole,
-    refetchInterval: 20_000,
+    refetchInterval: 15_000,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vida_escrow_orders")
-        .select("*, vida_products(title)")
-        .in("status", ["funds_locked", "in_transit"])
-        .or(`courier_id.eq.${user!.id},courier_id.is.null`)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data;
+      const [mine, open] = await Promise.all([
+        supabase
+          .from("vida_escrow_orders")
+          .select("*, vida_products(title)")
+          .eq("courier_id", user!.id)
+          .in("status", ["pending_deposit", "funds_locked", "in_transit"])
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("vida_escrow_orders")
+          .select("*, vida_products(title)")
+          .is("courier_id", null)
+          .eq("status", "funds_locked")
+          .order("created_at", { ascending: true }),
+      ]);
+      if (mine.error) throw mine.error;
+      if (open.error) throw open.error;
+      const seen = new Set<string>();
+      return [...(mine.data ?? []), ...(open.data ?? [])].filter((o: any) =>
+        seen.has(o.id) ? false : (seen.add(o.id), true),
+      );
     },
   });
 
@@ -120,7 +133,16 @@ function VidaCourierPortal() {
               {formatXOF(Number(o.delivery_fee))} de frais de course
             </p>
 
-            {o.status === "funds_locked" ? (
+            <p className="mt-1 text-[10px] font-bold text-muted-foreground">
+              {o.courier_id ? "Course qui vous est confiée" : "Course ouverte au dispatch"}
+            </p>
+
+            {o.status === "pending_deposit" ? (
+              <p className="mt-2 rounded-lg bg-muted/50 px-2 py-2 text-[11px] text-muted-foreground">
+                En attente du dépôt du client chez l'agent. La prise en charge s'activera dès que
+                les fonds seront verrouillés.
+              </p>
+            ) : o.status === "funds_locked" ? (
               <button
                 onClick={() => pickup.mutate(o.id)}
                 disabled={pickup.isPending}
@@ -129,7 +151,19 @@ function VidaCourierPortal() {
                 Prise en charge du colis
               </button>
             ) : (
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 space-y-2">
+              <QrScanButton
+                label="Scanner le QR / OTP du client"
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-black text-secondary-foreground"
+                onResult={(raw) => {
+                  const { otp, code } = parseVidaQr(raw);
+                  const value = (otp ?? code ?? "").replace(/\D/g, "").slice(0, 6);
+                  if (value.length !== 6) return toast.error("QR non reconnu — OTP invalide.");
+                  setOtpByOrder((s) => ({ ...s, [o.id]: value }));
+                  toast.success("Code de livraison lu.");
+                }}
+              />
+              <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <KeyRound className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -147,6 +181,7 @@ function VidaCourierPortal() {
               >
                 Valider
               </button>
+              </div>
             </div>
             )}
           </div>
