@@ -31,6 +31,25 @@ function ProfilePage() {
     },
   });
 
+  // Rôles ViDa approuvés : ouvre les terminaux Agent / Livreur / Vendeur.
+  const { data: vidaRoles } = useQuery({
+    queryKey: ["my-vida-roles", user?.id],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("vida_roles")
+        .select("role, is_approved, is_suspended")
+        .eq("user_id", user!.id);
+      return data ?? [];
+    },
+  });
+
+  const vidaPortals = (vidaRoles ?? [])
+    .filter((r) => r.is_approved && !r.is_suspended)
+    .map((r) => VIDA_PORTALS[r.role as keyof typeof VIDA_PORTALS])
+    .filter(Boolean);
+
   if (loading) return null;
   if (!user) {
     return (
