@@ -147,6 +147,8 @@ export const vidaAdminConfigureAgent = createServerFn({ method: "POST" })
       p_max_cash_limit: data.maxCashLimit,
       p_security_deposit: data.securityDeposit,
       p_is_active: data.isActive,
+      p_virtual_float_balance: data.virtualFloatBalance ?? null,
+      p_cash_in_hand: data.cashInHand ?? null,
     });
     if (error) throw new Error(error.message);
     return row;
