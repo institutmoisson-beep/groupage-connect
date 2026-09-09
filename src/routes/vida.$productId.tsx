@@ -48,13 +48,9 @@ function VidaProductDetail() {
   });
 
   const { data: agents } = useQuery({
-    queryKey: ["vida-active-agents"],
-    enabled: channel === "agent_cash",
-    queryFn: async () => {
-      const { data, error } = await supabase.from("vida_active_agents").select("*");
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ["vida-active-agents", user?.id],
+    enabled: channel === "agent_cash" && !!user,
+    queryFn: () => listAgents({ data: undefined }),
   });
 
   const submit = useMutation({
