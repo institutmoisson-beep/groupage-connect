@@ -303,6 +303,8 @@ function AgentConfigForm({
     maxCashLimit: number;
     securityDeposit: number;
     isActive: boolean;
+    virtualFloatBalance: number;
+    cashInHand: number;
   }) => void;
 }) {
   const [mode, setMode] = useState<(typeof RECOVERY_MODES)[number]>(
@@ -310,6 +312,8 @@ function AgentConfigForm({
   );
   const [limit, setLimit] = useState(String(initial?.max_cash_limit ?? 500000));
   const [deposit, setDeposit] = useState(String(initial?.security_deposit_amount ?? 100000));
+  const [float, setFloat] = useState(String(initial?.virtual_float_balance ?? 0));
+  const [cash, setCash] = useState(String(initial?.cash_in_hand ?? 0));
   const [active, setActive] = useState(initial?.is_active ?? true);
 
   return (
