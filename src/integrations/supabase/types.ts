@@ -2227,31 +2227,59 @@ export type Database = {
           status: Database["public"]["Enums"]["withdrawal_status"]
         }[]
       }
-      vida_admin_configure_agent: {
-        Args: {
-          p_agent_id: string
-          p_is_active: boolean
-          p_max_cash_limit: number
-          p_recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
-          p_security_deposit: number
-        }
-        Returns: {
-          agent_id: string
-          cash_in_hand: number
-          is_active: boolean
-          max_cash_limit: number
-          recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
-          security_deposit_amount: number
-          updated_at: string
-          virtual_float_balance: number
-        }
-        SetofOptions: {
-          from: "*"
-          to: "vida_agent_configurations"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      vida_admin_configure_agent:
+        | {
+            Args: {
+              p_agent_id: string
+              p_is_active: boolean
+              p_max_cash_limit: number
+              p_recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+              p_security_deposit: number
+            }
+            Returns: {
+              agent_id: string
+              cash_in_hand: number
+              is_active: boolean
+              max_cash_limit: number
+              recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+              security_deposit_amount: number
+              updated_at: string
+              virtual_float_balance: number
+            }
+            SetofOptions: {
+              from: "*"
+              to: "vida_agent_configurations"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_agent_id: string
+              p_cash_in_hand?: number
+              p_is_active: boolean
+              p_max_cash_limit: number
+              p_recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+              p_security_deposit: number
+              p_virtual_float_balance?: number
+            }
+            Returns: {
+              agent_id: string
+              cash_in_hand: number
+              is_active: boolean
+              max_cash_limit: number
+              recovery_mode: Database["public"]["Enums"]["vida_recovery_mode"]
+              security_deposit_amount: number
+              updated_at: string
+              virtual_float_balance: number
+            }
+            SetofOptions: {
+              from: "*"
+              to: "vida_agent_configurations"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       vida_admin_create_product: {
         Args: {
           p_agent_commission_percentage: number
@@ -2408,6 +2436,25 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      vida_agent_deposit_queue: {
+        Args: never
+        Returns: {
+          agent_commission: number
+          assigned: boolean
+          client_name: string
+          client_phone: string
+          created_at: string
+          delivery_address: string
+          delivery_fee: number
+          delivery_phone: string
+          id: string
+          order_code: string
+          product_title: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+        }[]
       }
       vida_agent_lock_funds: {
         Args: { p_order_code: string }
@@ -2753,6 +2800,15 @@ export type Database = {
       }
       vida_generate_order_code: { Args: never; Returns: string }
       vida_generate_otp: { Args: never; Returns: string }
+      vida_list_active_agents: {
+        Args: never
+        Returns: {
+          agent_id: string
+          city: string
+          full_name: string
+          phone: string
+        }[]
+      }
       vida_list_couriers: {
         Args: never
         Returns: {
