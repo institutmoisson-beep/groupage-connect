@@ -126,6 +126,8 @@ function AdminVidaAgents() {
       maxCashLimit: number;
       securityDeposit: number;
       isActive: boolean;
+      virtualFloatBalance: number;
+      cashInHand: number;
     }) => configureAgent({ data: v }),
     onSuccess: () => {
       toast.success("Configuration agent enregistrée.");
