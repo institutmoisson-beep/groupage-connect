@@ -130,6 +130,10 @@ const configureAgentSchema = z.object({
   maxCashLimit: z.number().positive(),
   securityDeposit: z.number().min(0),
   isActive: z.boolean(),
+  /** Omis = inchangé. Float virtuel dont dispose l'agent pour encaisser des dépôts clients. */
+  virtualFloatBalance: z.number().min(0).optional(),
+  /** Omis = inchangé. Correction manuelle du cash physique détenu par l'agent. */
+  cashInHand: z.number().min(0).optional(),
 });
 
 /** Panneau admin : bascule le mode de récupération de cash et les limites pour un agent donné. */
@@ -143,6 +147,8 @@ export const vidaAdminConfigureAgent = createServerFn({ method: "POST" })
       p_max_cash_limit: data.maxCashLimit,
       p_security_deposit: data.securityDeposit,
       p_is_active: data.isActive,
+      p_virtual_float_balance: data.virtualFloatBalance ?? null,
+      p_cash_in_hand: data.cashInHand ?? null,
     });
     if (error) throw new Error(error.message);
     return row;
@@ -386,4 +392,45 @@ export const vidaCourierPickup = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     return row;
+  });
+
+// ============ DÉPÔT EN ESPÈCES CHEZ UN AGENT (transparence client / agent) ============
+
+/** Liste des agents Mobile Money actifs (nom, téléphone, ville) — visible par tout utilisateur
+ * connecté, pour savoir où aller déposer l'argent de sa commande. */
+export const vidaListActiveAgents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("vida_list_active_agents");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      agent_id: string;
+      full_name: string | null;
+      phone: string | null;
+      city: string | null;
+    }>;
+  });
+
+/** File d'attente de l'agent : dépôts à encaisser, commandes déjà encaissées et remboursements. */
+export const vidaAgentDepositQueue = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("vida_agent_deposit_queue");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      id: string;
+      order_code: string;
+      status: string;
+      product_title: string;
+      total_amount: number;
+      delivery_fee: number;
+      agent_commission: number;
+      refund_amount: number;
+      client_name: string | null;
+      client_phone: string | null;
+      delivery_address: string | null;
+      delivery_phone: string | null;
+      assigned: boolean;
+      created_at: string;
+    }>;
   });

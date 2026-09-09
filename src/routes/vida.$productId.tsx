@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { VIDA_PAYMENT_CHANNEL_LABELS } from "@/lib/vida";
-import { vidaCreateOrder } from "@/lib/vida.functions";
+import { vidaCreateOrder, vidaListActiveAgents } from "@/lib/vida.functions";
 
 export const Route = createFileRoute("/vida/$productId")({
   head: () => ({
@@ -28,6 +28,7 @@ function VidaProductDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const createOrder = useServerFn(vidaCreateOrder);
+  const listAgents = useServerFn(vidaListActiveAgents);
 
   const [channel, setChannel] = useState<"agent_cash" | "mobile_money_online">("agent_cash");
   const [agentId, setAgentId] = useState<string>("");
@@ -48,13 +49,9 @@ function VidaProductDetail() {
   });
 
   const { data: agents } = useQuery({
-    queryKey: ["vida-active-agents"],
-    enabled: channel === "agent_cash",
-    queryFn: async () => {
-      const { data, error } = await supabase.from("vida_active_agents").select("*");
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ["vida-active-agents", user?.id],
+    enabled: channel === "agent_cash" && !!user,
+    queryFn: () => listAgents({ data: undefined }),
   });
 
   const submit = useMutation({
@@ -148,19 +145,35 @@ function VidaProductDetail() {
 
             {channel === "agent_cash" && (
               <div>
-                <label className="text-xs font-bold">Agent Mobile Money partenaire</label>
+                <label className="text-xs font-bold">
+                  Point de dépôt — Agent Mobile Money partenaire
+                </label>
                 <select
                   value={agentId}
                   onChange={(e) => setAgentId(e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5 text-xs"
                 >
-                  <option value="">Choisir à l'arrivée chez un agent proche</option>
-                  {(agents ?? []).map((a: any) => (
+                  <option value="">Choisir le point de dépôt…</option>
+                  {(agents ?? []).map((a) => (
                     <option key={a.agent_id} value={a.agent_id}>
-                      {a.full_name} — {a.city}
+                      {a.full_name ?? "Agent ViDa"} — {a.city ?? "Ville non précisée"}
+                      {a.phone ? ` · ${a.phone}` : ""}
                     </option>
                   ))}
                 </select>
+                {(agents ?? []).length === 0 ? (
+                  <p className="mt-1.5 rounded-lg bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                    Aucun point de dépôt actif pour l'instant. Choisissez « Mobile Money en ligne »
+                    ou réessayez plus tard.
+                  </p>
+                ) : (
+                  <p className="mt-1.5 rounded-lg bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                    Après validation, un voucher (QR + code à 8 caractères) est généré. Vous remettez
+                    les espèces à cet agent, il scanne votre voucher : votre argent est alors
+                    verrouillé en séquestre et ne part au vendeur qu'après votre confirmation de
+                    livraison.
+                  </p>
+                )}
               </div>
             )}
 

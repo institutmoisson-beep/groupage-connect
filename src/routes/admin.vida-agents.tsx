@@ -126,6 +126,8 @@ function AdminVidaAgents() {
       maxCashLimit: number;
       securityDeposit: number;
       isActive: boolean;
+      virtualFloatBalance: number;
+      cashInHand: number;
     }) => configureAgent({ data: v }),
     onSuccess: () => {
       toast.success("Configuration agent enregistrée.");
@@ -303,6 +305,8 @@ function AgentConfigForm({
     maxCashLimit: number;
     securityDeposit: number;
     isActive: boolean;
+    virtualFloatBalance: number;
+    cashInHand: number;
   }) => void;
 }) {
   const [mode, setMode] = useState<(typeof RECOVERY_MODES)[number]>(
@@ -310,6 +314,8 @@ function AgentConfigForm({
   );
   const [limit, setLimit] = useState(String(initial?.max_cash_limit ?? 500000));
   const [deposit, setDeposit] = useState(String(initial?.security_deposit_amount ?? 100000));
+  const [float, setFloat] = useState(String(initial?.virtual_float_balance ?? 0));
+  const [cash, setCash] = useState(String(initial?.cash_in_hand ?? 0));
   const [active, setActive] = useState(initial?.is_active ?? true);
 
   return (
@@ -346,6 +352,30 @@ function AgentConfigForm({
           />
         </label>
       </div>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <label className="text-[10px] text-muted-foreground">
+          Float virtuel disponible
+          <input
+            value={float}
+            onChange={(e) => setFloat(e.target.value)}
+            type="number"
+            className="mt-0.5 w-full rounded-lg border border-input bg-background p-1.5 text-xs"
+          />
+        </label>
+        <label className="text-[10px] text-muted-foreground">
+          Cash en main (correction)
+          <input
+            value={cash}
+            onChange={(e) => setCash(e.target.value)}
+            type="number"
+            className="mt-0.5 w-full rounded-lg border border-input bg-background p-1.5 text-xs"
+          />
+        </label>
+      </div>
+      <p className="mt-1 text-[9px] text-muted-foreground">
+        L'agent ne peut encaisser une commande que si son float virtuel couvre le montant et que le
+        plafond de cash en main n'est pas dépassé.
+      </p>
       <label className="mt-2 flex items-center gap-1.5 text-[10px] font-bold">
         <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />{" "}
         Agent actif (visible au catalogue)
@@ -357,12 +387,14 @@ function AgentConfigForm({
             maxCashLimit: Number(limit),
             securityDeposit: Number(deposit),
             isActive: active,
+            virtualFloatBalance: Number(float || 0),
+            cashInHand: Number(cash || 0),
           })
         }
         disabled={saving}
         className="mt-2 w-full rounded-lg bg-secondary py-1.5 text-[10px] font-black text-secondary-foreground disabled:opacity-50"
       >
-        Enregistrer — {formatXOF(Number(limit || 0))} max
+        Enregistrer — float {formatXOF(Number(float || 0))} · plafond {formatXOF(Number(limit || 0))}
       </button>
     </div>
   );
