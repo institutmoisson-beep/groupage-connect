@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { VIDA_PAYMENT_CHANNEL_LABELS } from "@/lib/vida";
-import { vidaCreateOrder } from "@/lib/vida.functions";
+import { vidaCreateOrder, vidaListActiveAgents } from "@/lib/vida.functions";
 
 export const Route = createFileRoute("/vida/$productId")({
   head: () => ({
@@ -28,6 +28,7 @@ function VidaProductDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const createOrder = useServerFn(vidaCreateOrder);
+  const listAgents = useServerFn(vidaListActiveAgents);
 
   const [channel, setChannel] = useState<"agent_cash" | "mobile_money_online">("agent_cash");
   const [agentId, setAgentId] = useState<string>("");
