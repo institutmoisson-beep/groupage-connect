@@ -130,6 +130,10 @@ const configureAgentSchema = z.object({
   maxCashLimit: z.number().positive(),
   securityDeposit: z.number().min(0),
   isActive: z.boolean(),
+  /** Omis = inchangé. Float virtuel dont dispose l'agent pour encaisser des dépôts clients. */
+  virtualFloatBalance: z.number().min(0).optional(),
+  /** Omis = inchangé. Correction manuelle du cash physique détenu par l'agent. */
+  cashInHand: z.number().min(0).optional(),
 });
 
 /** Panneau admin : bascule le mode de récupération de cash et les limites pour un agent donné. */
