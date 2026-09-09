@@ -145,19 +145,35 @@ function VidaProductDetail() {
 
             {channel === "agent_cash" && (
               <div>
-                <label className="text-xs font-bold">Agent Mobile Money partenaire</label>
+                <label className="text-xs font-bold">
+                  Point de dépôt — Agent Mobile Money partenaire
+                </label>
                 <select
                   value={agentId}
                   onChange={(e) => setAgentId(e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5 text-xs"
                 >
-                  <option value="">Choisir à l'arrivée chez un agent proche</option>
-                  {(agents ?? []).map((a: any) => (
+                  <option value="">Choisir le point de dépôt…</option>
+                  {(agents ?? []).map((a) => (
                     <option key={a.agent_id} value={a.agent_id}>
-                      {a.full_name} — {a.city}
+                      {a.full_name ?? "Agent ViDa"} — {a.city ?? "Ville non précisée"}
+                      {a.phone ? ` · ${a.phone}` : ""}
                     </option>
                   ))}
                 </select>
+                {(agents ?? []).length === 0 ? (
+                  <p className="mt-1.5 rounded-lg bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                    Aucun point de dépôt actif pour l'instant. Choisissez « Mobile Money en ligne »
+                    ou réessayez plus tard.
+                  </p>
+                ) : (
+                  <p className="mt-1.5 rounded-lg bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                    Après validation, un voucher (QR + code à 8 caractères) est généré. Vous remettez
+                    les espèces à cet agent, il scanne votre voucher : votre argent est alors
+                    verrouillé en séquestre et ne part au vendeur qu'après votre confirmation de
+                    livraison.
+                  </p>
+                )}
               </div>
             )}
 
