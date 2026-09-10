@@ -2179,6 +2179,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_my_referrals: {
+        Args: never
+        Returns: {
+          city: string
+          created_at: string
+          delivered_referrals_count: number
+          full_name: string
+          id: string
+          referral_code: string
+        }[]
+      }
       onfaisimple_create_order: {
         Args: {
           p_channel_label?: string
