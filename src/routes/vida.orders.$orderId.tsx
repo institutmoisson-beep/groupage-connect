@@ -18,7 +18,7 @@ import {
   vidaQrUrl,
   vidaVoucherPayload,
 } from "@/lib/vida";
-import { vidaCancelOrder } from "@/lib/vida.functions";
+import { vidaCancelOrder, vidaListActiveAgents } from "@/lib/vida.functions";
 
 export const Route = createFileRoute("/vida/orders/$orderId")({
   head: () => ({
@@ -53,6 +53,14 @@ function VidaOrderDetail() {
       return data;
     },
   });
+
+  const listAgents = useServerFn(vidaListActiveAgents);
+  const { data: agents } = useQuery({
+    queryKey: ["vida-active-agents-order", orderId],
+    enabled: !!order?.agent_id,
+    queryFn: () => listAgents({ data: undefined }),
+  });
+  const agent = (agents ?? []).find((a) => a.agent_id === order?.agent_id);
 
   // Rafraîchit le countdown chaque minute sans re-fetch réseau.
   useEffect(() => {
