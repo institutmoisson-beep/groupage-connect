@@ -37,10 +37,7 @@ function MLMPage() {
     queryKey: ["referrals", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, referral_code, created_at, city")
-        .eq("referred_by", user!.id);
+      const { data, error } = await supabase.rpc("list_my_referrals");
       if (error) throw error;
       return data ?? [];
     },
