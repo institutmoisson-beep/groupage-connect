@@ -148,6 +148,31 @@ function VidaOrderDetail() {
             <p className="mt-2 font-mono text-lg font-black tracking-widest">
               {vidaFormatOrderCode(order.order_code)}
             </p>
+            <div className="mt-3 rounded-xl bg-muted/50 p-3 text-left">
+              <p className="text-[11px] font-black">Où déposer votre argent ?</p>
+              {agent ? (
+                <div className="mt-1 space-y-0.5 text-[11px] text-muted-foreground">
+                  <p className="font-bold text-foreground">{agent.full_name ?? "Agent ViDa"}</p>
+                  {agent.city && <p>{agent.city}</p>}
+                  {agent.phone && (
+                    <a href={`tel:${agent.phone}`} className="font-bold text-primary">
+                      Appeler {agent.phone}
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {order.payment_channel === "agent_cash"
+                    ? "Coordonnées de l'agent en cours de chargement…"
+                    : "Paiement Mobile Money en ligne : suivez les instructions reçues."}
+                </p>
+              )}
+              <ol className="mt-2 list-inside list-decimal space-y-1 text-[10px] text-muted-foreground">
+                <li>Remettez {formatXOF(Number(order.total_amount))} en espèces à cet agent.</li>
+                <li>L'agent scanne ce QR (ou saisit le code) pour encaisser.</li>
+                <li>Vos fonds sont verrouillés en séquestre — le vendeur n'est payé qu'après votre confirmation de livraison.</li>
+              </ol>
+            </div>
           </div>
         )}
 
