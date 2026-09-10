@@ -38,6 +38,7 @@ function VidaAgentPortal() {
   const lockFunds = useServerFn(vidaAgentLockFunds);
   const processRefund = useServerFn(vidaAgentProcessRefund);
   const settleRecovery = useServerFn(vidaAgentSettleRecovery);
+  const depositQueue = useServerFn(vidaAgentDepositQueue);
 
   const [voucherInput, setVoucherInput] = useState("");
   const [recoveryAmount, setRecoveryAmount] = useState("");
@@ -218,6 +219,54 @@ function VidaAgentPortal() {
               {lock.isPending ? "…" : "Verrouiller"}
             </button>
           </div>
+        </section>
+
+        {/* Dépôts à encaisser */}
+        <section className="rounded-xl border border-border bg-card p-3">
+          <p className="flex items-center gap-1.5 text-xs font-bold">
+            <Banknote className="h-4 w-4" /> Dépôts à encaisser
+          </p>
+          {(queue ?? []).filter((o) => o.status === "pending_deposit").length === 0 ? (
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Aucun dépôt client en attente pour le moment.
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-2">
+              {(queue ?? [])
+                .filter((o) => o.status === "pending_deposit")
+                .map((o) => (
+                  <li key={o.id} className="rounded-lg bg-muted/40 p-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-[11px]">
+                        {vidaFormatOrderCode(o.order_code)}
+                      </span>
+                      <span className="text-xs font-black">{formatXOF(Number(o.total_amount))}</span>
+                    </div>
+                    <p className="mt-0.5 text-[10px] text-muted-foreground">
+                      {o.product_title} · {o.client_name ?? "Client ViDa"}
+                      {o.client_phone ? ` · ${o.client_phone}` : ""}
+                    </p>
+                    <button
+                      onClick={() => collect.mutate(o.order_code)}
+                      disabled={collect.isPending}
+                      className="mt-1.5 w-full rounded-lg bg-primary py-1.5 text-[10px] font-black text-primary-foreground disabled:opacity-50"
+                    >
+                      {collect.isPending ? "…" : "Encaisser et verrouiller les fonds"}
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          )}
+          {(queue ?? []).filter((o) => o.status === "funds_locked" || o.status === "in_transit")
+            .length > 0 && (
+            <p className="mt-2 text-[10px] text-muted-foreground">
+              {
+                (queue ?? []).filter((o) => o.status === "funds_locked" || o.status === "in_transit")
+                  .length
+              }{" "}
+              commande(s) déjà encaissée(s) et en cours de livraison.
+            </p>
+          )}
         </section>
 
         {/* Refund Processing */}
