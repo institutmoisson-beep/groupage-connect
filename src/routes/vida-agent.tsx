@@ -16,6 +16,7 @@ import {
   vidaFormatOrderCode,
 } from "@/lib/vida";
 import {
+  vidaAgentDepositQueue,
   vidaAgentLockFunds,
   vidaAgentProcessRefund,
   vidaAgentSettleRecovery,
