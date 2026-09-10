@@ -78,12 +78,34 @@ function VidaAgentPortal() {
     },
   });
 
+  const { data: queue } = useQuery({
+    queryKey: ["vida-agent-queue", user?.id],
+    enabled: !!user && hasRole,
+    refetchInterval: 15_000,
+    queryFn: () => depositQueue({ data: undefined }),
+  });
+
+  const refreshAgent = () => {
+    qc.invalidateQueries({ queryKey: ["vida-agent-config"] });
+    qc.invalidateQueries({ queryKey: ["vida-agent-queue"] });
+    qc.invalidateQueries({ queryKey: ["vida-agent-refunds"] });
+  };
+
   const lock = useMutation({
     mutationFn: () => lockFunds({ data: { orderCode: voucherInput.trim().toUpperCase() } }),
     onSuccess: (order: any) => {
       toast.success(`Fonds verrouillés pour ${vidaFormatOrderCode(order.order_code)}. OTP généré.`);
       setVoucherInput("");
-      qc.invalidateQueries({ queryKey: ["vida-agent-config"] });
+      refreshAgent();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const collect = useMutation({
+    mutationFn: (orderCode: string) => lockFunds({ data: { orderCode } }),
+    onSuccess: (order: any) => {
+      toast.success(`Dépôt encaissé — ${vidaFormatOrderCode(order.order_code)} en séquestre.`);
+      refreshAgent();
     },
     onError: (e: Error) => toast.error(e.message),
   });
