@@ -203,6 +203,26 @@ export const vidaAdminUpdateProductRules = createServerFn({ method: "POST" })
     return row;
   });
 
+const adminCancelOrderSchema = z.object({
+  orderId: z.string().uuid(),
+  reason: z.string().trim().max(300).optional().default(""),
+});
+
+/** Annulation admin — fonctionne quel que soit le statut/la fenêtre d'annulation client
+ * (tant que la commande n'est pas déjà livrée ou déjà en remboursement). Rembourse
+ * intégralement si des fonds étaient déjà séquestrés. */
+export const vidaAdminCancelOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => adminCancelOrderSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: order, error } = await (context.supabase as any).rpc("vida_admin_cancel_order", {
+      p_order_id: data.orderId,
+      p_reason: data.reason,
+    });
+    if (error) throw new Error(error.message);
+    return order;
+  });
+
 // ============ ADMIN — CRÉATION / ÉDITION DE PRODUITS VIDA (article seul ou pack) ============
 
 /** Un article composant un pack : soit un produit déjà existant (productId renseigné),
@@ -433,4 +453,84 @@ export const vidaAgentDepositQueue = createServerFn({ method: "POST" })
       assigned: boolean;
       created_at: string;
     }>;
+  });
+
+// ============ RECHARGE DE CAISSE (FLOAT VIRTUEL AGENT) ============
+
+export type VidaRechargeRequest = {
+  id: string;
+  agent_id: string;
+  amount_requested: number;
+  note: string | null;
+  status: "pending" | "approved" | "rejected";
+  decided_by: string | null;
+  decision_note: string | null;
+  created_at: string;
+  decided_at: string | null;
+};
+
+export type VidaAdminRechargeRequest = VidaRechargeRequest & {
+  agent_full_name: string | null;
+  agent_phone: string | null;
+};
+
+const requestRechargeSchema = z.object({
+  amount: z.number().positive(),
+  note: z.string().trim().max(300).optional().default(""),
+});
+
+/** Espace agent : demande une recharge de son float virtuel — soumise à approbation admin. */
+export const vidaAgentRequestRecharge = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => requestRechargeSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await (context.supabase as any).rpc(
+      "vida_agent_request_recharge",
+      { p_amount: data.amount, p_note: data.note || null },
+    );
+    if (error) throw new Error(error.message);
+    return row as VidaRechargeRequest;
+  });
+
+/** Espace agent : historique de mes demandes de recharge (les plus récentes en premier). */
+export const vidaAgentListMyRechargeRequests = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc(
+      "vida_agent_list_my_recharge_requests",
+    );
+    if (error) throw new Error(error.message);
+    return (data ?? []) as VidaRechargeRequest[];
+  });
+
+/** Panneau admin : toutes les demandes de recharge (en attente en premier), avec infos agent. */
+export const vidaAdminListRechargeRequests = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc(
+      "vida_admin_list_recharge_requests",
+    );
+    if (error) throw new Error(error.message);
+    return (data ?? []) as VidaAdminRechargeRequest[];
+  });
+
+const decideRechargeSchema = z.object({
+  requestId: z.string().uuid(),
+  approve: z.boolean(),
+  note: z.string().trim().max(300).optional().default(""),
+});
+
+/** Panneau admin : approuve (crédite automatiquement le float de l'agent) ou refuse une
+ * demande de recharge de caisse. */
+export const vidaAdminDecideRecharge = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => decideRechargeSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await (context.supabase as any).rpc("vida_admin_decide_recharge", {
+      p_request_id: data.requestId,
+      p_approve: data.approve,
+      p_note: data.note || null,
+    });
+    if (error) throw new Error(error.message);
+    return row as VidaRechargeRequest;
   });
