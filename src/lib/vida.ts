@@ -57,6 +57,13 @@ export function vidaVoucherPayload(
   return JSON.stringify({ app: "vida", kind, code: orderCode });
 }
 
+/** Construit la charge utile encodée dans le QR code de confirmation de livraison — le
+ * livreur le scanne (bouton "Scanner le QR / OTP du client" côté /vida-courier) au lieu
+ * de devoir ressaisir manuellement les 6 chiffres. */
+export function vidaDeliveryOtpPayload(otp: string): string {
+  return JSON.stringify({ app: "vida", kind: "delivery", otp });
+}
+
 export function vidaCountdownLabel(deadline: string | null): string {
   if (!deadline) return "—";
   const ms = new Date(deadline).getTime() - Date.now();
