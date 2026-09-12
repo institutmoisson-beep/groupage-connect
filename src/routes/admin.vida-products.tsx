@@ -27,7 +27,6 @@ import {
   vidaAdminUpdateProduct,
   vidaAdminSetProductActive,
 } from "@/lib/vida.functions";
-import { adminListUsers } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/admin/vida-products")({
   head: () => ({
@@ -59,29 +58,25 @@ function AdminVidaProducts() {
   const [showCreate, setShowCreate] = useState(false);
 
   // ---- Comptes "Vendeur" ViDa approuvés — un produit doit obligatoirement leur appartenir ----
-  // ---- Comptes pouvant porter un produit ViDa : vendeurs ViDa approuvés + tous les comptes ----
-  const listUsers = useServerFn(adminListUsers);
   const { data: vendors } = useQuery({
-    queryKey: ["admin-vida-vendor-candidates"],
+    queryKey: ["admin-vida-vendors"],
     queryFn: async () => {
-      const users = await listUsers({ data: undefined });
-      const { data: roles } = await supabase
+      const { data: roles, error } = await supabase
         .from("vida_roles")
-        .select("user_id")
+        .select("user_id, is_approved, is_suspended")
         .eq("role", "vendor")
         .eq("is_approved", true)
         .eq("is_suspended", false);
-      const vendorIds = new Set((roles ?? []).map((r: any) => r.user_id));
-      return users
-        .map((u) => ({
-          id: u.id,
-          label: `${u.fullName ?? u.email ?? u.id}${vendorIds.has(u.id) ? " · vendeur ViDa" : ""}`,
-          isVendor: vendorIds.has(u.id),
-        }))
-        .sort((a, b) => Number(b.isVendor) - Number(a.isVendor));
+      if (error) throw error;
+      const ids = (roles ?? []).map((r: any) => r.user_id);
+      if (ids.length === 0) return [];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, phone")
+        .in("id", ids);
+      return (profiles ?? []).map((p: any) => ({ id: p.id, label: p.full_name ?? p.phone ?? p.id }));
     },
   });
-
 
   // ---- Produits ViDa déjà créés (avec le contenu de leur pack, s'il y en a un) ----
   const { data: products, isLoading } = useQuery({
@@ -122,6 +117,7 @@ function AdminVidaProducts() {
     cancellationPenaltyPercentage: number;
     agentCommissionPercentage: number;
     platformCommissionPercentage: number;
+    vendorId: string;
     items: { productId: string | null; title: string; quantity: number; unitPriceXof: number }[];
   };
 
@@ -134,6 +130,7 @@ function AdminVidaProducts() {
     deliveryFeeXof: number;
     stockQuantity: number;
     isActive: boolean;
+    vendorId?: string;
   };
 
   const create = useMutation({
@@ -456,9 +453,12 @@ function CreateProductPanel({
                 </option>
               ))}
             </select>
-            <span className="mt-1 block text-[10px] text-muted-foreground">
-              Tous les comptes sont listés ; les vendeurs ViDa approuvés apparaissent en premier.
-            </span>
+            {vendors.length === 0 && (
+              <span className="mt-1 block text-[10px] text-muted-foreground">
+                Aucun compte "Vendeur" approuvé pour l'instant — vous pouvez utiliser votre
+                compte administrateur, ou en approuver un dans « ViDa — Agents & Rôles ».
+              </span>
+            )}
           </label>
           <label className="flex items-center gap-2 text-xs">
             <input
@@ -728,7 +728,7 @@ function BaseFieldsForm({
             className="mt-0.5 w-full rounded-lg border border-input bg-background p-1.5 text-xs text-foreground"
           >
             {!vendors.some((v) => v.id === vendorId) && vendorId && (
-              <option value={vendorId}>Vendeur actuel ({vendorId.slice(0, 8)}…)</option>
+              <option value={vendorId}>Vendeur actuel ({String(vendorId).slice(0, 8)}…)</option>
             )}
             {vendors.map((v) => (
               <option key={v.id} value={v.id}>
