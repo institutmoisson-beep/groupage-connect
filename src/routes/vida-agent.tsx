@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Banknote, QrCode, RefreshCcw, ShieldAlert, Wallet } from "lucide-react";
+import { Banknote, PlusCircle, QrCode, RefreshCcw, ShieldAlert, Wallet } from "lucide-react";
 
 import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,9 @@ import {
   vidaAgentLockFunds,
   vidaAgentProcessRefund,
   vidaAgentSettleRecovery,
+  vidaAgentRequestRecharge,
+  vidaAgentListMyRechargeRequests,
+  type VidaRechargeRequest,
 } from "@/lib/vida.functions";
 
 export const Route = createFileRoute("/vida-agent")({
@@ -39,11 +42,16 @@ function VidaAgentPortal() {
   const processRefund = useServerFn(vidaAgentProcessRefund);
   const settleRecovery = useServerFn(vidaAgentSettleRecovery);
   const depositQueue = useServerFn(vidaAgentDepositQueue);
+  const requestRecharge = useServerFn(vidaAgentRequestRecharge);
+  const myRechargeRequests = useServerFn(vidaAgentListMyRechargeRequests);
 
   const [voucherInput, setVoucherInput] = useState("");
   const [recoveryAmount, setRecoveryAmount] = useState("");
   const [recoveryRef, setRecoveryRef] = useState("");
   const [recoveryCounterparty, setRecoveryCounterparty] = useState("");
+  const [showRechargeForm, setShowRechargeForm] = useState(false);
+  const [rechargeAmount, setRechargeAmount] = useState("");
+  const [rechargeNote, setRechargeNote] = useState("");
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { redirect: "/vida-agent" } as never });
@@ -83,6 +91,12 @@ function VidaAgentPortal() {
     enabled: !!user && hasRole,
     refetchInterval: 15_000,
     queryFn: () => depositQueue({ data: undefined }),
+  });
+
+  const { data: rechargeRequests } = useQuery({
+    queryKey: ["vida-agent-recharge-requests", user?.id],
+    enabled: !!user && hasRole,
+    queryFn: () => myRechargeRequests({ data: undefined }),
   });
 
   const refreshAgent = () => {
@@ -140,6 +154,19 @@ function VidaAgentPortal() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const recharge = useMutation({
+    mutationFn: () =>
+      requestRecharge({ data: { amount: Number(rechargeAmount), note: rechargeNote } }),
+    onSuccess: () => {
+      toast.success("Demande de recharge envoyée à l'administration.");
+      setRechargeAmount("");
+      setRechargeNote("");
+      setShowRechargeForm(false);
+      qc.invalidateQueries({ queryKey: ["vida-agent-recharge-requests"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (loading || roleLoading) {
     return (
       <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
@@ -187,6 +214,78 @@ function VidaAgentPortal() {
               {formatXOF(Number(cfg?.virtual_float_balance ?? 0))}
             </p>
           </div>
+        </section>
+
+        {/* Demande de recharge de caisse */}
+        <section className="rounded-xl border border-border bg-card p-3">
+          <div className="flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-xs font-bold">
+              <PlusCircle className="h-4 w-4" /> Demander une recharge
+            </p>
+            <button
+              onClick={() => setShowRechargeForm((v) => !v)}
+              className="rounded-lg border border-primary/40 px-2.5 py-1 text-[10px] font-bold text-primary"
+            >
+              {showRechargeForm ? "Fermer" : "Nouvelle demande"}
+            </button>
+          </div>
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            Votre float virtuel est insuffisant pour verrouiller un dépôt ? Demandez une
+            recharge — elle sera créditée automatiquement dès approbation par l'administration.
+          </p>
+
+          {showRechargeForm && (
+            <div className="mt-2 space-y-2">
+              <input
+                value={rechargeAmount}
+                onChange={(e) => setRechargeAmount(e.target.value)}
+                type="number"
+                placeholder="Montant demandé (FCFA)"
+                className="w-full rounded-lg border border-input bg-background p-2.5 text-xs"
+              />
+              <input
+                value={rechargeNote}
+                onChange={(e) => setRechargeNote(e.target.value)}
+                placeholder="Note (optionnel)"
+                className="w-full rounded-lg border border-input bg-background p-2.5 text-xs"
+              />
+              <button
+                onClick={() => recharge.mutate()}
+                disabled={recharge.isPending || !rechargeAmount || Number(rechargeAmount) <= 0}
+                className="w-full rounded-lg bg-primary py-2.5 text-xs font-black text-primary-foreground disabled:opacity-50"
+              >
+                {recharge.isPending ? "…" : "Envoyer la demande"}
+              </button>
+            </div>
+          )}
+
+          {(rechargeRequests ?? []).length > 0 && (
+            <ul className="mt-3 space-y-1.5 border-t border-border pt-2">
+              {(rechargeRequests ?? []).slice(0, 5).map((r: VidaRechargeRequest) => (
+                <li
+                  key={r.id}
+                  className="flex items-center justify-between gap-2 rounded-lg bg-muted/40 p-2 text-[11px]"
+                >
+                  <span className="font-bold">{formatXOF(Number(r.amount_requested))}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                      r.status === "approved"
+                        ? "bg-success text-success-foreground"
+                        : r.status === "rejected"
+                          ? "bg-destructive/15 text-destructive"
+                          : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {r.status === "approved"
+                      ? "Approuvée"
+                      : r.status === "rejected"
+                        ? "Refusée"
+                        : "En attente"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {cfg && (
