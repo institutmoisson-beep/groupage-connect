@@ -61,6 +61,7 @@ function VidaAgentPortal() {
     queryKey: ["vida-agent-config", user?.id],
     enabled: !!user && hasRole,
     refetchInterval: 20_000,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vida_agent_configurations")
@@ -96,6 +97,8 @@ function VidaAgentPortal() {
   const { data: rechargeRequests } = useQuery({
     queryKey: ["vida-agent-recharge-requests", user?.id],
     enabled: !!user && hasRole,
+    refetchInterval: 10_000,
+    refetchOnWindowFocus: true,
     queryFn: () => myRechargeRequests({ data: undefined }),
   });
 
