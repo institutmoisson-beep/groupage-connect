@@ -17,6 +17,7 @@ import {
   vidaIsCancellable,
   vidaQrUrl,
   vidaVoucherPayload,
+  vidaDeliveryOtpPayload,
 } from "@/lib/vida";
 import { vidaCancelOrder, vidaListActiveAgents } from "@/lib/vida.functions";
 
@@ -183,11 +184,19 @@ function VidaOrderDetail() {
               <Lock className="h-3.5 w-3.5" />
               <p className="text-xs font-bold">Code de confirmation de livraison</p>
             </div>
+            {order.delivery_otp && (
+              <img
+                src={vidaQrUrl(vidaDeliveryOtpPayload(order.delivery_otp))}
+                alt="QR code de confirmation de livraison"
+                className="mx-auto mt-2 h-44 w-44"
+              />
+            )}
             <p className="mt-2 font-mono text-2xl font-black tracking-[0.3em]">
               {order.delivery_otp}
             </p>
             <p className="mt-1 text-[10px] text-muted-foreground">
-              Communiquez ce code UNIQUEMENT au livreur, au moment de la remise du colis.
+              Montrez ce QR au livreur pour qu'il le scanne — ou communiquez-lui le code
+              UNIQUEMENT au moment de la remise du colis.
             </p>
             {order.cancellation_deadline && (
               <p className="mt-2 flex items-center justify-center gap-1 text-[10px] font-bold text-destructive">
