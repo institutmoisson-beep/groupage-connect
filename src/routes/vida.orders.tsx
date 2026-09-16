@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/vida/orders")({
 function VidaOrders() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const cancelOrder = useServerFn(vidaCancelOrder);
 
   const { data: orders, isLoading } = useQuery({
@@ -62,10 +63,18 @@ function VidaOrders() {
             return (
               <li key={o.id} className="rounded-xl border border-border bg-card p-3">
                 <div className="flex items-center gap-3">
-                  <Link
-                    to="/vida/orders/$orderId"
-                    params={{ orderId: o.id }}
-                    className="flex min-w-0 flex-1 items-center gap-3"
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      toast.info("Ouverture de la commande…");
+                      navigate({ to: "/vida/orders/$orderId", params: { orderId: o.id } }).catch(
+                        (err: unknown) => {
+                          toast.error(`Erreur de navigation : ${String((err as Error)?.message ?? err)}`);
+                        },
+                      );
+                    }}
+                    className="flex min-w-0 flex-1 cursor-pointer items-center gap-3"
                   >
                     <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
                       {o.vida_products?.image_url && (
@@ -85,7 +94,7 @@ function VidaOrders() {
                         {formatXOF(Number(o.total_amount))}
                       </p>
                     </div>
-                  </Link>
+                  </div>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${VIDA_ORDER_STATUS_CLASSES[o.status] ?? "bg-muted"}`}
                   >
