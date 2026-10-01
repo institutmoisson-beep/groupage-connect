@@ -43,7 +43,9 @@ import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
 import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
+import { Route as AdminVidaRechargeRouteImport } from './routes/admin.vida-recharge'
 import { Route as AdminVidaProductsRouteImport } from './routes/admin.vida-products'
+import { Route as AdminVidaOrdersRouteImport } from './routes/admin.vida-orders'
 import { Route as AdminVidaDeliveryRouteImport } from './routes/admin.vida-delivery'
 import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
 import { Route as AdminVidaRouteImport } from './routes/admin.vida'
@@ -245,9 +247,19 @@ const AdminWalletsRoute = AdminWalletsRouteImport.update({
   path: '/wallets',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminVidaRechargeRoute = AdminVidaRechargeRouteImport.update({
+  id: '/vida-recharge',
+  path: '/vida-recharge',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminVidaProductsRoute = AdminVidaProductsRouteImport.update({
   id: '/vida-products',
   path: '/vida-products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaOrdersRoute = AdminVidaOrdersRouteImport.update({
+  id: '/vida-orders',
+  path: '/vida-orders',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminVidaDeliveryRoute = AdminVidaDeliveryRouteImport.update({
@@ -444,7 +456,9 @@ export interface FileRoutesByFullPath {
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
   '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
+  '/admin/vida-orders': typeof AdminVidaOrdersRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
+  '/admin/vida-recharge': typeof AdminVidaRechargeRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -510,7 +524,9 @@ export interface FileRoutesByTo {
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
   '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
+  '/admin/vida-orders': typeof AdminVidaOrdersRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
+  '/admin/vida-recharge': typeof AdminVidaRechargeRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -578,7 +594,9 @@ export interface FileRoutesById {
   '/admin/vida': typeof AdminVidaRoute
   '/admin/vida-agents': typeof AdminVidaAgentsRoute
   '/admin/vida-delivery': typeof AdminVidaDeliveryRoute
+  '/admin/vida-orders': typeof AdminVidaOrdersRoute
   '/admin/vida-products': typeof AdminVidaProductsRoute
+  '/admin/vida-recharge': typeof AdminVidaRechargeRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/checkout/$orderId': typeof CheckoutOrderIdRoute
@@ -647,7 +665,9 @@ export interface FileRouteTypes {
     | '/admin/vida'
     | '/admin/vida-agents'
     | '/admin/vida-delivery'
+    | '/admin/vida-orders'
     | '/admin/vida-products'
+    | '/admin/vida-recharge'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -713,7 +733,9 @@ export interface FileRouteTypes {
     | '/admin/vida'
     | '/admin/vida-agents'
     | '/admin/vida-delivery'
+    | '/admin/vida-orders'
     | '/admin/vida-products'
+    | '/admin/vida-recharge'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -780,7 +802,9 @@ export interface FileRouteTypes {
     | '/admin/vida'
     | '/admin/vida-agents'
     | '/admin/vida-delivery'
+    | '/admin/vida-orders'
     | '/admin/vida-products'
+    | '/admin/vida-recharge'
     | '/admin/wallets'
     | '/admin/withdrawals'
     | '/checkout/$orderId'
@@ -1088,11 +1112,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWalletsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/vida-recharge': {
+      id: '/admin/vida-recharge'
+      path: '/vida-recharge'
+      fullPath: '/admin/vida-recharge'
+      preLoaderRoute: typeof AdminVidaRechargeRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/vida-products': {
       id: '/admin/vida-products'
       path: '/vida-products'
       fullPath: '/admin/vida-products'
       preLoaderRoute: typeof AdminVidaProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-orders': {
+      id: '/admin/vida-orders'
+      path: '/vida-orders'
+      fullPath: '/admin/vida-orders'
+      preLoaderRoute: typeof AdminVidaOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/vida-delivery': {
@@ -1332,7 +1370,9 @@ interface AdminRouteChildren {
   AdminVidaRoute: typeof AdminVidaRoute
   AdminVidaAgentsRoute: typeof AdminVidaAgentsRoute
   AdminVidaDeliveryRoute: typeof AdminVidaDeliveryRoute
+  AdminVidaOrdersRoute: typeof AdminVidaOrdersRoute
   AdminVidaProductsRoute: typeof AdminVidaProductsRoute
+  AdminVidaRechargeRoute: typeof AdminVidaRechargeRoute
   AdminWalletsRoute: typeof AdminWalletsRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1362,7 +1402,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminVidaRoute: AdminVidaRoute,
   AdminVidaAgentsRoute: AdminVidaAgentsRoute,
   AdminVidaDeliveryRoute: AdminVidaDeliveryRoute,
+  AdminVidaOrdersRoute: AdminVidaOrdersRoute,
   AdminVidaProductsRoute: AdminVidaProductsRoute,
+  AdminVidaRechargeRoute: AdminVidaRechargeRoute,
   AdminWalletsRoute: AdminWalletsRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   AdminIndexRoute: AdminIndexRoute,

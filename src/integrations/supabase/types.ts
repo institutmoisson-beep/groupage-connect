@@ -1743,6 +1743,42 @@ export type Database = {
         }
         Relationships: []
       }
+      vida_cash_recharge_requests: {
+        Row: {
+          agent_id: string
+          amount_requested: number
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          note: string | null
+          status: string
+        }
+        Insert: {
+          agent_id: string
+          amount_requested: number
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          note?: string | null
+          status?: string
+        }
+        Update: {
+          agent_id?: string
+          amount_requested?: number
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          note?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       vida_cash_recovery_ledger: {
         Row: {
           agent_id: string
@@ -1792,6 +1828,9 @@ export type Database = {
       }
       vida_escrow_orders: {
         Row: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -1819,6 +1858,9 @@ export type Database = {
           vendor_payout: number
         }
         Insert: {
+          admin_cancel_reason?: string | null
+          admin_cancelled_at?: string | null
+          admin_cancelled_by?: string | null
           agent_commission?: number
           agent_id?: string | null
           cancel_reason?: string | null
@@ -1846,6 +1888,9 @@ export type Database = {
           vendor_payout?: number
         }
         Update: {
+          admin_cancel_reason?: string | null
+          admin_cancelled_at?: string | null
+          admin_cancelled_by?: string | null
           agent_commission?: number
           agent_id?: string | null
           cancel_reason?: string | null
@@ -2238,6 +2283,45 @@ export type Database = {
           status: Database["public"]["Enums"]["withdrawal_status"]
         }[]
       }
+      vida_admin_cancel_order: {
+        Args: { p_order_id: string; p_reason?: string }
+        Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
+          agent_commission: number
+          agent_id: string | null
+          cancel_reason: string | null
+          cancellation_deadline: string | null
+          cancellation_penalty_percentage: number
+          cancellation_window_hours: number
+          client_id: string
+          courier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee: number
+          delivery_otp: string | null
+          delivery_phone: string | null
+          deposited_at: string | null
+          id: string
+          order_code: string
+          payment_channel: Database["public"]["Enums"]["vida_payment_channel"]
+          platform_commission: number
+          product_id: string
+          refund_amount: number
+          status: Database["public"]["Enums"]["vida_order_status"]
+          total_amount: number
+          updated_at: string
+          vendor_payout: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       vida_admin_configure_agent:
         | {
             Args: {
@@ -2330,6 +2414,42 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      vida_admin_decide_recharge: {
+        Args: { p_approve: boolean; p_note?: string; p_request_id: string }
+        Returns: {
+          agent_id: string
+          amount_requested: number
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          note: string | null
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recharge_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_admin_list_recharge_requests: {
+        Args: never
+        Returns: {
+          agent_full_name: string
+          agent_id: string
+          agent_phone: string
+          amount_requested: number
+          created_at: string
+          decided_at: string
+          decided_by: string
+          decision_note: string
+          id: string
+          note: string
+          status: string
+        }[]
       }
       vida_admin_set_product_active: {
         Args: { p_is_active: boolean; p_product_id: string }
@@ -2467,9 +2587,32 @@ export type Database = {
           total_amount: number
         }[]
       }
+      vida_agent_list_my_recharge_requests: {
+        Args: never
+        Returns: {
+          agent_id: string
+          amount_requested: number
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          note: string | null
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recharge_requests"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       vida_agent_lock_funds: {
         Args: { p_order_code: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2506,6 +2649,9 @@ export type Database = {
       vida_agent_process_refund: {
         Args: { p_order_id: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2535,6 +2681,26 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "vida_escrow_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      vida_agent_request_recharge: {
+        Args: { p_amount: number; p_note?: string }
+        Returns: {
+          agent_id: string
+          amount_requested: number
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          note: string | null
+          status: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vida_cash_recharge_requests"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2589,6 +2755,9 @@ export type Database = {
       vida_assign_courier: {
         Args: { p_courier_id: string; p_order_id: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2625,6 +2794,9 @@ export type Database = {
       vida_cancel_order: {
         Args: { p_order_id: string; p_reason: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2682,6 +2854,9 @@ export type Database = {
       vida_confirm_delivery: {
         Args: { p_order_id: string; p_otp: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2718,6 +2893,9 @@ export type Database = {
       vida_courier_pickup: {
         Args: { p_order_id: string }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
@@ -2760,6 +2938,9 @@ export type Database = {
           p_product_id: string
         }
         Returns: {
+          admin_cancel_reason: string | null
+          admin_cancelled_at: string | null
+          admin_cancelled_by: string | null
           agent_commission: number
           agent_id: string | null
           cancel_reason: string | null
