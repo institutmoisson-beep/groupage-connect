@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { KeyRound, MapPin, Phone, ShieldAlert, Truck } from "lucide-react";
 
 import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
+import { VidaOrderDetailSheet } from "@/components/VidaOrderDetailSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
@@ -27,6 +28,7 @@ function VidaCourierPortal() {
   const pickupFn = useServerFn(vidaCourierPickup);
 
   const [otpByOrder, setOtpByOrder] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<any | null>(null);
 
   useEffect(() => {
     if (!loading && !user)
