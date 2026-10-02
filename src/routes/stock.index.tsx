@@ -6,6 +6,7 @@ import { PackagePlus, Search, ShoppingBag, TrendingUp, Wallet } from "lucide-rea
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
+import { useTrackSearch } from "@/lib/analytics";
 import { useAuth } from "@/hooks/use-auth";
 import { formatXOF } from "@/lib/format";
 import { CATEGORY_LABELS, STOCK_CATEGORIES } from "@/lib/stock";
@@ -36,6 +37,7 @@ type SortKey = "commission" | "recent" | "price";
 function StockCatalog() {
   const { user, loading } = useAuth();
   const [q, setQ] = useState("");
+  useTrackSearch(q, "Stock");
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState<SortKey>("commission");
   const [minCommission, setMinCommission] = useState(0);

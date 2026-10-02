@@ -26,6 +26,7 @@ import {
   ShieldHalf,
   UserCog,
   SlidersHorizontal,
+  BarChart3,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/admin")({
 
 const NAV: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean }> = [
   { to: "/admin", label: "Tableau de bord", icon: Home, exact: true },
+  { to: "/admin/analytics", label: "Activité & audience", icon: BarChart3 },
   { to: "/admin/users", label: "Utilisateurs", icon: Users },
   { to: "/admin/roles", label: "Rôles", icon: ShieldCheck },
   { to: "/admin/staff", label: "Rôles délégués", icon: UserCog },
