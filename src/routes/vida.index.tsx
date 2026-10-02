@@ -6,6 +6,7 @@ import { ShieldCheck, Search, PackageCheck } from "lucide-react";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
+import { useTrackSearch } from "@/lib/analytics";
 import { formatXOF } from "@/lib/format";
 
 export const Route = createFileRoute("/vida/")({
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/vida/")({
 
 function VidaCatalog() {
   const [q, setQ] = useState("");
+  useTrackSearch(q, "ViDa");
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["vida-catalog"],

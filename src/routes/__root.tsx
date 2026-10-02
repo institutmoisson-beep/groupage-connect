@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { registerAppSW } from "../lib/register-sw";
 import { InstallPrompt } from "../components/InstallPrompt";
+import { AnalyticsTracker } from "../components/AnalyticsTracker";
 
 function NotFoundComponent() {
   return (
@@ -146,6 +147,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <InstallPrompt />
+      <AnalyticsTracker />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );

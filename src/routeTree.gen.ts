@@ -69,6 +69,7 @@ import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dis
 import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as VidaOrdersOrderIdRouteImport } from './routes/vida.orders.$orderId'
 import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
 import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
@@ -377,6 +378,11 @@ const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
   path: '/campaign-products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const VidaOrdersOrderIdRoute = VidaOrdersOrderIdRouteImport.update({
   id: '/$orderId',
   path: '/$orderId',
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/vida-courier': typeof VidaCourierRoute
   '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -501,6 +508,7 @@ export interface FileRoutesByTo {
   '/vida-courier': typeof VidaCourierRoute
   '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -571,6 +579,7 @@ export interface FileRoutesById {
   '/vida-courier': typeof VidaCourierRoute
   '/vida-vendor': typeof VidaVendorRoute
   '/wallet': typeof WalletRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/campaign-products': typeof AdminCampaignProductsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cargo': typeof AdminCargoRoute
@@ -642,6 +651,7 @@ export interface FileRouteTypes {
     | '/vida-courier'
     | '/vida-vendor'
     | '/wallet'
+    | '/admin/analytics'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -710,6 +720,7 @@ export interface FileRouteTypes {
     | '/vida-courier'
     | '/vida-vendor'
     | '/wallet'
+    | '/admin/analytics'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -779,6 +790,7 @@ export interface FileRouteTypes {
     | '/vida-courier'
     | '/vida-vendor'
     | '/wallet'
+    | '/admin/analytics'
     | '/admin/campaign-products'
     | '/admin/campaigns'
     | '/admin/cargo'
@@ -1294,6 +1306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCampaignProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/vida/orders/$orderId': {
       id: '/vida/orders/$orderId'
       path: '/$orderId'
@@ -1347,6 +1366,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCampaignProductsRoute: typeof AdminCampaignProductsRoute
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminCargoRoute: typeof AdminCargoRoute
@@ -1379,6 +1399,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCampaignProductsRoute: AdminCampaignProductsRoute,
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminCargoRoute: AdminCargoRoute,
