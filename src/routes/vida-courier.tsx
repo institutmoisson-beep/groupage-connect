@@ -151,14 +151,17 @@ function VidaCourierPortal() {
               </p>
             ) : o.status === "funds_locked" ? (
               <button
-                onClick={() => pickup.mutate(o.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  pickup.mutate(o.id);
+                }}
                 disabled={pickup.isPending}
                 className="mt-2 w-full rounded-lg bg-primary px-3 py-2 text-xs font-black text-primary-foreground disabled:opacity-50"
               >
                 Prise en charge du colis
               </button>
             ) : (
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-2" onClick={(e) => e.stopPropagation()}>
               <QrScanButton
                 label="Scanner le QR / OTP du client"
                 className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-black text-secondary-foreground"
