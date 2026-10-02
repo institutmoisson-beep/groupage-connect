@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_events: {
+        Row: {
+          created_at: string
+          device: string | null
+          event_type: string
+          id: string
+          path: string
+          referrer: string | null
+          search_context: string | null
+          search_term: string | null
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device?: string | null
+          event_type: string
+          id?: string
+          path: string
+          referrer?: string | null
+          search_context?: string | null
+          search_term?: string | null
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device?: string | null
+          event_type?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          search_context?: string | null
+          search_term?: string | null
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       campaign_products: {
         Row: {
           campaign_id: string
