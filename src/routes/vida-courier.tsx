@@ -118,13 +118,18 @@ function VidaCourierPortal() {
       <main className="mx-auto max-w-md space-y-3 px-4 py-4">
         {isLoading && <p className="text-sm text-muted-foreground">Chargement des courses…</p>}
         {(orders ?? []).map((o: any) => (
-          <div key={o.id} className="rounded-xl border border-border bg-card p-3">
+          <div
+            key={o.id}
+            onClick={() => setSelected(o)}
+            className="cursor-pointer rounded-xl border border-border bg-card p-3 transition-colors active:bg-muted/40"
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold">{o.vida_products?.title}</p>
               <span className="font-mono text-[10px] text-muted-foreground">
                 {vidaFormatOrderCode(o.order_code)}
               </span>
             </div>
+            <p className="text-[10px] font-bold text-primary">Toucher pour voir le détail et le QR →</p>
             <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
               <MapPin className="h-3 w-3" /> {o.delivery_address}
             </p>
