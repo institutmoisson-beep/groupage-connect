@@ -202,6 +202,66 @@ function VidaCourierPortal() {
           </p>
         )}
       </main>
+
+      {/* Fiche détail de la course + QR voucher */}
+      <VidaOrderDetailSheet order={selected} onClose={() => setSelected(null)}>
+        {selected?.status === "funds_locked" ? (
+          <button
+            onClick={() => {
+              pickup.mutate(selected.id);
+              setSelected(null);
+            }}
+            disabled={pickup.isPending}
+            className="w-full rounded-lg bg-primary px-3 py-2.5 text-xs font-black text-primary-foreground disabled:opacity-50"
+          >
+            Prise en charge du colis
+          </button>
+        ) : selected?.status === "in_transit" ? (
+          <div className="space-y-2">
+            <QrScanButton
+              label="Scanner le QR / OTP du client"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-black text-secondary-foreground"
+              onResult={(raw) => {
+                const { otp, code } = parseVidaQr(raw);
+                const value = (otp ?? code ?? "").replace(/\D/g, "").slice(0, 6);
+                if (value.length !== 6) return toast.error("QR non reconnu — OTP invalide.");
+                setOtpByOrder((s) => ({ ...s, [selected.id]: value }));
+                toast.success("Code de livraison lu.");
+              }}
+            />
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <KeyRound className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={otpByOrder[selected.id] ?? ""}
+                  onChange={(e) =>
+                    setOtpByOrder((s) => ({ ...s, [selected.id]: e.target.value }))
+                  }
+                  placeholder="OTP client (6 chiffres)"
+                  maxLength={6}
+                  className="w-full rounded-lg border border-input bg-background py-2 pl-8 pr-2 text-xs font-mono tracking-widest"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  confirm.mutate(selected.id);
+                  setSelected(null);
+                }}
+                disabled={confirm.isPending || (otpByOrder[selected.id]?.length ?? 0) !== 6}
+                className="rounded-lg bg-success px-3 py-2 text-xs font-black text-success-foreground disabled:opacity-50"
+              >
+                Valider
+              </button>
+            </div>
+          </div>
+        ) : selected?.status === "pending_deposit" ? (
+          <p className="rounded-lg bg-muted/50 px-2 py-2 text-[11px] text-muted-foreground">
+            En attente du dépôt du client chez l'agent. Montrez ce QR à l'agent pour qu'il
+            vérifie la commande ; la prise en charge s'activera dès que les fonds seront
+            verrouillés.
+          </p>
+        ) : null}
+      </VidaOrderDetailSheet>
     </div>
   );
 }
