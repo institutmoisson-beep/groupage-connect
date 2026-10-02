@@ -361,7 +361,11 @@ function VidaAgentPortal() {
               {(queue ?? [])
                 .filter((o) => o.status === "pending_deposit")
                 .map((o) => (
-                  <li key={o.id} className="rounded-lg bg-muted/40 p-2">
+                  <li
+                    key={o.id}
+                    onClick={() => setSelectedDeposit(o)}
+                    className="cursor-pointer rounded-lg bg-muted/40 p-2 transition-colors active:bg-muted/70"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono text-[11px]">
                         {vidaFormatOrderCode(o.order_code)}
@@ -372,8 +376,14 @@ function VidaAgentPortal() {
                       {o.product_title} · {o.client_name ?? "Client ViDa"}
                       {o.client_phone ? ` · ${o.client_phone}` : ""}
                     </p>
+                    <p className="mt-0.5 text-[10px] font-bold text-primary">
+                      Toucher pour voir le détail et le QR →
+                    </p>
                     <button
-                      onClick={() => collect.mutate(o.order_code)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        collect.mutate(o.order_code);
+                      }}
                       disabled={collect.isPending}
                       className="mt-1.5 w-full rounded-lg bg-primary py-1.5 text-[10px] font-black text-primary-foreground disabled:opacity-50"
                     >
