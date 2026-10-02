@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Banknote, PlusCircle, QrCode, RefreshCcw, ShieldAlert, Wallet } from "lucide-react";
 
 import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
+import { VidaOrderDetailSheet } from "@/components/VidaOrderDetailSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
@@ -46,6 +47,7 @@ function VidaAgentPortal() {
   const myRechargeRequests = useServerFn(vidaAgentListMyRechargeRequests);
 
   const [voucherInput, setVoucherInput] = useState("");
+  const [selectedDeposit, setSelectedDeposit] = useState<any | null>(null);
   const [recoveryAmount, setRecoveryAmount] = useState("");
   const [recoveryRef, setRecoveryRef] = useState("");
   const [recoveryCounterparty, setRecoveryCounterparty] = useState("");
@@ -359,7 +361,11 @@ function VidaAgentPortal() {
               {(queue ?? [])
                 .filter((o) => o.status === "pending_deposit")
                 .map((o) => (
-                  <li key={o.id} className="rounded-lg bg-muted/40 p-2">
+                  <li
+                    key={o.id}
+                    onClick={() => setSelectedDeposit(o)}
+                    className="cursor-pointer rounded-lg bg-muted/40 p-2 transition-colors active:bg-muted/70"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono text-[11px]">
                         {vidaFormatOrderCode(o.order_code)}
@@ -370,8 +376,14 @@ function VidaAgentPortal() {
                       {o.product_title} · {o.client_name ?? "Client ViDa"}
                       {o.client_phone ? ` · ${o.client_phone}` : ""}
                     </p>
+                    <p className="mt-0.5 text-[10px] font-bold text-primary">
+                      Toucher pour voir le détail et le QR →
+                    </p>
                     <button
-                      onClick={() => collect.mutate(o.order_code)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        collect.mutate(o.order_code);
+                      }}
                       disabled={collect.isPending}
                       className="mt-1.5 w-full rounded-lg bg-primary py-1.5 text-[10px] font-black text-primary-foreground disabled:opacity-50"
                     >
@@ -456,6 +468,28 @@ function VidaAgentPortal() {
           </div>
         </section>
       </main>
+
+      {/* Fiche détail du dépôt + QR voucher à vérifier */}
+      <VidaOrderDetailSheet order={selectedDeposit} onClose={() => setSelectedDeposit(null)}>
+        {selectedDeposit?.status === "pending_deposit" && (
+          <div className="space-y-2">
+            <p className="rounded-lg bg-muted/50 px-2 py-2 text-[11px] text-muted-foreground">
+              Vérifiez que le QR présenté par le client correspond à ce code voucher, encaissez
+              les espèces, puis verrouillez les fonds.
+            </p>
+            <button
+              onClick={() => {
+                collect.mutate(selectedDeposit.order_code);
+                setSelectedDeposit(null);
+              }}
+              disabled={collect.isPending}
+              className="w-full rounded-lg bg-primary py-2.5 text-xs font-black text-primary-foreground disabled:opacity-50"
+            >
+              {collect.isPending ? "…" : "Encaisser et verrouiller les fonds"}
+            </button>
+          </div>
+        )}
+      </VidaOrderDetailSheet>
     </div>
   );
 }
