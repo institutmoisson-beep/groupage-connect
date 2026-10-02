@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Banknote, PlusCircle, QrCode, RefreshCcw, ShieldAlert, Wallet } from "lucide-react";
 
 import { QrScanButton, parseVidaQr } from "@/components/QrScanButton";
+import { VidaOrderDetailSheet } from "@/components/VidaOrderDetailSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useVidaRole } from "@/hooks/use-vida-role";
@@ -46,6 +47,7 @@ function VidaAgentPortal() {
   const myRechargeRequests = useServerFn(vidaAgentListMyRechargeRequests);
 
   const [voucherInput, setVoucherInput] = useState("");
+  const [selectedDeposit, setSelectedDeposit] = useState<any | null>(null);
   const [recoveryAmount, setRecoveryAmount] = useState("");
   const [recoveryRef, setRecoveryRef] = useState("");
   const [recoveryCounterparty, setRecoveryCounterparty] = useState("");
