@@ -468,6 +468,28 @@ function VidaAgentPortal() {
           </div>
         </section>
       </main>
+
+      {/* Fiche détail du dépôt + QR voucher à vérifier */}
+      <VidaOrderDetailSheet order={selectedDeposit} onClose={() => setSelectedDeposit(null)}>
+        {selectedDeposit?.status === "pending_deposit" && (
+          <div className="space-y-2">
+            <p className="rounded-lg bg-muted/50 px-2 py-2 text-[11px] text-muted-foreground">
+              Vérifiez que le QR présenté par le client correspond à ce code voucher, encaissez
+              les espèces, puis verrouillez les fonds.
+            </p>
+            <button
+              onClick={() => {
+                collect.mutate(selectedDeposit.order_code);
+                setSelectedDeposit(null);
+              }}
+              disabled={collect.isPending}
+              className="w-full rounded-lg bg-primary py-2.5 text-xs font-black text-primary-foreground disabled:opacity-50"
+            >
+              {collect.isPending ? "…" : "Encaisser et verrouiller les fonds"}
+            </button>
+          </div>
+        )}
+      </VidaOrderDetailSheet>
     </div>
   );
 }
