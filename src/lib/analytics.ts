@@ -68,3 +68,16 @@ export function useTrackSearch(term: string, context: string) {
 }
 
 export const PRESENCE_CHANNEL = "msn-online-users";
+
+export type LivePresence = { key: string; path: string; user_id: string | null };
+let liveState: LivePresence[] = [];
+const liveListeners = new Set<(s: LivePresence[]) => void>();
+export function setLivePresence(s: LivePresence[]) {
+  liveState = s;
+  liveListeners.forEach((l) => l(s));
+}
+export function subscribeLivePresence(l: (s: LivePresence[]) => void) {
+  liveListeners.add(l);
+  l(liveState);
+  return () => void liveListeners.delete(l);
+}
