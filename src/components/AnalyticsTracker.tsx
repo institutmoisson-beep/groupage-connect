@@ -13,6 +13,8 @@ export function AnalyticsTracker() {
   }, [pathname]);
 
   useEffect(() => {
+    const existing = supabase.getChannels().find((c) => c.topic === `realtime:${PRESENCE_CHANNEL}`);
+    if (existing) void supabase.removeChannel(existing);
     const ch = supabase.channel(PRESENCE_CHANNEL, {
       config: { presence: { key: getSessionId() } },
     });
