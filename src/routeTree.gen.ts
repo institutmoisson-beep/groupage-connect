@@ -9,138 +9,78 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CargoRouteImport } from './routes/cargo'
-import { Route as GroupageRouteImport } from './routes/groupage'
-import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as MlmRouteImport } from './routes/mlm'
-import { Route as OrdersRouteImport } from './routes/orders'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SourcingRouteImport } from './routes/sourcing'
-import { Route as VidaAgentRouteImport } from './routes/vida-agent'
-import { Route as VidaCourierRouteImport } from './routes/vida-courier'
-import { Route as VidaVendorRouteImport } from './routes/vida-vendor'
 import { Route as WalletRouteImport } from './routes/wallet'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
-import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
-import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
-import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
-import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dispatch'
-import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
-import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
-import { Route as AdminHotelBookingsRouteImport } from './routes/admin.hotel-bookings'
-import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
-import { Route as AdminLogisticsRouteImport } from './routes/admin.logistics'
-import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
-import { Route as AdminOnfaisimpleRouteImport } from './routes/admin.onfaisimple'
-import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
-import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
-import { Route as AdminProductsRouteImport } from './routes/admin.products'
-import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
-import { Route as AdminRolesRouteImport } from './routes/admin.roles'
-import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
-import { Route as AdminStaffRouteImport } from './routes/admin.staff'
-import { Route as AdminStockRouteImport } from './routes/admin.stock'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminVidaRouteImport } from './routes/admin.vida'
-import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
-import { Route as AdminVidaDeliveryRouteImport } from './routes/admin.vida-delivery'
-import { Route as AdminVidaOrdersRouteImport } from './routes/admin.vida-orders'
-import { Route as AdminVidaProductsRouteImport } from './routes/admin.vida-products'
-import { Route as AdminVidaRechargeRouteImport } from './routes/admin.vida-recharge'
-import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
-import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
-import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
-import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
-import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
-import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
-import { Route as OnfaisimpleIndexRouteImport } from './routes/onfaisimple.index'
-import { Route as OnfaisimpleProductIdRouteImport } from './routes/onfaisimple.$productId'
-import { Route as OnfaisimpleOrdersRouteImport } from './routes/onfaisimple.orders'
-import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
-import { Route as ProductIdRouteImport } from './routes/product.$id'
-import { Route as StockIndexRouteImport } from './routes/stock.index'
-import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
-import { Route as StockOrdersRouteImport } from './routes/stock.orders'
-import { Route as StockSellRouteImport } from './routes/stock.sell'
+import { Route as VidaVendorRouteImport } from './routes/vida-vendor'
+import { Route as VidaCourierRouteImport } from './routes/vida-courier'
+import { Route as VidaAgentRouteImport } from './routes/vida-agent'
+import { Route as SourcingRouteImport } from './routes/sourcing'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as MlmRouteImport } from './routes/mlm'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as GroupageRouteImport } from './routes/groupage'
+import { Route as CargoRouteImport } from './routes/cargo'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as VidaIndexRouteImport } from './routes/vida.index'
-import { Route as VidaProductIdRouteImport } from './routes/vida.$productId'
+import { Route as StockIndexRouteImport } from './routes/stock.index'
+import { Route as OnfaisimpleIndexRouteImport } from './routes/onfaisimple.index'
+import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as VidaOrdersRouteImport } from './routes/vida.orders'
-import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
-import { Route as HotelsVoucherDirectBookingIdRouteImport } from './routes/hotels.voucher-direct.$bookingId'
-import { Route as HotelsVoucherBookingIdRouteImport } from './routes/hotels.voucher.$bookingId'
-import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
-import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
+import { Route as VidaProductIdRouteImport } from './routes/vida.$productId'
+import { Route as StockSellRouteImport } from './routes/stock.sell'
+import { Route as StockOrdersRouteImport } from './routes/stock.orders'
+import { Route as StockProductIdRouteImport } from './routes/stock.$productId'
+import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
+import { Route as OnfaisimpleOrdersRouteImport } from './routes/onfaisimple.orders'
+import { Route as OnfaisimpleProductIdRouteImport } from './routes/onfaisimple.$productId'
+import { Route as HotelsBookingsRouteImport } from './routes/hotels.bookings'
+import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
+import { Route as CheckoutOrderIdRouteImport } from './routes/checkout.$orderId'
+import { Route as AdminWithdrawalsRouteImport } from './routes/admin.withdrawals'
+import { Route as AdminWalletsRouteImport } from './routes/admin.wallets'
+import { Route as AdminVidaRechargeRouteImport } from './routes/admin.vida-recharge'
+import { Route as AdminVidaProductsRouteImport } from './routes/admin.vida-products'
+import { Route as AdminVidaOrdersRouteImport } from './routes/admin.vida-orders'
+import { Route as AdminVidaDeliveryRouteImport } from './routes/admin.vida-delivery'
+import { Route as AdminVidaAgentsRouteImport } from './routes/admin.vida-agents'
+import { Route as AdminVidaRouteImport } from './routes/admin.vida'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminStockRouteImport } from './routes/admin.stock'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
+import { Route as AdminSourcingRouteImport } from './routes/admin.sourcing'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminProofsRouteImport } from './routes/admin.proofs'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminPaymentMethodsRouteImport } from './routes/admin.payment-methods'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminOnfaisimpleRouteImport } from './routes/admin.onfaisimple'
+import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminLogisticsRouteImport } from './routes/admin.logistics'
+import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
+import { Route as AdminHotelBookingsRouteImport } from './routes/admin.hotel-bookings'
+import { Route as AdminCommissionsRouteImport } from './routes/admin.commissions'
+import { Route as AdminCargoPackagesRouteImport } from './routes/admin.cargo-packages'
+import { Route as AdminCargoDispatchRouteImport } from './routes/admin.cargo-dispatch'
+import { Route as AdminCargoRouteImport } from './routes/admin.cargo'
+import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
+import { Route as AdminCampaignProductsRouteImport } from './routes/admin.campaign-products'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as VidaOrdersOrderIdRouteImport } from './routes/vida.orders.$orderId'
+import { Route as SourcingSourcingIdChatRouteImport } from './routes/sourcing.$sourcingId.chat'
+import { Route as ReceiptSourcingSourcingIdRouteImport } from './routes/receipt.sourcing.$sourcingId'
+import { Route as HotelsVoucherBookingIdRouteImport } from './routes/hotels.voucher.$bookingId'
+import { Route as HotelsVoucherDirectBookingIdRouteImport } from './routes/hotels.voucher-direct.$bookingId'
+import { Route as CheckoutSourcingSourcingIdRouteImport } from './routes/checkout.sourcing.$sourcingId'
 import { Route as ApiPublicWebhooksGeniuspayRouteImport } from './routes/api/public/webhooks/geniuspay'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CargoRoute = CargoRouteImport.update({
-  id: '/cargo',
-  path: '/cargo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupageRoute = GroupageRouteImport.update({
-  id: '/groupage',
-  path: '/groupage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MlmRoute = MlmRouteImport.update({
-  id: '/mlm',
-  path: '/mlm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersRoute = OrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SourcingRoute = SourcingRouteImport.update({
-  id: '/sourcing',
-  path: '/sourcing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VidaAgentRoute = VidaAgentRouteImport.update({
-  id: '/vida-agent',
-  path: '/vida-agent',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VidaCourierRoute = VidaCourierRouteImport.update({
-  id: '/vida-courier',
-  path: '/vida-courier',
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VidaVendorRoute = VidaVendorRouteImport.update({
@@ -148,224 +88,69 @@ const VidaVendorRoute = VidaVendorRouteImport.update({
   path: '/vida-vendor',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WalletRoute = WalletRouteImport.update({
-  id: '/wallet',
-  path: '/wallet',
+const VidaCourierRoute = VidaCourierRouteImport.update({
+  id: '/vida-courier',
+  path: '/vida-courier',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
+const VidaAgentRoute = VidaAgentRouteImport.update({
+  id: '/vida-agent',
+  path: '/vida-agent',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
-  id: '/campaign-products',
-  path: '/campaign-products',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
-  id: '/campaigns',
-  path: '/campaigns',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCargoRoute = AdminCargoRouteImport.update({
-  id: '/cargo',
-  path: '/cargo',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCargoDispatchRoute = AdminCargoDispatchRouteImport.update({
-  id: '/cargo-dispatch',
-  path: '/cargo-dispatch',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCargoPackagesRoute = AdminCargoPackagesRouteImport.update({
-  id: '/cargo-packages',
-  path: '/cargo-packages',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCommissionsRoute = AdminCommissionsRouteImport.update({
-  id: '/commissions',
-  path: '/commissions',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminHotelBookingsRoute = AdminHotelBookingsRouteImport.update({
-  id: '/hotel-bookings',
-  path: '/hotel-bookings',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminHotelsRoute = AdminHotelsRouteImport.update({
-  id: '/hotels',
-  path: '/hotels',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLogisticsRoute = AdminLogisticsRouteImport.update({
-  id: '/logistics',
-  path: '/logistics',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMessagesRoute = AdminMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminOnfaisimpleRoute = AdminOnfaisimpleRouteImport.update({
-  id: '/onfaisimple',
-  path: '/onfaisimple',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminOrdersRoute = AdminOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
-  id: '/payment-methods',
-  path: '/payment-methods',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProductsRoute = AdminProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProofsRoute = AdminProofsRouteImport.update({
-  id: '/proofs',
-  path: '/proofs',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSourcingRoute = AdminSourcingRouteImport.update({
+const SourcingRoute = SourcingRouteImport.update({
   id: '/sourcing',
   path: '/sourcing',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminStaffRoute = AdminStaffRouteImport.update({
-  id: '/staff',
-  path: '/staff',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminStockRoute = AdminStockRouteImport.update({
-  id: '/stock',
-  path: '/stock',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaRoute = AdminVidaRouteImport.update({
-  id: '/vida',
-  path: '/vida',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaAgentsRoute = AdminVidaAgentsRouteImport.update({
-  id: '/vida-agents',
-  path: '/vida-agents',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaDeliveryRoute = AdminVidaDeliveryRouteImport.update({
-  id: '/vida-delivery',
-  path: '/vida-delivery',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaOrdersRoute = AdminVidaOrdersRouteImport.update({
-  id: '/vida-orders',
-  path: '/vida-orders',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaProductsRoute = AdminVidaProductsRouteImport.update({
-  id: '/vida-products',
-  path: '/vida-products',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVidaRechargeRoute = AdminVidaRechargeRouteImport.update({
-  id: '/vida-recharge',
-  path: '/vida-recharge',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminWalletsRoute = AdminWalletsRouteImport.update({
-  id: '/wallets',
-  path: '/wallets',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
-  id: '/withdrawals',
-  path: '/withdrawals',
-  getParentRoute: () => AdminRoute,
-} as any)
-const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
-  id: '/checkout/$orderId',
-  path: '/checkout/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HotelsIndexRoute = HotelsIndexRouteImport.update({
-  id: '/hotels/',
-  path: '/hotels/',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
-  id: '/hotels/$hotelId',
-  path: '/hotels/$hotelId',
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HotelsBookingsRoute = HotelsBookingsRouteImport.update({
-  id: '/hotels/bookings',
-  path: '/hotels/bookings',
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnfaisimpleIndexRoute = OnfaisimpleIndexRouteImport.update({
-  id: '/onfaisimple/',
-  path: '/onfaisimple/',
+const MlmRoute = MlmRouteImport.update({
+  id: '/mlm',
+  path: '/mlm',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnfaisimpleProductIdRoute = OnfaisimpleProductIdRouteImport.update({
-  id: '/onfaisimple/$productId',
-  path: '/onfaisimple/$productId',
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnfaisimpleOrdersRoute = OnfaisimpleOrdersRouteImport.update({
-  id: '/onfaisimple/orders',
-  path: '/onfaisimple/orders',
+const GroupageRoute = GroupageRouteImport.update({
+  id: '/groupage',
+  path: '/groupage',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
-  id: '/payment/callback',
-  path: '/payment/callback',
+const CargoRoute = CargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductIdRoute = ProductIdRouteImport.update({
-  id: '/product/$id',
-  path: '/product/$id',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StockIndexRoute = StockIndexRouteImport.update({
-  id: '/stock/',
-  path: '/stock/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StockProductIdRoute = StockProductIdRouteImport.update({
-  id: '/stock/$productId',
-  path: '/stock/$productId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StockOrdersRoute = StockOrdersRouteImport.update({
-  id: '/stock/orders',
-  path: '/stock/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StockSellRoute = StockSellRouteImport.update({
-  id: '/stock/sell',
-  path: '/stock/sell',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VidaIndexRoute = VidaIndexRouteImport.update({
@@ -373,32 +158,240 @@ const VidaIndexRoute = VidaIndexRouteImport.update({
   path: '/vida/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VidaProductIdRoute = VidaProductIdRouteImport.update({
-  id: '/vida/$productId',
-  path: '/vida/$productId',
+const StockIndexRoute = StockIndexRouteImport.update({
+  id: '/stock/',
+  path: '/stock/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleIndexRoute = OnfaisimpleIndexRouteImport.update({
+  id: '/onfaisimple/',
+  path: '/onfaisimple/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsIndexRoute = HotelsIndexRouteImport.update({
+  id: '/hotels/',
+  path: '/hotels/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const VidaOrdersRoute = VidaOrdersRouteImport.update({
   id: '/vida/orders',
   path: '/vida/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutSourcingSourcingIdRoute =
-  CheckoutSourcingSourcingIdRouteImport.update({
-    id: '/checkout/sourcing/$sourcingId',
-    path: '/checkout/sourcing/$sourcingId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const HotelsVoucherDirectBookingIdRoute =
-  HotelsVoucherDirectBookingIdRouteImport.update({
-    id: '/hotels/voucher-direct/$bookingId',
-    path: '/hotels/voucher-direct/$bookingId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const HotelsVoucherBookingIdRoute = HotelsVoucherBookingIdRouteImport.update({
-  id: '/hotels/voucher/$bookingId',
-  path: '/hotels/voucher/$bookingId',
+const VidaProductIdRoute = VidaProductIdRouteImport.update({
+  id: '/vida/$productId',
+  path: '/vida/$productId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const StockSellRoute = StockSellRouteImport.update({
+  id: '/stock/sell',
+  path: '/stock/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockOrdersRoute = StockOrdersRouteImport.update({
+  id: '/stock/orders',
+  path: '/stock/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockProductIdRoute = StockProductIdRouteImport.update({
+  id: '/stock/$productId',
+  path: '/stock/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductIdRoute = ProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
+  id: '/payment/callback',
+  path: '/payment/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleOrdersRoute = OnfaisimpleOrdersRouteImport.update({
+  id: '/onfaisimple/orders',
+  path: '/onfaisimple/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnfaisimpleProductIdRoute = OnfaisimpleProductIdRouteImport.update({
+  id: '/onfaisimple/$productId',
+  path: '/onfaisimple/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsBookingsRoute = HotelsBookingsRouteImport.update({
+  id: '/hotels/bookings',
+  path: '/hotels/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
+  id: '/hotels/$hotelId',
+  path: '/hotels/$hotelId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutOrderIdRoute = CheckoutOrderIdRouteImport.update({
+  id: '/checkout/$orderId',
+  path: '/checkout/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
+  id: '/withdrawals',
+  path: '/withdrawals',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminWalletsRoute = AdminWalletsRouteImport.update({
+  id: '/wallets',
+  path: '/wallets',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaRechargeRoute = AdminVidaRechargeRouteImport.update({
+  id: '/vida-recharge',
+  path: '/vida-recharge',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaProductsRoute = AdminVidaProductsRouteImport.update({
+  id: '/vida-products',
+  path: '/vida-products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaOrdersRoute = AdminVidaOrdersRouteImport.update({
+  id: '/vida-orders',
+  path: '/vida-orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaDeliveryRoute = AdminVidaDeliveryRouteImport.update({
+  id: '/vida-delivery',
+  path: '/vida-delivery',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaAgentsRoute = AdminVidaAgentsRouteImport.update({
+  id: '/vida-agents',
+  path: '/vida-agents',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVidaRoute = AdminVidaRouteImport.update({
+  id: '/vida',
+  path: '/vida',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSourcingRoute = AdminSourcingRouteImport.update({
+  id: '/sourcing',
+  path: '/sourcing',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProofsRoute = AdminProofsRouteImport.update({
+  id: '/proofs',
+  path: '/proofs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
+  id: '/payment-methods',
+  path: '/payment-methods',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOnfaisimpleRoute = AdminOnfaisimpleRouteImport.update({
+  id: '/onfaisimple',
+  path: '/onfaisimple',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMessagesRoute = AdminMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogisticsRoute = AdminLogisticsRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHotelsRoute = AdminHotelsRouteImport.update({
+  id: '/hotels',
+  path: '/hotels',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHotelBookingsRoute = AdminHotelBookingsRouteImport.update({
+  id: '/hotel-bookings',
+  path: '/hotel-bookings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCommissionsRoute = AdminCommissionsRouteImport.update({
+  id: '/commissions',
+  path: '/commissions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCargoPackagesRoute = AdminCargoPackagesRouteImport.update({
+  id: '/cargo-packages',
+  path: '/cargo-packages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCargoDispatchRoute = AdminCargoDispatchRouteImport.update({
+  id: '/cargo-dispatch',
+  path: '/cargo-dispatch',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCargoRoute = AdminCargoRouteImport.update({
+  id: '/cargo',
+  path: '/cargo',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCampaignProductsRoute = AdminCampaignProductsRouteImport.update({
+  id: '/campaign-products',
+  path: '/campaign-products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const VidaOrdersOrderIdRoute = VidaOrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => VidaOrdersRoute,
+} as any)
+const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
+  id: '/$sourcingId/chat',
+  path: '/$sourcingId/chat',
+  getParentRoute: () => SourcingRoute,
 } as any)
 const ReceiptSourcingSourcingIdRoute =
   ReceiptSourcingSourcingIdRouteImport.update({
@@ -406,16 +399,23 @@ const ReceiptSourcingSourcingIdRoute =
     path: '/receipt/sourcing/$sourcingId',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SourcingSourcingIdChatRoute = SourcingSourcingIdChatRouteImport.update({
-  id: '/$sourcingId/chat',
-  path: '/$sourcingId/chat',
-  getParentRoute: () => SourcingRoute,
+const HotelsVoucherBookingIdRoute = HotelsVoucherBookingIdRouteImport.update({
+  id: '/hotels/voucher/$bookingId',
+  path: '/hotels/voucher/$bookingId',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const VidaOrdersOrderIdRoute = VidaOrdersOrderIdRouteImport.update({
-  id: '/$orderId',
-  path: '/$orderId',
-  getParentRoute: () => VidaOrdersRoute,
-} as any)
+const HotelsVoucherDirectBookingIdRoute =
+  HotelsVoucherDirectBookingIdRouteImport.update({
+    id: '/hotels/voucher-direct/$bookingId',
+    path: '/hotels/voucher-direct/$bookingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CheckoutSourcingSourcingIdRoute =
+  CheckoutSourcingSourcingIdRouteImport.update({
+    id: '/checkout/sourcing/$sourcingId',
+    path: '/checkout/sourcing/$sourcingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksGeniuspayRoute =
   ApiPublicWebhooksGeniuspayRouteImport.update({
     id: '/api/public/webhooks/geniuspay',
@@ -886,95 +886,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cargo': {
-      id: '/cargo'
-      path: '/cargo'
-      fullPath: '/cargo'
-      preLoaderRoute: typeof CargoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groupage': {
-      id: '/groupage'
-      path: '/groupage'
-      fullPath: '/groupage'
-      preLoaderRoute: typeof GroupageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mlm': {
-      id: '/mlm'
-      path: '/mlm'
-      fullPath: '/mlm'
-      preLoaderRoute: typeof MlmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders': {
-      id: '/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof OrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sourcing': {
-      id: '/sourcing'
-      path: '/sourcing'
-      fullPath: '/sourcing'
-      preLoaderRoute: typeof SourcingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vida-agent': {
-      id: '/vida-agent'
-      path: '/vida-agent'
-      fullPath: '/vida-agent'
-      preLoaderRoute: typeof VidaAgentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vida-courier': {
-      id: '/vida-courier'
-      path: '/vida-courier'
-      fullPath: '/vida-courier'
-      preLoaderRoute: typeof VidaCourierRouteImport
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vida-vendor': {
@@ -984,312 +900,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VidaVendorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wallet': {
-      id: '/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof WalletRouteImport
+    '/vida-courier': {
+      id: '/vida-courier'
+      path: '/vida-courier'
+      fullPath: '/vida-courier'
+      preLoaderRoute: typeof VidaCourierRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/vida-agent': {
+      id: '/vida-agent'
+      path: '/vida-agent'
+      fullPath: '/vida-agent'
+      preLoaderRoute: typeof VidaAgentRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/analytics': {
-      id: '/admin/analytics'
-      path: '/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/campaign-products': {
-      id: '/admin/campaign-products'
-      path: '/campaign-products'
-      fullPath: '/admin/campaign-products'
-      preLoaderRoute: typeof AdminCampaignProductsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/campaigns': {
-      id: '/admin/campaigns'
-      path: '/campaigns'
-      fullPath: '/admin/campaigns'
-      preLoaderRoute: typeof AdminCampaignsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/cargo': {
-      id: '/admin/cargo'
-      path: '/cargo'
-      fullPath: '/admin/cargo'
-      preLoaderRoute: typeof AdminCargoRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/cargo-dispatch': {
-      id: '/admin/cargo-dispatch'
-      path: '/cargo-dispatch'
-      fullPath: '/admin/cargo-dispatch'
-      preLoaderRoute: typeof AdminCargoDispatchRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/cargo-packages': {
-      id: '/admin/cargo-packages'
-      path: '/cargo-packages'
-      fullPath: '/admin/cargo-packages'
-      preLoaderRoute: typeof AdminCargoPackagesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/commissions': {
-      id: '/admin/commissions'
-      path: '/commissions'
-      fullPath: '/admin/commissions'
-      preLoaderRoute: typeof AdminCommissionsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/hotel-bookings': {
-      id: '/admin/hotel-bookings'
-      path: '/hotel-bookings'
-      fullPath: '/admin/hotel-bookings'
-      preLoaderRoute: typeof AdminHotelBookingsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/hotels': {
-      id: '/admin/hotels'
-      path: '/hotels'
-      fullPath: '/admin/hotels'
-      preLoaderRoute: typeof AdminHotelsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/logistics': {
-      id: '/admin/logistics'
-      path: '/logistics'
-      fullPath: '/admin/logistics'
-      preLoaderRoute: typeof AdminLogisticsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/messages': {
-      id: '/admin/messages'
-      path: '/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AdminMessagesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/onfaisimple': {
-      id: '/admin/onfaisimple'
-      path: '/onfaisimple'
-      fullPath: '/admin/onfaisimple'
-      preLoaderRoute: typeof AdminOnfaisimpleRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/orders': {
-      id: '/admin/orders'
-      path: '/orders'
-      fullPath: '/admin/orders'
-      preLoaderRoute: typeof AdminOrdersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/payment-methods': {
-      id: '/admin/payment-methods'
-      path: '/payment-methods'
-      fullPath: '/admin/payment-methods'
-      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/products': {
-      id: '/admin/products'
-      path: '/products'
-      fullPath: '/admin/products'
-      preLoaderRoute: typeof AdminProductsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/proofs': {
-      id: '/admin/proofs'
-      path: '/proofs'
-      fullPath: '/admin/proofs'
-      preLoaderRoute: typeof AdminProofsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/sourcing': {
-      id: '/admin/sourcing'
+    '/sourcing': {
+      id: '/sourcing'
       path: '/sourcing'
-      fullPath: '/admin/sourcing'
-      preLoaderRoute: typeof AdminSourcingRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/staff': {
-      id: '/admin/staff'
-      path: '/staff'
-      fullPath: '/admin/staff'
-      preLoaderRoute: typeof AdminStaffRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/stock': {
-      id: '/admin/stock'
-      path: '/stock'
-      fullPath: '/admin/stock'
-      preLoaderRoute: typeof AdminStockRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida': {
-      id: '/admin/vida'
-      path: '/vida'
-      fullPath: '/admin/vida'
-      preLoaderRoute: typeof AdminVidaRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida-agents': {
-      id: '/admin/vida-agents'
-      path: '/vida-agents'
-      fullPath: '/admin/vida-agents'
-      preLoaderRoute: typeof AdminVidaAgentsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida-delivery': {
-      id: '/admin/vida-delivery'
-      path: '/vida-delivery'
-      fullPath: '/admin/vida-delivery'
-      preLoaderRoute: typeof AdminVidaDeliveryRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida-orders': {
-      id: '/admin/vida-orders'
-      path: '/vida-orders'
-      fullPath: '/admin/vida-orders'
-      preLoaderRoute: typeof AdminVidaOrdersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida-products': {
-      id: '/admin/vida-products'
-      path: '/vida-products'
-      fullPath: '/admin/vida-products'
-      preLoaderRoute: typeof AdminVidaProductsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vida-recharge': {
-      id: '/admin/vida-recharge'
-      path: '/vida-recharge'
-      fullPath: '/admin/vida-recharge'
-      preLoaderRoute: typeof AdminVidaRechargeRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/wallets': {
-      id: '/admin/wallets'
-      path: '/wallets'
-      fullPath: '/admin/wallets'
-      preLoaderRoute: typeof AdminWalletsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/withdrawals': {
-      id: '/admin/withdrawals'
-      path: '/withdrawals'
-      fullPath: '/admin/withdrawals'
-      preLoaderRoute: typeof AdminWithdrawalsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/checkout/$orderId': {
-      id: '/checkout/$orderId'
-      path: '/checkout/$orderId'
-      fullPath: '/checkout/$orderId'
-      preLoaderRoute: typeof CheckoutOrderIdRouteImport
+      fullPath: '/sourcing'
+      preLoaderRoute: typeof SourcingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hotels/': {
-      id: '/hotels/'
-      path: '/hotels'
-      fullPath: '/hotels/'
-      preLoaderRoute: typeof HotelsIndexRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hotels/$hotelId': {
-      id: '/hotels/$hotelId'
-      path: '/hotels/$hotelId'
-      fullPath: '/hotels/$hotelId'
-      preLoaderRoute: typeof HotelsHotelIdRouteImport
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hotels/bookings': {
-      id: '/hotels/bookings'
-      path: '/hotels/bookings'
-      fullPath: '/hotels/bookings'
-      preLoaderRoute: typeof HotelsBookingsRouteImport
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/onfaisimple/': {
-      id: '/onfaisimple/'
-      path: '/onfaisimple'
-      fullPath: '/onfaisimple/'
-      preLoaderRoute: typeof OnfaisimpleIndexRouteImport
+    '/mlm': {
+      id: '/mlm'
+      path: '/mlm'
+      fullPath: '/mlm'
+      preLoaderRoute: typeof MlmRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/onfaisimple/$productId': {
-      id: '/onfaisimple/$productId'
-      path: '/onfaisimple/$productId'
-      fullPath: '/onfaisimple/$productId'
-      preLoaderRoute: typeof OnfaisimpleProductIdRouteImport
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/onfaisimple/orders': {
-      id: '/onfaisimple/orders'
-      path: '/onfaisimple/orders'
-      fullPath: '/onfaisimple/orders'
-      preLoaderRoute: typeof OnfaisimpleOrdersRouteImport
+    '/groupage': {
+      id: '/groupage'
+      path: '/groupage'
+      fullPath: '/groupage'
+      preLoaderRoute: typeof GroupageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/payment/callback': {
-      id: '/payment/callback'
-      path: '/payment/callback'
-      fullPath: '/payment/callback'
-      preLoaderRoute: typeof PaymentCallbackRouteImport
+    '/cargo': {
+      id: '/cargo'
+      path: '/cargo'
+      fullPath: '/cargo'
+      preLoaderRoute: typeof CargoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/$id': {
-      id: '/product/$id'
-      path: '/product/$id'
-      fullPath: '/product/$id'
-      preLoaderRoute: typeof ProductIdRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/stock/': {
-      id: '/stock/'
-      path: '/stock'
-      fullPath: '/stock/'
-      preLoaderRoute: typeof StockIndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/stock/$productId': {
-      id: '/stock/$productId'
-      path: '/stock/$productId'
-      fullPath: '/stock/$productId'
-      preLoaderRoute: typeof StockProductIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stock/orders': {
-      id: '/stock/orders'
-      path: '/stock/orders'
-      fullPath: '/stock/orders'
-      preLoaderRoute: typeof StockOrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stock/sell': {
-      id: '/stock/sell'
-      path: '/stock/sell'
-      fullPath: '/stock/sell'
-      preLoaderRoute: typeof StockSellRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vida/': {
@@ -1299,12 +998,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VidaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/vida/$productId': {
-      id: '/vida/$productId'
-      path: '/vida/$productId'
-      fullPath: '/vida/$productId'
-      preLoaderRoute: typeof VidaProductIdRouteImport
+    '/stock/': {
+      id: '/stock/'
+      path: '/stock'
+      fullPath: '/stock/'
+      preLoaderRoute: typeof StockIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/': {
+      id: '/onfaisimple/'
+      path: '/onfaisimple'
+      fullPath: '/onfaisimple/'
+      preLoaderRoute: typeof OnfaisimpleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/': {
+      id: '/hotels/'
+      path: '/hotels'
+      fullPath: '/hotels/'
+      preLoaderRoute: typeof HotelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/vida/orders': {
       id: '/vida/orders'
@@ -1313,18 +1033,305 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VidaOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/sourcing/$sourcingId': {
-      id: '/checkout/sourcing/$sourcingId'
-      path: '/checkout/sourcing/$sourcingId'
-      fullPath: '/checkout/sourcing/$sourcingId'
-      preLoaderRoute: typeof CheckoutSourcingSourcingIdRouteImport
+    '/vida/$productId': {
+      id: '/vida/$productId'
+      path: '/vida/$productId'
+      fullPath: '/vida/$productId'
+      preLoaderRoute: typeof VidaProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hotels/voucher-direct/$bookingId': {
-      id: '/hotels/voucher-direct/$bookingId'
-      path: '/hotels/voucher-direct/$bookingId'
-      fullPath: '/hotels/voucher-direct/$bookingId'
-      preLoaderRoute: typeof HotelsVoucherDirectBookingIdRouteImport
+    '/stock/sell': {
+      id: '/stock/sell'
+      path: '/stock/sell'
+      fullPath: '/stock/sell'
+      preLoaderRoute: typeof StockSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/orders': {
+      id: '/stock/orders'
+      path: '/stock/orders'
+      fullPath: '/stock/orders'
+      preLoaderRoute: typeof StockOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/$productId': {
+      id: '/stock/$productId'
+      path: '/stock/$productId'
+      fullPath: '/stock/$productId'
+      preLoaderRoute: typeof StockProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$id': {
+      id: '/product/$id'
+      path: '/product/$id'
+      fullPath: '/product/$id'
+      preLoaderRoute: typeof ProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/callback': {
+      id: '/payment/callback'
+      path: '/payment/callback'
+      fullPath: '/payment/callback'
+      preLoaderRoute: typeof PaymentCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/orders': {
+      id: '/onfaisimple/orders'
+      path: '/onfaisimple/orders'
+      fullPath: '/onfaisimple/orders'
+      preLoaderRoute: typeof OnfaisimpleOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onfaisimple/$productId': {
+      id: '/onfaisimple/$productId'
+      path: '/onfaisimple/$productId'
+      fullPath: '/onfaisimple/$productId'
+      preLoaderRoute: typeof OnfaisimpleProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/bookings': {
+      id: '/hotels/bookings'
+      path: '/hotels/bookings'
+      fullPath: '/hotels/bookings'
+      preLoaderRoute: typeof HotelsBookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/$hotelId': {
+      id: '/hotels/$hotelId'
+      path: '/hotels/$hotelId'
+      fullPath: '/hotels/$hotelId'
+      preLoaderRoute: typeof HotelsHotelIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$orderId': {
+      id: '/checkout/$orderId'
+      path: '/checkout/$orderId'
+      fullPath: '/checkout/$orderId'
+      preLoaderRoute: typeof CheckoutOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/withdrawals': {
+      id: '/admin/withdrawals'
+      path: '/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AdminWithdrawalsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/wallets': {
+      id: '/admin/wallets'
+      path: '/wallets'
+      fullPath: '/admin/wallets'
+      preLoaderRoute: typeof AdminWalletsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-recharge': {
+      id: '/admin/vida-recharge'
+      path: '/vida-recharge'
+      fullPath: '/admin/vida-recharge'
+      preLoaderRoute: typeof AdminVidaRechargeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-products': {
+      id: '/admin/vida-products'
+      path: '/vida-products'
+      fullPath: '/admin/vida-products'
+      preLoaderRoute: typeof AdminVidaProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-orders': {
+      id: '/admin/vida-orders'
+      path: '/vida-orders'
+      fullPath: '/admin/vida-orders'
+      preLoaderRoute: typeof AdminVidaOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-delivery': {
+      id: '/admin/vida-delivery'
+      path: '/vida-delivery'
+      fullPath: '/admin/vida-delivery'
+      preLoaderRoute: typeof AdminVidaDeliveryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida-agents': {
+      id: '/admin/vida-agents'
+      path: '/vida-agents'
+      fullPath: '/admin/vida-agents'
+      preLoaderRoute: typeof AdminVidaAgentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/vida': {
+      id: '/admin/vida'
+      path: '/vida'
+      fullPath: '/admin/vida'
+      preLoaderRoute: typeof AdminVidaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sourcing': {
+      id: '/admin/sourcing'
+      path: '/sourcing'
+      fullPath: '/admin/sourcing'
+      preLoaderRoute: typeof AdminSourcingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/proofs': {
+      id: '/admin/proofs'
+      path: '/proofs'
+      fullPath: '/admin/proofs'
+      preLoaderRoute: typeof AdminProofsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payment-methods': {
+      id: '/admin/payment-methods'
+      path: '/payment-methods'
+      fullPath: '/admin/payment-methods'
+      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/onfaisimple': {
+      id: '/admin/onfaisimple'
+      path: '/onfaisimple'
+      fullPath: '/admin/onfaisimple'
+      preLoaderRoute: typeof AdminOnfaisimpleRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/logistics': {
+      id: '/admin/logistics'
+      path: '/logistics'
+      fullPath: '/admin/logistics'
+      preLoaderRoute: typeof AdminLogisticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/hotels': {
+      id: '/admin/hotels'
+      path: '/hotels'
+      fullPath: '/admin/hotels'
+      preLoaderRoute: typeof AdminHotelsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/hotel-bookings': {
+      id: '/admin/hotel-bookings'
+      path: '/hotel-bookings'
+      fullPath: '/admin/hotel-bookings'
+      preLoaderRoute: typeof AdminHotelBookingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/commissions': {
+      id: '/admin/commissions'
+      path: '/commissions'
+      fullPath: '/admin/commissions'
+      preLoaderRoute: typeof AdminCommissionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cargo-packages': {
+      id: '/admin/cargo-packages'
+      path: '/cargo-packages'
+      fullPath: '/admin/cargo-packages'
+      preLoaderRoute: typeof AdminCargoPackagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cargo-dispatch': {
+      id: '/admin/cargo-dispatch'
+      path: '/cargo-dispatch'
+      fullPath: '/admin/cargo-dispatch'
+      preLoaderRoute: typeof AdminCargoDispatchRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cargo': {
+      id: '/admin/cargo'
+      path: '/cargo'
+      fullPath: '/admin/cargo'
+      preLoaderRoute: typeof AdminCargoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/campaigns': {
+      id: '/admin/campaigns'
+      path: '/campaigns'
+      fullPath: '/admin/campaigns'
+      preLoaderRoute: typeof AdminCampaignsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/campaign-products': {
+      id: '/admin/campaign-products'
+      path: '/campaign-products'
+      fullPath: '/admin/campaign-products'
+      preLoaderRoute: typeof AdminCampaignProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/vida/orders/$orderId': {
+      id: '/vida/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/vida/orders/$orderId'
+      preLoaderRoute: typeof VidaOrdersOrderIdRouteImport
+      parentRoute: typeof VidaOrdersRoute
+    }
+    '/sourcing/$sourcingId/chat': {
+      id: '/sourcing/$sourcingId/chat'
+      path: '/$sourcingId/chat'
+      fullPath: '/sourcing/$sourcingId/chat'
+      preLoaderRoute: typeof SourcingSourcingIdChatRouteImport
+      parentRoute: typeof SourcingRoute
+    }
+    '/receipt/sourcing/$sourcingId': {
+      id: '/receipt/sourcing/$sourcingId'
+      path: '/receipt/sourcing/$sourcingId'
+      fullPath: '/receipt/sourcing/$sourcingId'
+      preLoaderRoute: typeof ReceiptSourcingSourcingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/voucher/$bookingId': {
@@ -1334,26 +1341,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotelsVoucherBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/receipt/sourcing/$sourcingId': {
-      id: '/receipt/sourcing/$sourcingId'
-      path: '/receipt/sourcing/$sourcingId'
-      fullPath: '/receipt/sourcing/$sourcingId'
-      preLoaderRoute: typeof ReceiptSourcingSourcingIdRouteImport
+    '/hotels/voucher-direct/$bookingId': {
+      id: '/hotels/voucher-direct/$bookingId'
+      path: '/hotels/voucher-direct/$bookingId'
+      fullPath: '/hotels/voucher-direct/$bookingId'
+      preLoaderRoute: typeof HotelsVoucherDirectBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sourcing/$sourcingId/chat': {
-      id: '/sourcing/$sourcingId/chat'
-      path: '/$sourcingId/chat'
-      fullPath: '/sourcing/$sourcingId/chat'
-      preLoaderRoute: typeof SourcingSourcingIdChatRouteImport
-      parentRoute: typeof SourcingRoute
-    }
-    '/vida/orders/$orderId': {
-      id: '/vida/orders/$orderId'
-      path: '/$orderId'
-      fullPath: '/vida/orders/$orderId'
-      preLoaderRoute: typeof VidaOrdersOrderIdRouteImport
-      parentRoute: typeof VidaOrdersRoute
+    '/checkout/sourcing/$sourcingId': {
+      id: '/checkout/sourcing/$sourcingId'
+      path: '/checkout/sourcing/$sourcingId'
+      fullPath: '/checkout/sourcing/$sourcingId'
+      preLoaderRoute: typeof CheckoutSourcingSourcingIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/webhooks/geniuspay': {
       id: '/api/public/webhooks/geniuspay'

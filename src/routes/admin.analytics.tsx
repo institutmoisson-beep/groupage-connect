@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, Eye, Search, Smartphone, Users, UserCheck, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PRESENCE_CHANNEL } from "@/lib/analytics";
+import { subscribeLivePresence } from "@/lib/analytics";
 
 export const Route = createFileRoute("/admin/analytics")({
   head: () => ({ meta: [{ title: "Activité & audience — MSN Admin" }, { name: "robots", content: "noindex" }] }),
@@ -32,28 +32,7 @@ const RANGES = [
 
 function useLiveUsers() {
   const [live, setLive] = useState<LiveUser[]>([]);
-  useEffect(() => {
-    const ch = supabase.channel(PRESENCE_CHANNEL + "-admin-watch");
-    // Watch the same presence channel without tracking self twice
-    const watch = supabase.channel(PRESENCE_CHANNEL);
-    const sync = () => {
-      const state = watch.presenceState() as Record<string, Array<{ path?: string; user_id?: string | null }>>;
-      setLive(
-        Object.entries(state).map(([key, metas]) => ({
-          key,
-          path: metas[metas.length - 1]?.path ?? "/",
-          user_id: metas[metas.length - 1]?.user_id ?? null,
-        })),
-      );
-    };
-    watch.on("presence", { event: "sync" }, sync).subscribe();
-    const t = setInterval(sync, 5000);
-    return () => {
-      clearInterval(t);
-      void supabase.removeChannel(watch);
-      void supabase.removeChannel(ch);
-    };
-  }, []);
+  useEffect(() => subscribeLivePresence(setLive), []);
   return live;
 }
 
