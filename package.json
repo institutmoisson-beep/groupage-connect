@@ -91,5 +91,12 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^8.0.16"
+  },
+  "overrides": {
+    "browserslist": "^4.28.7",
+    "js-yaml": "^4.3.2",
+    "brace-expansion": "^2.1.6",
+    "fast-uri": "^3.1.7",
+    "baseline-browser-mapping": "^2.11.0"
   }
 }
